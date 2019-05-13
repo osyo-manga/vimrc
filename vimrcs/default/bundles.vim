@@ -19,10 +19,6 @@ command! -nargs=1
 \	MyBundle
 \	call neobundle#bundle(<args>)
 
-" command! -nargs=1
-" \	NeoBundleStaySame
-" \	NeoBundle <args>
-" \	, { 'stay_same' : 1 }
 
 command! -nargs=1
 \	NeoBundleNoSync
@@ -72,24 +68,16 @@ NeoBundleLazy "Shougo/vinarise.vim", {
 \	'autoload' : { 'commands' : [ 'Vinarise' ] }
 \}
 
-NeoBundle "Shougo/denite.nvim"
-NeoBundle "Shougo/deol.nvim"
+" NeoBundle "Shougo/denite.nvim"
+" NeoBundle "Shougo/deol.nvim"
 
 let s:use_deoplete = 1
 if s:use_deoplete
 	NeoBundle "Shougo/deoplete.nvim"
 	NeoBundle "roxma/nvim-yarp"
 	NeoBundle "roxma/vim-hug-neovim-rpc"
-" 	NeoBundle "fishbullet/deoplete-ruby"
-" 	NeoBundle "uplus/deoplete-solargraph"
 elseif has("lua")
 	NeoBundle "Shougo/neocomplete.vim"
-	NeoBundle "Shougo/neco-vim"
-	NeoBundle "Shougo/neoinclude.vim"
-	NeoBundleFetch "Shougo/neocomplcache"
-else
-	NeoBundle "Shougo/neocomplcache"
-	NeoBundleFetch "Shougo/neocomplete.vim"
 endif
 
 
@@ -99,9 +87,6 @@ if executable("look")
 endif
 NeoBundle "Shougo/neosnippet"
 NeoBundle "Shougo/neosnippet-snippets"
-" NeoBundle "Shougo/junkfile.vim"
-
-" NeoBundle "scrooloose/nerdtree"
 
 
 " operator
@@ -111,7 +96,6 @@ NeoBundle "thinca/vim-operator-sequence"
 " cy
 NeoBundle "kana/vim-operator-replace"
 
-" NeoBundle "rhysd/vim-operator-surround"
 NeoBundle "rhysd/vim-operator-surround", {
 \	"rev" : "input_in_advance"
 \}
@@ -135,7 +119,6 @@ NeoBundle "sgur/vim-textobj-parameter"
 NeoBundle "anyakichi/vim-textobj-xbrackets"
 
 " ii
-" NeoBundle "kana/vim-textobj-indent"
 NeoBundleLazy 'kana/vim-textobj-indent', {
 \ 'depends': 'kana/vim-textobj-user',
 \ 'autoload': {
@@ -150,7 +133,6 @@ vmap ia <Plug>(textobj-indent-a)
 
 
 NeoBundle "thinca/vim-textobj-comment"
-" NeoBundle "glts/vim-textobj-comment"
 NeoBundle "mattn/vim-textobj-url"
 NeoBundle "deris/vim-textobj-enclosedsyntax"
 
@@ -160,55 +142,15 @@ NeoBundleLazy "basyura/TweetVim", {
 \	'depends' : ["basyura/twibill.vim", "basyura/bitly.vim"],
 \	'autoload' : { 'commands' : [ 'TweetVimSwitchAccount', "TweetVimSay", "TweetVimHomeTimeline" ] },
 \}
-" NeoBundle "twitvim/twitvim"
+
 
 " C++
-if exists("$LLVM_ROOT")
-	" clang_complete の初期化が FileType cpp に発動するので…
-" 	NeoBundle "Rip-Rip/clang_complete"
-" 	NeoBundleLazy "Rip-Rip/clang_complete", {
-" 	\	"autoload" : { "filetypes" : ["c", "cpp"] }
-" 	\}
-endif
-" NeoBundle "Valloric/YouCompleteMe"
-" NeoBundle "mattn/quickrunex-vim"
-" NeoBundle "rhysd/wandbox-vim"
 NeoBundle "vim-jp/cpp-vim"
-" NeoBundle "Mizuchi/STL-Syntax"
-" NeoBundle "quark-zju/vim-cpp-auto-include"
-
-" NeoBundle "natebosch/vim-lsc"
 
 
-" C#
-" NeoBundle "nosami/Omnisharp"
-" NeoBundle "tpope/vim-dispatch"
-
-
-" Dart
-" NeoBundle "vim-scripts/Dart"
-
-
-" TypeScript
-" NeoBundle "leafgarland/typescript-vim"
-
-
-" Ruby
-" NeoBundleLazy "ujihisa/neco-rubymf", {
-" \	"autoload" : { "filetypes" : ["ruby"] }
-" \}
-" NeoBundleLazy "basyura/wwwrefe.vim", {
-" \	"autoload" : { "filetypes" : ["ruby"] }
-" \}
 
 NeoBundle "rhysd/vim-textobj-ruby"
 NeoBundle "ruby-formatter/rufo-vim"
-" NeoBundle "todesking/ruby_hl_lvar.vim"
-
-
-" QML
-" NeoBundle "peterhoeg/vim-qml"
-
 
 " Slim
 NeoBundle "slim-template/vim-slim"
@@ -219,10 +161,6 @@ NeoBundleLazy "eagletmt/unite-haddock", {
 \	"autoload" : { "filetypes" : ["haskell"] }
 \}
 
-" NeoBundleLazy "eagletmt/ghcmod-vim", {
-" \	"autoload" : { "filetypes" : ["haskell"] }
-" \}
-
 NeoBundleLazy "ujihisa/neco-ghc", {
 \	"autoload" : { "filetypes" : ["haskell"] }
 \}
@@ -230,52 +168,21 @@ NeoBundleLazy "ujihisa/neco-ghc", {
 NeoBundle "vim-jp/vimdoc-ja"
 
 
-" JavaScript
-" NeoBundle "marijnh/tern_for_vim"
-" NeoBundleLazy "othree/yajs.vim", {
-" \	'autoload':{'filetypes':['javascript']
-" \}
 " NeoBundle "jelera/vim-javascript-syntax"
 NeoBundle "pangloss/vim-javascript"
 " NeoBundle "isRuslan/vim-es6"
 
 
-" F#
-" NeoBundleLazy "kongo2002/fsharp-vim"
-
-
-"SCSS
-" NeoBundle "cakebaker/scss-syntax.vim"
-
-
-" Clojure
-" NeoBundle "thinca/vim-ft-clojure"
-
 
 " Vim script
 NeoBundle "thinca/vim-prettyprint"
-" NeoBundleLazy "thinca/vim-prettyprint", {
-" \	"autoload" : {
-" \		"commands" : ["PP"],
-" \		'functions' : ["PP"],
-" \	}
-" \}
 
 NeoBundle "kana/vim-gf-user"
 " NeoBundle "sgur/vim-gf-autoload"
 NeoBundle "hujo/gf-user-vimfn"
 
 " markdown
-" NeoBundle "plasticboy/vim-markdown"
-" http://rcmdnk.github.io/blog/2013/11/17/computer-vim/
-" NeoBundle "rcmdnk/vim-markdown"
-" NeoBundle "tpope/vim-markdown"
-" NeoBundle "tyru/markdown-codehl-onthefly.vim"
 NeoBundle "kannokanno/previm"
-
-
-" JSX
-" NeoBundle "jsx/jsx.vim"
 
 
 " Riot
@@ -295,23 +202,6 @@ NeoBundle "udalov/kotlin-vim"
 NeoBundle "IN3D/vim-raml"
 
 
-" Coffee
-" NeoBundle "vim-coffee-script"
-
-
-" Go
-" NeoBundle "fsouza/go.vim"
-" NeoBundle "jnwhiteh/vim-golang"
-
-
-" Python
-" NeoBundleLazy "davidhalter/jedi-vim", {
-" \	"autoload" : {
-" \		"filetypes" : ["python"]
-" \	}
-" \}
-
-
 " HTML5
 NeoBundle "othree/html5.vim"
 
@@ -325,7 +215,6 @@ NeoBundle "tpope/vim-haml"
 
 
 " コーディング支援
-" NeoBundle "thinca/vim-quickrun"
 NeoBundleLazy "thinca/vim-quickrun", {
 \	"focus" : 10,
 \	'autoload' : {
@@ -334,17 +223,12 @@ NeoBundleLazy "thinca/vim-quickrun", {
 \}
 
 NeoBundle "Shougo/unite-outline"
-" NeoBundle "rhysd/unite-codic.vim"
 NeoBundle "tyru/caw.vim"
 NeoBundle "dannyob/quickfixstatus"
 
 NeoBundleLazy "cohama/vim-hier", {
 \	'autoload' : { 'commands' : [ "HierClear", "HierStart", "HierStop", "HierUpdate" ] }
 \}
-
-" NeoBundleLazy "rbtnn/vimconsole.vim", {
-" \	'autoload' : { 'commands' : [ "VimConsoleLog", "VimConsoleClear" ] }
-" \}
 
 
 NeoBundle "h1mesuke/vim-alignta"
@@ -353,37 +237,13 @@ NeoBundle "tyru/current-func-info.vim"
 
 let g:loaded_matchparen = 1
 NeoBundle 'itchyny/vim-parenmatch'
-" NeoBundleNoSync "vim-scripts/Highlight-UnMatched-Brackets.git"
-
-
-" NeoBundleLazy "mattn/sonictemplate-vim", {
-" \	'autoload' : {
-" \		'commands' : [ "Template" ],
-" \		"unite_sources" : ["sonictemplate"],
-" \	}
-" \}
 
 
 " unite-sources
 NeoBundle "ujihisa/unite-colorscheme"
-" NeoBundle "thinca/vim-unite-history"
-" NeoBundle "Shougo/unite-help"
-" NeoBundle "choplin/unite-vim_hacks"
-" NeoBundle "thinca/vim-openbuf"
-" NeoBundle "mattn/wwwrenderer-vim"
 
 
 " テキスト支援
-" NeoBundle "tpope/vim-surround"
-" NeoBundle "thinca/partedit.vim"
-" NeoBundle 'LeafCage/yankround.vim'
-" NeoBundle "thinca/vim-editvar"
-NeoBundleLazy "AndrewRadev/switch.vim", {
-\	'autoload' : {
-\		'commands' : [ "Switch" ],
-\	}
-\}
-" NeoBundle "kana/vim-smartinput"
 NeoBundle "cohama/lexima.vim"
 
 " Git
@@ -425,11 +285,6 @@ NeoBundleLazy "thinca/vim-ref", {
 \	}
 \}
 
-" NeoBundleLazy "mattn/excitetranslate-vim", {
-" \	'autoload' : { 'commands' : [ "ExciteTranslate" ] }
-" \}
-" NeoBundle "haya14busa/vim-gtrans"
-" NeoBundle "haya14busa/vim-open-googletranslate"
 
 NeoBundleLazy "vim-scripts/copypath.vim", {
 \	'autoload' : { 'commands' : [ "CopyPath" ] }
@@ -438,9 +293,6 @@ NeoBundleLazy "vim-scripts/copypath.vim", {
 NeoBundleLazy "tyru/restart.vim", {
 \	'autoload' : { 'commands' : [ "Restart" ] }
 \}
-
-" NeoBundleLazy "ryutorion/vim-itunes"
-" NeoBundle "mattn/unite-rhythmbox"
 
 NeoBundle "tyru/open-browser.vim"
 NeoBundle "tyru/open-browser-github.vim"
@@ -461,56 +313,28 @@ NeoBundleLazy "thinca/vim-scall", {
 \	'autoload' : {'functions' : ["Scall"] },
 \}
 
-" http://haya14busa.com/change-vim-easymotion-from-lokaltog-to-forked/
-" NeoBundleLazy "supasorn/vim-easymotion", {
-" \	"autoload" : {
-" \		'mappings'  : ["f", "F"]
-" \	},
-" \}
 NeoBundle "Lokaltog/vim-easymotion"
 NeoBundle "t9md/vim-textmanip"
 NeoBundle "haya14busa/incsearch.vim"
 NeoBundle "haya14busa/incsearch-migemo.vim"
 NeoBundle 'haya14busa/vim-asterisk'
 NeoBundle 'thinca/vim-localrc'
-" NeoBundle "google/vim-searchindex"
 
-
-" NeoBundle "vim-scripts/glsl.vim"
-
-NeoBundle "syngan/vim-vimlint"
-NeoBundle "ynkdir/vim-vimlparser"
-" NeoBundle "dbakker/vim-lint"
+" NeoBundle "syngan/vim-vimlint"
+" NeoBundle "ynkdir/vim-vimlparser"
 
 if !has("mac")
 	NeoBundle "bling/vim-airline"
 	NeoBundle "vim-airline/vim-airline-themes"
 endif
 
-" NeoBundle "terryma/vim-multiple-cursors"
-
-" NeoBundle "matchit.zip"
-" NeoBundle "vimtaku/hl_matchit.vim"
-
-" NeoBundle "rhysd/vim-clang-format"
 NeoBundle "tyru/vim-altercmd"
-" NeoBundle "mattn/unite-mcdonalds-vim"
-" NeoBundle "AndrewRadev/linediff.vim"
-" NeoBundle "AndrewRadev/splitjoin.vim"
 NeoBundle "t9md/vim-choosewin"
 NeoBundle "thinca/vim-qfreplace"
-" NeoBundle 'deris/vim-rengbang'
-" NeoBundle "koron/codic-vim"
-
-" NeoBundle "gcmt/wildfire.vim"
-" NeoBundle "terryma/vim-expand-region"
-
-" NeoBundle "lambdalisue/vim-gista"
-" NeoBundle "mattn/gist-vim"
-" NeoBundle "kien/ctrlp.vim"
 
 NeoBundle "sgur/vim-editorconfig"
 
+" QSL formatter
 NeoBundle 'vim-scripts/Align'
 NeoBundle 'vim-scripts/SQLUtilities'
 
@@ -519,14 +343,7 @@ NeoBundle "mbbill/undotree", {
 \	'autoload' : {'commands' : ["UndotreeShow"] },
 \}
 
-" NeoBundle "itchyny/calendar.vim", {
-" \	'autoload' : {'commands' : ["Calendar"] },
-" \}
-" NeoBundle "rhysd/clever-f.vim"
 NeoBundle "Yggdroot/indentLine"
-" NeoBundle "yuratomo/w3m.vim"
-" NeoBundle "tpope/vim-fugitive"
-" NeoBundle "fuenor/qfixhowm"
 NeoBundle "vim-scripts/sudo.vim"
 NeoBundle "vim-scripts/AnsiEsc.vim"
 NeoBundle "simeji/winresizer"
@@ -538,23 +355,6 @@ NeoBundle "mattn/webapi-vim"
 NeoBundle "vim-jp/vital.vim"
 " NeoBundle "haya14busa/revital.vim"
 NeoBundle 'lambdalisue/vital-ArgumentParser'
-
-" NeoBundle "koron/imcsc-vim", {
-" \	"rtp" : "ibus-python",
-" \	'name': 'ibus-python',
-" \	"directory" : "ibus-python",
-" \}
-"
-" NeoBundle "koron/imcsc-vim", {
-" \	"rtp" : "uim-ctlso",
-" \	"directory" : "uim-ctlso",
-" \	'name': 'uim-ctlso',
-" \}
-" NeoBundle "koron/imcsc-vim", {
-" \	"rtp" : "fcitx-python",
-" \	"directory" : "fcitx-python",
-" \	'name': 'fcitx-python',
-" \}
 
 
 " 自作プラグインとか
@@ -774,66 +574,6 @@ endif
 
 
 NeoBundleOrigin "wandbox-vim"
-
-
-
-" finish
-
-
-" C++ library
-
-" 保存ディレクトリ
-let g:cpp_library_directory = "D:/home/work/software/lib/cpp/neobundle"
-" let g:cpp_library_directory = $HOME . "/work/software/lib/cpp/neobundle"
-
-function! s:neobundle_cpp(name, ...)
-	let option = get(a:, 1, {})
-	let base = {
-\		"base" : g:cpp_library_directory,
-\		"description" : "cpp-libraries",
-\		"include_dir" : get(option, "include_dir", ""),
-\		"type" : "nosync",
-\	}
-	execute "NeoBundleFetch" string(a:name) . "," . string(extend(base, option))
-" 	let bundle = neobundle#config#fetch_bundle(string(a:name) ."," . string(extend(base, option)))
-
-	" インクルードディレクトリを追加
-" 	let include_dir = get(option, "include_dir", "")
-" 	let include_path = substitute(bundle.path."/".include_dir, '\\', '/', "g")
-" 	execute "AddCppIncludeDir" string(include_path)
-endfunction
-
-" C++ のライブラリを管理する
-" :Unite neobundle -input=cpp-libraries
-command! -nargs=1
-\	NeoBundleCpp
-\	call s:neobundle_cpp(<args>)
-
-
-NeoBundleCpp "bolero-MURAKAMI/Sprout"
-" NeoBundleCpp "sabel83/mpllibs"
-
-" インクルードパスをリポジトリからの相対パスで設定したり
-" NeoBundleCpp "grafikrobot/boost-predef", { "include_dir" : "/include" }
-" NeoBundleCpp "himura/p-stade", { "include_dir" : "/pstade" }
-
-" svn から clone したり
-" NeoBundleCpp "http://svn.boost.org/svn/boost/sandbox/type_erasure/"
-
-" リビジョンを指定してみたり
-" NeoBundleCpp "cpp-netlib/cpp-netlib", {
-" \	"rev" : "0.9-devel"
-" \}
-
-
-NeoBundleFetch "boostcon/cppnow_presentations_2013"
-
-" NeoBundleCpp "supermomonga/sidecar-client"
-NeoBundleCpp "https://github.com/EzoeRyou/cpp-book", {
-\	"rev" : "gh-pages"
-\}
-
-
 
 
 NeoBundle "fuenor/qfixhowm"
