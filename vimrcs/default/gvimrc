@@ -1,0 +1,35 @@
+Fontzoom 14
+" 
+" 
+" "カラースキーマを設定
+" set background=light
+" " let g:solarized_contrast="hight"
+" let g:solarized_italic=0
+" colorscheme solarized
+" " colorscheme solarized2
+" 
+" " フォントを設定
+" " フォント名に日本語名を使うので、一時的に文字コードを変える
+" setlocal encoding=cp932
+" set guifont=Osaka－等幅:h11
+" " set guifont=メイリオ:h11
+" " set guifont=IPAモナーフォント:h11
+" "setlocal guifont=みかちゃん:h11
+" " set guifont=MS_Gothic:h12
+" "set guifont=Ricty:h12
+" 
+" " set guifontwide=MS_Gothic:h11
+" set guifontwide=Osaka－等幅:h10
+" " set guifontwide=Osaka－等幅:h10
+" " set guifontwide=メイリオ:h10
+" " set guifontwide=IPAモナーフォント:h11
+" "set guifontwide=みかちゃん:h10
+" "set guifontwide=Ricty-Regular:h10
+" set ambiwidth=double
+" " 文字コードを元に戻す
+" setlocal encoding=utf-8
+" "
+" execute "highlight hier_warning gui=undercurl guisp=Blue"
+" 
+" 
+" 
