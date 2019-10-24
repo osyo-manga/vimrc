@@ -2863,7 +2863,7 @@ endif
 
 
 function! s:eval_ruby(expr)
-	echo system(printf("ruby -e '%s'", tr(a:expr, "'", '"')))
+	echo vimproc#system(printf("ruby -e '%s'", tr(a:expr, "'", '"')))
 endfunction
 command! -nargs=* R call s:eval_ruby(<q-args>)
 
