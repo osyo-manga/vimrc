@@ -313,6 +313,7 @@ set display=lastline
 " http://qiita.com/amagawawaw/items/4a46d08f6c3e456e18d0
 if has("Mac")
 	set imdisable
+	MyAutocmd InsertEnter * set imdisable
 " 	let g:mapleader = "¥"
 endif
 " }}}
@@ -478,7 +479,17 @@ nnoremap N Nzzzv
 " 縦に連番を入力する
 nnoremap <silent> co :ContinuousNumber <C-a><CR>
 vnoremap <silent> co :ContinuousNumber <C-a><CR>
-command! -count -nargs=1 ContinuousNumber let c = col('.')|for n in range(1, <count>?<count>-line('.'):1)|exec 'normal! j' . n . <q-args>|call cursor('.', c)|endfor
+function! s:continuous_number(count, key)
+	echo "Hoge"
+	echo a:count
+	let c = col('.')
+	for n in range(1, a:count ? a:count - line('.') : 1)
+		exec 'normal! j' . n . a:key
+		call cursor('.', c)
+	endfor
+endfunction
+command! -range -nargs=1 ContinuousNumber call s:continuous_number(<count>, <q-args>)
+" command! -count -nargs=1 ContinuousNumber let c = col('.')|for n in range(1, <count>?<count>-line('.'):1)|exec 'normal! j' . n . <q-args>|call cursor('.', c)|endfor
 
 
 " 最後の編集位置へ戻る
@@ -827,7 +838,7 @@ nnoremap <Space>rc :Ref webdict codic<Space>
 let s:bundle = neobundle#get("vim-ref")
 let s:bundle.hooks = get(s:bundle, "hooks", {})
 function! s:bundle.hooks.on_source(bundle)
-	let g:ref_use_vimproc = 1
+	let g:ref_use_vimproc = 0
 
 	" let g:ref_open="tabnew"
 	let lynx = g:lynx_dir.'/lynx.exe'
@@ -1172,6 +1183,7 @@ nnoremap <silent> <Space>vfe :VFE<CR>
 let s:bundle = neobundle#get("neocomplete.vim")
 let s:bundle.hooks = get(s:bundle, "hooks", {})
 function! s:bundle.hooks.on_source(bundle)
+	return
 	let g:neocomplete#enable_at_startup = 1
 	let g:neocomplete#enable_ignore_case = 0
 	let g:neocomplete#enable_smart_case = 0
@@ -1282,7 +1294,18 @@ let s:bundle = neobundle#get("deoplete.nvim")
 let s:bundle.hooks = get(s:bundle, "hooks", {})
 function! s:bundle.hooks.on_source(bundle)
 	let g:deoplete#enable_at_startup = 1
-	call deoplete#mappings#manual_complete()
+" 	call deoplete#mappings#manual_complete()
+	call deoplete#custom#option('profile', v:true)
+	call deoplete#enable_logging('DEBUG', 'deoplete.log')
+	let $NVIM_PYTHON_LOG_FILE="/tmp/nvim_log"
+	let $NVIM_PYTHON_LOG_LEVEL="DEBUG"
+	
+" 	call deoplete#custom#source("vimshell_history", "sorters", ["sorter_word"])
+
+
+	call deoplete#custom#var('omni', 'input_patterns', {
+	    \ 'ruby': ['[a-zA-Z_]\w*::'],
+	    \})
 endfunction
 
 unlet s:bundle
@@ -1962,15 +1985,15 @@ unlet s:hooks
 
 " vim-gitgutter {{{
 let s:hooks = neobundle#get_hooks("vim-gitgutter")
-function! s:hooks.on_source(bundle)
+function! s:hooks.post_source(bundle)
 " 	nnoremap <leader>gg :<C-u>GitGutterToggle<CR>
 " 	nnoremap <leader>gh :<C-u>GitGutterLineHighlightsToggle<CR>
+	autocmd! gitgutter CursorHold,CursorHoldI
 	let g:gitgutter_map_keys = 0
 
 	let g:gitgutter_escape_grep = 1
 	let g:gitgutter_eager = 1
 " 	let g:gitgutter_realtime = 0
-
 endfunction
 unlet s:hooks
 " }}}
@@ -2095,7 +2118,7 @@ function! s:hooks.on_source(bundle)
 	" nmap <C-p> <Plug>(operator-swap-paste)
 
 	nmap <C-p><C-p> <Plug>(operator-swap-reset)
-	nmap <C-p> <Plug>(operator-swap-last-yank)
+" 	nmap <C-p> <Plug>(operator-swap-last-yank)
 endfunction
 unlet s:hooks
 " }}}
@@ -2264,7 +2287,7 @@ let s:hooks = neobundle#get_hooks("vim-brightest")
 function! s:hooks.on_source(bundle)
 " 	let g:brightest_highlight_pattern = '[A-Za-z0-9]\+'
 " 	let g:brightest#highlight_format = '%s'
-	let g:brightest#highlight = { "group" : "BrightestUnderline" }
+" 	let g:brightest#highlight = { "group" : "BrightestUnderline" }
 " 	let g:brightest#highlight = {
 " \		"priority" : 10000
 " \	}
@@ -2272,6 +2295,7 @@ function! s:hooks.on_source(bundle)
 " 	let g:brightest#ignore_syntax_list = [ "Statement", "Keyword" ]
 
 
+return
 	let g:brightest#enable_on_CursorHold = 0
 	let g:brightest#enable_insert_mode = 0
 	let g:brightest#enable_highlight_all_window = 0
@@ -2836,5 +2860,11 @@ if has('vim_starting') && !has("gui")
     " 置換モード時に非点滅の下線タイプのカーソル
     let &t_SR .= "\e[4 q"
 endif
+
+
+function! s:eval_ruby(expr)
+	echo system(printf("ruby -e '%s'", tr(a:expr, "'", '"')))
+endfunction
+command! -nargs=* R call s:eval_ruby(<q-args>)
 
 
