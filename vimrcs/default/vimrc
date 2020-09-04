@@ -237,7 +237,10 @@ set autoread
 silent! set regexpengine=1
 
 let g:omni_sql_no_default_maps = 1
-" }}}
+
+" 補完入力中に関連のメッセージを表示しないようにする
+" e.g. 1 番目の該当 (全該当 2 個中)
+set shortmess+=c
 
 
 "==========================================================
@@ -445,6 +448,9 @@ nnoremap <Esc><Esc> :nohlsearch<CR>
 " カーソル位置の上に改行を挿入
 " カーソル位置のテキストを下に動かすような挙動
 nnoremap <silent> <C-j> :call append(line(".")-1, "")<CR>
+" カーソル位置を基準として開業する
+nnoremap <silent> <A-j> i<CR><Esc>
+nnoremap <silent> <A-k> i<C-h><Esc>
 
 " カーソル位置の上の行を削除
 " カーソル位置を上に動かすような挙動
@@ -599,6 +605,9 @@ nnoremap tt :tabnew<CR>
 
 " カーソル移動
 inoremap <C-l> <Right>
+
+" SQLUFormatter
+nnoremap <A-q><A-q> :SQLUFormatter<CR>
 " }}}
 
 
@@ -803,9 +812,11 @@ function! s:bundle.hooks.on_source(bundle)
 	let g:vimshell_interactive_update_time = 0
 	let g:vimshell_scrollback_limit = 100000
 	let g:vimshell_data_directory = expand("~/.vim/vimshell")
+	let g:vimshell_max_command_history = 10000
 
 	" 表示形式
 	let g:vimshell_user_prompt = 'substitute(fnamemodify(getcwd(), ":~"), "\\", "/", "g")'
+	let g:vimshell_user_prompt = ""
 	let g:vimshell_prompt =  '$ '
 	
 	let s:leave_insert_patterns = '\%(' . join(map([
@@ -868,7 +879,7 @@ function! s:bundle.hooks.on_source(bundle)
 	\   'wikipedia:ja': 'http://ja.wikipedia.org/wiki/%s',
 	\   'aaaaa': {
 	\		"url" : 'http://eow.alc.co.jp/search?q=%s',
-	\		"line" : '31',
+	\		"line" : '66',
 	\	},
 	\   'codic': {
 	\     'url': 'http://codic.jp/search?q=%s',
@@ -1295,17 +1306,26 @@ let s:bundle.hooks = get(s:bundle, "hooks", {})
 function! s:bundle.hooks.on_source(bundle)
 	let g:deoplete#enable_at_startup = 1
 " 	call deoplete#mappings#manual_complete()
-	call deoplete#custom#option('profile', v:true)
-	call deoplete#enable_logging('DEBUG', 'deoplete.log')
-	let $NVIM_PYTHON_LOG_FILE="/tmp/nvim_log"
-	let $NVIM_PYTHON_LOG_LEVEL="DEBUG"
+" 	call deoplete#custom#option('profile', v:true)
+" 	call deoplete#enable_logging('DEBUG', 'deoplete.log')
+" 	let $NVIM_PYTHON_LOG_FILE="/tmp/nvim_log"
+" 	let $NVIM_PYTHON_LOG_LEVEL="DEBUG"
 	
 " 	call deoplete#custom#source("vimshell_history", "sorters", ["sorter_word"])
 
+" 	call deoplete#custom#option('omni_patterns', {
+" 	\ 'ruby': ['[a-zA-Z_]\w*::'],
+" 	\})
 
+" 	call deoplete#custom#var('omni', 'input_patterns', {
+" 	    \ 'ruby': [],
+" 	    \})
+" 	call deoplete#custom#var('omni', 'input_patterns', {
+" 	    \ 'ruby': ['[a-zA-Z_]\w*::'],
+" 	    \})
 	call deoplete#custom#var('omni', 'input_patterns', {
-	    \ 'ruby': ['[a-zA-Z_]\w*::'],
-	    \})
+		\ 'ruby': ['[^. *\t]\.\w*', '[a-zA-Z_]\w*::'],
+	\})
 endfunction
 
 unlet s:bundle
@@ -1822,6 +1842,7 @@ function! s:bundle.hooks.on_source(bundle)
 	let g:airline#extensions#whitespace#checks = []
 	let g:airline#extensions#anzu#enabled = 1
 	let g:airline#extensions#hunks#enabled = 0
+	let g:airline#extensions#branch#enabled = 1
 endfunction
 unlet s:bundle
 " }}}
@@ -1842,6 +1863,8 @@ function! s:bundle.hooks.on_source(bundle)
 \		if &buftype !=# 'help'
 \|			call frill#add_file("file_short", expand("<afile>"))
 \|		endif
+
+	MyAutocmd FocusLost * call frill#save_all()
 endfunction
 unlet s:bundle
 " }}}
@@ -2361,6 +2384,10 @@ unlet s:hooks
 " vim-textobj-indent {{{
 nmap <A-,> <<Plug>(textobj-indent-i)
 nmap <A-.> ><Plug>(textobj-indent-i)
+omap ii <Plug>(textobj-indent-i)
+vmap ii <Plug>(textobj-indent-i)
+omap ia <Plug>(textobj-indent-a)
+vmap ia <Plug>(textobj-indent-a)
 " }}}
 
 
@@ -2501,6 +2528,118 @@ endfunction
 unlet s:hooks
 " }}}
 
+
+
+" autozimu/LanguageClient-neovim {{{
+let s:hooks = neobundle#get_hooks("LanguageClient-neovim")
+function! s:hooks.on_source(bundle)
+	let g:LanguageClient_serverCommands = {
+		\ 'ruby': ['solargraph', 'stdio'],
+	\}
+endfunction
+unlet s:hooks
+" }}}
+
+
+" prabirshrestha/vim-lsp {{{
+let s:hooks = neobundle#get_hooks("vim-lsp")
+function! s:hooks.on_source(bundle)
+	let g:lsp_log_verbose = 1
+	let g:lsp_log_file = expand('~/vim-lsp.log')
+	let g:lsp_signs_enabled = 0
+
+	" https://github.com/prabirshrestha/vim-lsp/wiki/Servers-Ruby
+" 	if executable('solargraph')
+		" gem install solargraph
+		MyAutocmd User lsp_setup call lsp#register_server({
+			\ 'name': 'solargraph',
+			\ 'cmd': {server_info->[&shell, &shellcmdflag, 'solargraph stdio']},
+			\ 'initialization_options': {"diagnostics": "true"},
+			\ 'whitelist': ['ruby'],
+			\ })
+" 	endif
+
+
+	function! s:on_lsp_buffer_enabled() abort
+" 		setlocal omnifunc=lsp#complete
+" 		setlocal signcolumn=yes
+		nmap <buffer> gd <plug>(lsp-definition)
+		nmap <buffer> <f2> <plug>(lsp-rename)
+		" refer to doc to add more commands
+	endfunction
+
+	augroup lsp_install
+		au!
+		" call s:on_lsp_buffer_enabled only for languages that has the server registered.
+		MyAutocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+	augroup END
+endfunction
+unlet s:hooks
+" }}}
+
+
+" tyru/empty-prompt.vim {{{
+let s:hooks = neobundle#get_hooks("empty-prompt.vim")
+function! s:hooks.on_source(bundle)
+	function! s:empty_prompt_mappings() abort
+		  call empty_prompt#map(#{lhs: ':', rhs: "<C-w>:"})
+		  call empty_prompt#map(#{lhs: '<Esc>', rhs: "<C-w>N"})
+	endfunction
+	MyAutocmd VimEnter * ++once call s:empty_prompt_mappings()
+endfunction
+unlet s:hooks
+" }}}
+
+
+" vimfiler {{{
+let s:bundle = neobundle#get("vim-clurin")
+let s:bundle.hooks = get(s:bundle, "hooks", {})
+function! s:bundle.hooks.on_source(bundle)
+	nmap <C-a> <Plug>(clurin-next)
+	nmap <C-x> <Plug>(clurin-prev)
+
+
+	function! g:CountUp(strs, cnt, def) abort
+	  " a:strs: matched text list
+	  " a:cnt: non zero.
+	  " a:def: definition
+	  return str2nr(a:strs[0]) + a:cnt
+	endfunction
+
+	function! g:CtrlAX(cnt) abort
+		if a:cnt >= 0
+			execute 'normal!' a:cnt . "\<C-A>"
+		else
+			execute 'normal!' (-a:cnt) . "\<C-X>"
+		endif
+	endfunction
+
+
+	let g:clurin = {
+	\	'-': {
+	\		'def': [
+	\			[
+	\				{'pattern': '\<true\>', 'replace': 'true'},
+	\				{'pattern': '\<false\>', 'replace': 'false'},
+	\			],
+	\			[
+	\				'on', 'off'
+	\			]
+	\		],
+	\		'nomatch': function('g:CtrlAX')
+	\	},
+	\	'vim': {
+	\		'def': [
+	\			[
+	\				{'pattern': '''\(\k\+\)''', 'replace': '''\1'''},
+	\				{'pattern': '"\(\k\+\)"', 'replace': '"\1"'},
+	\			]
+	\		]
+	\	},
+	\}
+endfunction
+unlet s:bundle
+" }}}
 
 
 
@@ -2787,6 +2926,7 @@ command! -nargs=* GitReset echo system("git reset --soft HEAD^")
 
 " filetype
 MyAutocmd BufEnter *_spec.rb set ft=ruby.rspec
+MyAutocmd BufEnter *.rbs set ft=rbs
 let g:ruby_path=""
 
 
@@ -2867,4 +3007,6 @@ function! s:eval_ruby(expr)
 endfunction
 command! -nargs=* R call s:eval_ruby(<q-args>)
 
-
+if !has("gui_running")
+	set notitle
+endif
