@@ -223,7 +223,7 @@ set textwidth=0
 set incsearch
 
 " コマンド履歴
-set history=5000
+set history=10000
 
 " スペルチェックから日本語を除外
 set spelllang+=cjk
@@ -301,6 +301,7 @@ set numberwidth=4
 " wrap 時に2行目以降もインデントする
 if exists("+breakindent")
 	set breakindent
+	let &showbreak = '> '
 endif
 
 " set foldmethod=marker
@@ -520,7 +521,7 @@ nnoremap <silent> <C-h> :tabprevious<CR>
 nnoremap <silent> <C-Tab> :tabnext<CR>
 
 " <C-CR> で改行した場合にインデントをスペースで揃える
-inoremap <silent> <C-CR> <Esc>:set expandtab<CR>a<CR> <Esc>:set noexpandtab<CR>a<BS>
+" inoremap <silent> <C-CR> <Esc>:set expandtab<CR>a<CR> <Esc>:set noexpandtab<CR>a<BS>
 
 " Y を y$ の変わりに使う
 nmap Yl y$
@@ -631,6 +632,7 @@ MyAutocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "no
 
 
 " Aliases
+let g:markdown_syntax_conceal = 0
 MyAutocmd FileType mkd set filetype=markdown
 MyAutocmd FileType md  set filetype=markdown
 MyAutocmd FileType js set filetype=javascript
@@ -1510,7 +1512,6 @@ function! s:bundle.hooks.on_source(bundle)
 " 	command! UniteQuickRunConfig :Unite quickrun_config -start-insert -immediately
 " 	source <sfile>:h/quickrun.vim
 " 	nmap <Space>q <Plug>(quickrun-op)
-	let _ = g:quickrun#default_config
 endfunction
 unlet s:bundle
 
@@ -2140,7 +2141,8 @@ function! s:hooks.on_source(bundle)
 	nmap <A-m> <Plug>(operator-swap-marking)
 	" nmap <C-p> <Plug>(operator-swap-paste)
 
-	nmap <C-p><C-p> <Plug>(operator-swap-reset)
+" 	omap <C-p><C-p> <Plug>(operator-swap-reset)
+
 " 	nmap <C-p> <Plug>(operator-swap-last-yank)
 endfunction
 unlet s:hooks
@@ -2169,10 +2171,10 @@ unlet s:hooks
 " indentline {{{
 let s:hooks = neobundle#get_hooks("indentLine")
 function! s:hooks.on_source(bundle)
-	let g:indentline_color_term = 111
-	let g:indentline_color_gui = '#708090'
-	let g:indentline_char = '¦' "use ¦, ┆ or │
-	let g:indentline_noconcealcursor = 1
+" 	let g:indentLine_color_term = 111
+" 	let g:indentLine_color_gui = '#708090'
+" 	let g:indentLine_char = '¦' "use ¦, ┆ or │
+	let g:indentLine_noconcealcursor = 1
 	MyAutocmd BufEnter * IndentLinesReset
 	MyAutocmd User PreciousFileType IndentLinesReset
 " 	MyAutocmd CursorHold * IndentLinesEnable
@@ -2509,7 +2511,7 @@ function! s:hooks.on_source(bundle)
 	set guitablabel=%{swindle#get_tablabel()}
 
 	let g:swindle_default_config = {
-\		"ignore_pat" : "vimfiler:default"
+\		"ignore_pat" : "vimfiler:default",
 \	}
 
 	nmap <silent> <A-l> <Plug>(swindle-jump-next)
@@ -2636,9 +2638,36 @@ function! s:bundle.hooks.on_source(bundle)
 	\			]
 	\		]
 	\	},
+	\	'ruby': {
+	\		'def': [
+	\			[
+	\				{'pattern': '\<if\>', 'replace': 'if'},
+	\				{'pattern': '\<unless\>', 'replace': 'unless'},
+	\			],
+	\			[
+	\				{'pattern': '\<puts\>', 'replace': 'puts'},
+	\				{'pattern': '\<pp\>', 'replace': 'pp'},
+	\			],
+	\		]
+	\	},
 	\}
 endfunction
 unlet s:bundle
+" }}}
+
+
+" vim-altercmd {{{
+let s:hooks = neobundle#get_hooks("denite.nvim")
+function! s:hooks.on_post_source(bundle)
+	execute "source" fnamemodify(s:vimrc, ":h")."/denite.vim"
+
+	MyAutocmd FileType denite-filter call s:denite_filter_my_settings()
+	function! s:denite_filter_my_settings() abort
+	  call deoplete#custom#buffer_option('auto_complete', v:false)
+	  imap <silent><buffer> <Esc> <Plug>(denite_filter_quit)
+	endfunction
+endfunction
+unlet s:hooks
 " }}}
 
 
@@ -2927,6 +2956,7 @@ command! -nargs=* GitReset echo system("git reset --soft HEAD^")
 " filetype
 MyAutocmd BufEnter *_spec.rb set ft=ruby.rspec
 MyAutocmd BufEnter *.rbs set ft=rbs
+" MyAutocmd BufEnter *.rbs set ft=ruby
 let g:ruby_path=""
 
 
@@ -2992,7 +3022,7 @@ endif
 
 
 " CUI で起動した時にインサートモードのカーソルを | にする
-if has('vim_starting') && !has("gui")
+if has('vim_starting') && !has("gui_running")
     " 挿入モード時に非点滅の縦棒タイプのカーソル
     let &t_SI .= "\e[6 q"
     " ノーマルモード時に非点滅のブロックタイプのカーソル

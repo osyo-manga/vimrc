@@ -123,21 +123,22 @@ call lexima#add_rule({"at" : "'\\%#'", "char" : "'", "input" : '<Right>', "synta
 
 
 
-call s:add_rule(
-\	{"at" : '\S\%#', "char" : '.', "input" : '.<C-x><C-o>', "filetype" : "ruby"},
-\	[
-\		{"at" : '\%#"',  "priority" : 10},
-\		{"at" : "\\%#'", "priority" : 10},
-\		{"syntax" : ["String", "Comment"]}
-\])
+" . で omnifunc を呼び出す
+" call s:add_rule(
+" \	{"at" : '\S\%#', "char" : '.', "input" : '.<C-x><C-o>', "filetype" : "ruby"},
+" \	[
+" \		{"at" : '\%#"',  "priority" : 10},
+" \		{"at" : "\\%#'", "priority" : 10},
+" \		{"syntax" : ["String", "Comment"]}
+" \])
 
-call s:add_rule(
-\	{"at" : '\S:\%#', "char" : ':', "input" : ':<C-x><C-o>', "filetype" : "ruby"},
-\	[
-\		{"at" : '\%#"',  "priority" : 10},
-\		{"at" : "\\%#'", "priority" : 10},
-\		{"syntax" : ["String", "Comment"]}
-\	])
+" call s:add_rule(
+" \	{"at" : '\S:\%#', "char" : ':', "input" : ':<C-x><C-o>', "filetype" : "ruby"},
+" \	[
+" \		{"at" : '\%#"',  "priority" : 10},
+" \		{"at" : "\\%#'", "priority" : 10},
+" \		{"syntax" : ["String", "Comment"]}
+" \	])
 
 call s:add_rule({"char" : "#", "input" : "#{}<Left>", "filetype" : "ruby", "syntax" : ["String", "Special"]})
 call s:add_rule({"at" : '#{\%#}', "char" : "#", "input" : "<Right><BS><BS>", "filetype" : "ruby", "syntax" : ["String", "Special"]})

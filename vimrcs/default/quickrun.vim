@@ -1,3 +1,4 @@
+
 " let g:quickrun_config = {
 " \	"javascript/watchdogs_checker" : {
 " \		"type" : "watchdogs_checker/eslint",
@@ -800,7 +801,7 @@ function! s:hook.on_normalized(session, context)
 	endif
 
 	if len(paths)
-		let a:session.config.cmdopt .= " " . join(map(paths, "printf(self.config.option_format, v:val)")) . " "
+" 		let a:session.config.cmdopt .= " " . join(map(paths, "printf(self.config.option_format, v:val)")) . " "
 	endif
 endfunction
 
@@ -1179,28 +1180,31 @@ endfunction
 "\		"hook/unite_quickfix/unite_options" : "-no-quit -direction=botright -winheight=4 -max-multi-lines=32 -wrap",
 
 "\		"runner" : "vimproc",
+" \		"runner/vimproc/updatetime" : 500,
+" \		"runner/vimproc/sleep" : 10,
 " \		"outputter" : "multi:buffer:quickfix:bufixlist",
+" \		"outputter/buffer/split" : ":botright 12sp",
+" \		"outputter/setbufline/split" : ":botright 12sp",
 " デフォルト {{{
 let s:config = {
 \	"_" : {
-\		"outputter/buffer/split" : ":botright 10sp",
-\		"outputter/setbufline/split" : ":botright 10sp",
+\		"outputter/buffer/split" : ":botright 8sp",
+\		"outputter/setbufline/split" : ":botright 8sp",
 \		"outputter" : "multi:setbufline:quickfix:bufixlist",
 \		"outputter/buffer/running_mark" : "ﾊﾞﾝ（∩`･ω･）ﾊﾞﾝﾊﾞﾝﾊﾞﾝﾊﾞﾝﾞﾝ",
 \		"outputter/setbufline/running_mark" : "ﾊﾞﾝ（∩`･ω･）ﾊﾞﾝﾊﾞﾝﾊﾞﾝﾊﾞﾝﾞﾝ",
 \		"outputter/quickfix/open_cmd" : "",
 \		"outputter/bufixlist/open_cmd" : "",
 \		"runner" : "job",
-\		"runner/vimproc/updatetime" : 500,
-\		"runner/vimproc/sleep" : 10,
-\		"hook/santi_pinch/enable" : 1,
+\		"hook/santi_pinch/enable" : 0,
 \		"hook/santi_pinch/wait" : 5,
 \		"hook/sweep/enable" : 0,
 \		"hook/extend_config/enable" : 1,
 \		"hook/extend_config/force" : 1,
-\		"hook/close_buffer/enable_failure" : 1,
+\		"hook/close_buffer/enable_failure" : 0,
 \		"hook/close_buffer/enable_empty_data" : 1,
 \		"hook/close_buffer/enable_exit" : 0,
+\		"hook/unite_quickfix/enable" : 0,
 \		"hook/unite_quickfix/enable_failure" : 1,
 \		"hook/unite_quickfix/priority_exit" : 0,
 \		"hook/unite_quickfix/unite_options" : "-no-quit -direction=botright -winheight=12 -max-multi-lines=32 -wrap",
@@ -1469,7 +1473,7 @@ let s:config = {
 \	},
 \
 \	"cpp" : {
-\		"type" : "cpp/clang++-5.0 1z",
+\		"type" : "cpp/gem-wandbox",
 \		"hook/extend_config/enable" : 1,
 \		"hook/close_buffer/enable_exit" : 0,
 \	},
@@ -1656,8 +1660,8 @@ let s:config = {
 \
 \	"cpp/g++" : {
 \		"command"   : "g++",
-\		"exec" : "%c %o %s -o %s:p:r ",
-\		"cmdopt"    : s:gcc_option." -std=gnu++0x",
+\		"exec" : "%c %o %s:p -o %s:p:r ",
+\		"cmdopt"    : s:gcc_option,
 \		"errorformat" : '%f:%l:%c:\ %t%*[^:]:%m,%f:%m',
 \	},
 \
@@ -1672,6 +1676,13 @@ let s:config = {
 \		"hook/close_buffer/enable_failure" : 0,
 \		"hook/unite_quickfix/enable" : 0,
 \		"hook/close_unite_quickfix/enable" : 0,
+\	},
+\
+\	"cpp/g++9.2 C++20" : {
+\		"command"   : "g++-9",
+\		"exec" : "%c %o %s:p -o %s:p:r ",
+\		"cmdopt"    : s:gcc_option." -pedantic-errors -std=gnu++2a",
+\		"errorformat" : '%f:%l:%c:\ %t%*[^:]:%m,%f:%m',
 \	},
 \
 \	"cpp/g++1z" : {
@@ -1874,9 +1885,20 @@ let s:config = {
 \		"type" : "wandbox",
 \	},
 \
+\	"cpp/gem-wandbox" : {
+\		"command" : "wandbox",
+\		"exec" : '%c run --options="gnu++2a" %s:p',
+\		"cmdopt"  : "gnu++2a",
+\		"hook/close_buffer/enable" : 0,
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\		"hook/unite_quickfix/enable_exist_data" : 0,
+\		"hook/unite_quickfix/enable_failure" : 0,
+\	},
+\
 \	"cpp/wandbox_gcc" : {
-\		"type" : "wandbox",
-\		"runner/wandbox/compiler" : "gcc-head",
+\		"command"   : "wandbox",
+\		"exec" : "%c %o",
 \	},
 \
 \
@@ -1887,6 +1909,63 @@ let s:config = {
 \	},
 \
 \
+\}
+let s:config = {
+\	"cpp/g++-preprocessor" : {
+\		"command"   : "g++",
+\		"exec" : "%c %o %s:p  ",
+\		"cmdopt"    : s:gcc_option." -P -E -MMD -std=gnu++0x",
+\		"outputter" : "buffer",
+\		"buffer/filetype" : "cpp",
+\		"hook/close_buffer/enable_empty_data" : 1,
+\		"hook/close_buffer/enable_success" : 0,
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\		"hook/close_unite_quickfix/enable" : 0,
+\	},
+\
+\	"cpp/g++9.2 C++20" : {
+\		"command"   : "g++-9",
+\		"exec" : "%c %o %s:p -o %s:p:r ",
+\		"cmdopt"    : s:gcc_option." -fconcepts -pedantic-errors -std=gnu++2a",
+\		"errorformat" : '%f:%l:%c:\ %t%*[^:]:%m,%f:%m',
+\	},
+\
+\	"cpp/g++9.2 C++17" : {
+\		"command"   : "g++-9",
+\		"exec" : "%c %o %s:p -o %s:p:r ",
+\		"cmdopt"    : s:gcc_option." -pedantic-errors -std=gnu++1z",
+\		"errorformat" : '%f:%l:%c:\ %t%*[^:]:%m,%f:%m',
+\	},
+\
+\	"cpp/clang-8 C++20" : {
+\		"command"   : "clang-8",
+\		"exec" : "%c %o %s:p -o %s:p:r ",
+\		"cmdopt"    : s:gcc_option." -fconcepts -pedantic-errors -std=gnu++2a",
+\		"errorformat" : '%f:%l:%c:\ %t%*[^:]:%m,%f:%m',
+\	},
+\
+\	"cpp/gem-wandbox-gcc-head" : {
+\		"command" : "wandbox",
+\		"exec" : '%c run --options="gnu++2a" %s:p',
+\		"cmdopt"  : "gnu++2a",
+\		"hook/close_buffer/enable" : 0,
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\		"hook/unite_quickfix/enable_exist_data" : 0,
+\		"hook/unite_quickfix/enable_failure" : 0,
+\	},
+\
+\	"cpp/gem-wandbox-clang-head" : {
+\		"command" : "wandbox",
+\		"exec" : '%c run --compiler=clang-head --options="gnu++2a" %s:p',
+\		"cmdopt"  : "gnu++2a",
+\		"hook/close_buffer/enable" : 0,
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\		"hook/unite_quickfix/enable_exist_data" : 0,
+\		"hook/unite_quickfix/enable_failure" : 0,
+\	},
 \}
 call extend(g:quickrun_config, s:config)
 unlet s:config
@@ -1935,9 +2014,90 @@ unlet s:config
 let s:config = {
 \	"ruby" : {
 \		"cmdopt" : "-Ku",
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
 \	},
 \	"ruby/ruby" : {
 \		"type" : "ruby",
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\	},
+\	"ruby/2.0" : {
+\		"command" : "ruby",
+\		"exec" : "RBENV_VERSION=2.0.0-p648 %c %o %s:p",
+\	},
+\	"ruby/2.0 -y" : {
+\		"command" : "ruby",
+\		"cmdopt" : "-y",
+\		"exec" : "RBENV_VERSION=2.0.0-p648 %c %o %s:p",
+\	},
+\	"ruby/2.5" : {
+\		"command" : "ruby",
+\		"exec" : "RBENV_VERSION=2.5.6 %c %o %s:p",
+\	},
+\	"ruby/2.6" : {
+\		"command" : "ruby",
+\		"exec" : "RBENV_VERSION=2.6.6 %c %o %s:p",
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\	},
+\	"ruby/2.7.0" : {
+\		"command" : "ruby",
+\		"exec" : "RBENV_VERSION=2.7.0 %c %o %s:p",
+\	},
+\	"ruby/2.7.1" : {
+\		"command" : "ruby",
+\		"exec" : "RBENV_VERSION=2.7.1 %c %o %s:p",
+\	},
+\	"ruby/2.7.1 within warning" : {
+\		"command" : "ruby",
+\		"cmdopt" : "-w",
+\		"exec" : "RBENV_VERSION=2.7.1 %c %o %s:p",
+\	},
+\	"ruby/2.7.1 without warning" : {
+\		"command" : "ruby",
+\		"cmdopt" : "-Ku -W:no-deprecated -W:no-experimental ",
+\		"exec" : "RBENV_VERSION=2.7.1 %c %o %s:p",
+\	},
+\	"ruby/2.7.2" : {
+\		"command" : "ruby",
+\		"exec" : "RBENV_VERSION=2.7.2 %c %o %s:p",
+\	},
+\	"ruby/3.0.0" : {
+\		"command" : "ruby",
+\		"exec" : "RBENV_VERSION=3.0.0 %c %o %s:p",
+\	},
+\	"ruby/3.0.0 with deprecated-warning" : {
+\		"command" : "ruby",
+\		"cmdopt" : "-Ku -W:deprecated",
+\		"exec" : "RBENV_VERSION=3.0.0 %c %o %s:p",
+\	},
+\	"ruby/3.0.0 without warning" : {
+\		"command" : "ruby",
+\		"cmdopt" : "-Ku -W:no-deprecated -W:no-experimental ",
+\		"exec" : "RBENV_VERSION=3.0.0 %c %o %s:p",
+\	},
+\	"ruby/3.1.0-dev" : {
+\		"command" : "ruby",
+\		"exec" : "RBENV_VERSION=3.1.0-dev %c %o %s:p",
+\	},
+\	"ruby/3.1.0-dev with deprecated-warning" : {
+\		"command" : "ruby",
+\		"cmdopt" : "-Ku -W:deprecated",
+\		"exec" : "RBENV_VERSION=3.1.0-dev %c %o %s:p",
+\	},
+\	"ruby/3.1.0-dev without warning" : {
+\		"command" : "ruby",
+\		"cmdopt" : "-Ku -W:no-deprecated -W:no-experimental ",
+\		"exec" : "RBENV_VERSION=3.1.0-dev %c %o %s:p",
+\	},
+\	"ruby/rake test without warning" : {
+\		"command" : "rake",
+\		"exec" : "bundle exec %c test %s:p",
+\	},
+\	"ruby/rake TEST without warning" : {
+\		"command" : "rake",
+\		"exec" : "bundle exec %c TEST=%s:p",
 \	},
 \	"ruby/trunk" : {
 \		"exec" : "%c %o %s:p",
@@ -1955,13 +2115,13 @@ let s:config = {
 \		"exec" : "%c test-all TESTS=%s:p",
 \		"command" : "make",
 \		"hook/cd" : 1,
-\		"hook/cd/directory" : expand("~/build/ruby/build"),
+\		"hook/cd/directory" :  expand("~/build/ruby/build"),
 \	},
 \	"ruby/ruby-test3" : {
 \		"exec" : "%c DEFS=-DVM_CHECK_MODE=2 test-all TESTS=%s:p",
 \		"command" : "make",
 \		"hook/cd" : 1,
-\		"hook/cd/directory" : expand("~/build/ruby/ruby"),
+\		"hook/cd/directory" : expand("~/build/ruby/build"),
 \	},
 \	"ruby/make-run" : {
 \		"exec" : "%c run",
@@ -1986,16 +2146,47 @@ let s:config = {
 \		"command" : "make",
 \		"hook/cd/directory" : "../build",
 \	},
+\	"ruby/make-runruby_with_make" : {
+\		"exec" : "make -j && %c DEFS=-DVM_CHECK_MODE=2 runruby %s:p",
+\		"command" : "make",
+\		"hook/cd/directory" : "../build",
+\	},
 \	"ruby/make-run_with_miniruby" : {
 \		"exec" : "%c miniruby && %c run %o %s:p",
 \		"command" : "make",
 \	},
-\	"ruby/2.4" : {
-\		"exec" : "%c %o %s:p",
-\		"command" : "ruby2.4",
+\	"ruby/make-run_with_miniruby2" : {
+\		"exec" : "%c miniruby && %c run %o %s:p",
+\		"command" : "make",
+\		"hook/cd/directory" : "../build",
 \	},
 \	"ruby/bundle" : {
 \		"exec" : "%c exec ruby %o %s:p",
+\		"command" : "bundle",
+\	},
+\	"ruby/bundle ruby 2.6" : {
+\		"exec" : "RBENV_VERSION=2.6 %c exec ruby %o %s:p",
+\		"command" : "bundle",
+\	},
+\	"ruby/bundle ruby 2.7.1" : {
+\		"exec" : "RBENV_VERSION=2.7.1 %c exec ruby %o %s:p",
+\		"command" : "bundle",
+\	},
+\	"ruby/bundle ruby 2.7.2" : {
+\		"exec" : "RBENV_VERSION=2.7.2 %c exec ruby %o %s:p",
+\		"command" : "bundle",
+\	},
+\	"ruby/bundle ruby 3.0.0" : {
+\		"exec" : "RBENV_VERSION=3.0.0 %c exec ruby %o %s:p",
+\		"command" : "bundle",
+\	},
+\	"ruby/bundle ruby 3.1.0-dev" : {
+\		"exec" : "RBENV_VERSION=3.1.0-dev %c exec ruby %o %s:p",
+\		"command" : "bundle",
+\	},
+\	"ruby/bundle without warning" : {
+\		"exec" : "%c exec ruby %o %s:p",
+\		"cmdopt" : "-Ku -W:no-deprecated -W:no-experimental ",
 \		"command" : "bundle",
 \	},
 \	"ruby/utf8" : {
@@ -2028,6 +2219,18 @@ let s:config = {
 \		"exec"    : "%c exec rubocop %o %s:p",
 \		"errorformat" : '%f:%l:%c:%m,%f:%l:%m,%-G%.%#',
 \	},
+\	"ruby/bundle exec with rails master" : {
+\		"exec" : "%c exec appraisal rails-master ruby %o %s:p",
+\		"cmdopt" : "-Ku ",
+\		"command" : "bundle",
+\		"hook/cd/directory" : "/home/worker/Dropbox/work/software/development/forked/smarthr/activerecord-bitemporal",
+\	},
+\	"ruby/bundle exec with rails 5.2" : {
+\		"exec" : "%c exec appraisal rails-5.2 ruby %o %s:p",
+\		"cmdopt" : "-Ku ",
+\		"command" : "bundle",
+\		"hook/cd/directory" : "/home/worker/Dropbox/work/software/development/forked/smarthr/activerecord-bitemporal",
+\	},
 \}
 
 " let s:config = {
@@ -2039,6 +2242,8 @@ let s:config = {
 
 call extend(g:quickrun_config, s:config)
 unlet s:config
+
+autocmd BufEnter,FocusGained,WinEnter schema.rb let b:watchdogs_checker_type = "ruby/syntax_check"
 "}}}
 
 
@@ -2049,6 +2254,35 @@ let s:config = {
 \		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
 \		"hook/close_buffer/enable_failure" : 0,
 \		"cmdopt"  : "-b",
+\		"outputter" : "quickfix",
+\	},
+\	"ruby.rspec/single_on_cursor 2.5.6" : {
+\		"command" : "rspec",
+\		"exec"    : "RBENV_VERSION=2.5.6 %c %s:p\\:%{line('.')}",
+\		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\	},
+\	"ruby.rspec/single_on_cursor 2.6" : {
+\		"command" : "rspec",
+\		"exec"    : "RBENV_VERSION=2.6.6 %c %s:p\\:%{line('.')}",
+\		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\	},
+\	"ruby.rspec/single_on_cursor 2.7" : {
+\		"command" : "rspec",
+\		"exec"    : "RBENV_VERSION=2.7.1 %c %s:p\\:%{line('.')}",
+\		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\	},
+\	"ruby.rspec/single_on_cursor 3.0" : {
+\		"command" : "rspec",
+\		"exec"    : "RBENV_VERSION=3.0.0 %c %s:p\\:%{line('.')}",
+\		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
 \	},
 \	"ruby.rspec/bundle" : {
 \		"command" : "rake",
@@ -2061,6 +2295,7 @@ let s:config = {
 \		"exec"    : "bash -c 'SPEC=%s:p bundle exec %c spec'",
 \		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
 \		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
 \	},
 \	"ruby.rspec/bundle_single_on_cursor" : {
 \		"command" : "rake",
@@ -2069,9 +2304,83 @@ let s:config = {
 \		"hook/close_buffer/enable_failure" : 0,
 \		"hook/unite_quickfix/enable" : 0,
 \	},
+\	"ruby.rspec/bundle_single_on_cursor 2.6.6" : {
+\		"command" : "rake",
+\		"exec"    : "RBENV_VERSION=2.6.6 bash -c 'SPEC=%s:p\\:%{line('.')} bundle exec %c spec'",
+\		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\	},
+\	"ruby.rspec/bundle_single_on_cursor 2.7.1" : {
+\		"command" : "rake",
+\		"exec"    : "RBENV_VERSION=2.7.1 bash -c 'SPEC=%s:p\\:%{line('.')} bundle exec %c spec'",
+\		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\	},
+\	"ruby.rspec/bundle_single_on_cursor 2.7.2" : {
+\		"command" : "rake",
+\		"exec"    : "RBENV_VERSION=2.7.2 bash -c 'SPEC=%s:p\\:%{line('.')} bundle exec %c spec'",
+\		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\	},
+\	"ruby.rspec/bundle_single_on_cursor 3.0.0" : {
+\		"command" : "rake",
+\		"exec"    : "RBENV_VERSION=3.0.0 bash -c 'SPEC=%s:p\\:%{line('.')} bundle exec %c spec'",
+\		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\	},
+\	"ruby.rspec/bundle_rspec_single_on_cursor" : {
+\		"command" : "rspec",
+\		"exec"    : "bundle exec %c %s:p\\:%{line('.')}",
+\		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\	},
+\	"ruby.rspec/bundle_single_on_cursor with rails 5.2" : {
+\		"command" : "rake",
+\		"exec"    : "bash -c 'SPEC=%s:p\\:%{line('.')} RUBYOPT=\"-W:no-deprecated\" bundle exec appraisal rails-5.2 %c spec'",
+\		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\		"hook/cd/directory" : "/home/worker/Dropbox/work/software/development/forked/smarthr/activerecord-bitemporal",
+\	},
+\	"ruby.rspec/bundle_single_on_cursor with rails 6.0" : {
+\		"command" : "rake",
+\		"exec"    : "bash -c 'SPEC=%s:p\\:%{line('.')} bundle exec appraisal rails-6.0 %c spec'",
+\		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\		"hook/cd/directory" : "/home/worker/Dropbox/work/software/development/forked/smarthr/activerecord-bitemporal",
+\	},
+\	"ruby.rspec/bundle_single_on_cursor with rails master" : {
+\		"command" : "rake",
+\		"exec"    : "bash -c 'SPEC=%s:p\\:%{line('.')} bundle exec appraisal rails-master %c spec'",
+\		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\		"hook/cd/directory" : "/home/worker/Dropbox/work/software/development/forked/smarthr/activerecord-bitemporal",
+\	},
+\	"ruby.rspec/bundle_single_on_cursor with rails master2" : {
+\		"command" : "rake",
+\		"exec"    : "bash -c 'SPEC=%s:p\\:%{line('.')} bundle exec appraisal rails-master %c spec'",
+\		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\		"hook/cd/directory" : "/home/worker/Dropbox/work/worker/smarthr/activerecord-multi-tenant",
+\	},
 \	"ruby.rspec/bundle_single_on_cursor2" : {
 \		"command" : "rake",
 \		"exec"    : "bash -c 'SPEC=%s:p\\:%{line('.')} SPEC_OPTS=\"-b\" bundle exec %c spec'",
+\		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\	},
+\	"ruby.rspec/bundle_single_on_cursor_without_warning" : {
+\		"command" : "rake",
+\		"exec"    : "bash -c 'SPEC=%s:p\\:%{line('.')} RUBYOPT=\"-W:no-deprecated\" bundle exec %c spec'",
 \		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
 \		"hook/close_buffer/enable_failure" : 0,
 \		"hook/unite_quickfix/enable" : 0,
@@ -2353,7 +2662,6 @@ endfunction
 
 " 実行
 " nnoremap <Leader>R :QuickRun run/vimproc -hook/close_buffer/enable_exit 0<CR>
-" nnoremap <silent> <Leader>R :QuickRun run/vimproc -hook/close_buffer/enable_exit 0<CR>
 nnoremap <expr><silent> <C-c> quickrun#is_running() ? quickrun#sweep_sessions() : "\<C-c>"
 " }}}
 
@@ -2377,7 +2685,7 @@ let g:watchdogs_check_CursorHold_enable = 1
 
 let s:config = {
 \	"watchdogs_checker/_" : {
-\		"runner" : "vimproc",
+\		"runner" : "job",
 \		"hook/extend_config/enable" : 0,
 \		"outputter" : "bufixlist",
 \		"outputter/bufixlist/open_cmd" : "",

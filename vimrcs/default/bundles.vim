@@ -39,6 +39,7 @@ NeoBundle "Shougo/vimproc.vim", {
 \    },
 \ }
 
+
 " NeoBundle "Shougo/neobundle-vim-scripts"
 NeoBundleLazy "Shougo/unite.vim", {
 \	"focus" : 10,
@@ -58,6 +59,7 @@ NeoBundleLazy 'Shougo/vimfiler.vim', {
 \	'autoload' : { 'commands' : [ "VimFilerTab", "VimFiler", "VimFilerExplorer" ] }
 \}
 " NeoBundleLazy 'Shougo/vimfiler.vim'
+" NeoBundle 'Shougo/defx.nvim'
 
 NeoBundleLazy 'Shougo/vimshell.vim', {
 \	"focus" : 5,
@@ -67,19 +69,21 @@ NeoBundleLazy 'Shougo/vimshell.vim', {
 NeoBundleLazy "Shougo/vinarise.vim", {
 \	'autoload' : { 'commands' : [ 'Vinarise' ] }
 \}
+NeoBundle "Shougo/deorise.nvim"
 
-" NeoBundle "Shougo/denite.nvim"
+NeoBundle "Shougo/denite.nvim"
 " NeoBundle "Shougo/deol.nvim"
+NeoBundle "Shougo/defx.nvim"
 
 let s:use_deoplete = 1
 if s:use_deoplete
 	NeoBundle "Shougo/deoplete.nvim"
 	NeoBundle "roxma/nvim-yarp"
 	NeoBundle "roxma/vim-hug-neovim-rpc"
+" 	NeoBundle "fszymanski/deoplete-emoji"
 elseif has("lua")
 	NeoBundle "Shougo/neocomplete.vim"
 endif
-
 
 
 if executable("look")
@@ -87,6 +91,25 @@ if executable("look")
 endif
 NeoBundle "Shougo/neosnippet"
 NeoBundle "Shougo/neosnippet-snippets"
+" finish
+
+
+" coding
+" NeoBundle "autozimu/LanguageClient-neovim", "next"
+" NeoBundle "autozimu/LanguageClient-neovim", "next", {
+" \ 'build' : {
+" \     'unix' : 'bash install.sh',
+" \    },
+" \ }
+" NeoBundle "prabirshrestha/async.vim"
+" NeoBundle "prabirshrestha/vim-lsp"
+" NeoBundle "lighttiger2505/deoplete-vim-lsp"
+" NeoBundle "Shougo/deoplete-lsp"
+" NeoBundle "dradtke/vim-dap"
+
+NeoBundle 'bogado/file-line'
+
+NeoBundle "tyru/empty-prompt.vim"
 
 
 " operator
@@ -145,25 +168,28 @@ NeoBundleLazy "basyura/TweetVim", {
 
 
 " C++
-NeoBundle "vim-jp/cpp-vim"
+" NeoBundle "vim-jp/cpp-vim"
 
 
+" Ruby
+" NeoBundle "rhysd/vim-textobj-ruby"
+" NeoBundle "ruby-formatter/rufo-vim"
+NeoBundle "pocke/rbs.vim"
+NeoBundle "tpope/vim-rbenv"
 
-NeoBundle "rhysd/vim-textobj-ruby"
-NeoBundle "ruby-formatter/rufo-vim"
 
 " Slim
-NeoBundle "slim-template/vim-slim"
+" NeoBundle "slim-template/vim-slim"
 
 
 " Haskell
-NeoBundleLazy "eagletmt/unite-haddock", {
-\	"autoload" : { "filetypes" : ["haskell"] }
-\}
-
-NeoBundleLazy "ujihisa/neco-ghc", {
-\	"autoload" : { "filetypes" : ["haskell"] }
-\}
+" NeoBundleLazy "eagletmt/unite-haddock", {
+" \	"autoload" : { "filetypes" : ["haskell"] }
+" \}
+"
+" NeoBundleLazy "ujihisa/neco-ghc", {
+" \	"autoload" : { "filetypes" : ["haskell"] }
+" \}
 
 NeoBundle "vim-jp/vimdoc-ja"
 
@@ -186,7 +212,7 @@ NeoBundle "kannokanno/previm"
 
 
 " Riot
-NeoBundle "nicklasos/vim-jsx-riot"
+" NeoBundle "nicklasos/vim-jsx-riot"
 
 " Pug
 NeoBundle "digitaltoad/vim-pug"
@@ -199,7 +225,7 @@ NeoBundle "udalov/kotlin-vim"
 
 
 " RAML
-NeoBundle "IN3D/vim-raml"
+" NeoBundle "IN3D/vim-raml"
 
 
 " HTML5
@@ -229,14 +255,18 @@ NeoBundle "dannyob/quickfixstatus"
 NeoBundleLazy "cohama/vim-hier", {
 \	'autoload' : { 'commands' : [ "HierClear", "HierStart", "HierStop", "HierUpdate" ] }
 \}
+" NeoBundle "jceb/vim-hier"
 
 
 NeoBundle "h1mesuke/vim-alignta"
 NeoBundle "t9md/vim-quickhl"
 NeoBundle "tyru/current-func-info.vim"
+NeoBundle "uplus/vim-clurin"
 
-let g:loaded_matchparen = 1
-NeoBundle 'itchyny/vim-parenmatch'
+
+
+" let g:loaded_matchparen = 1
+" NeoBundle 'itchyny/vim-parenmatch'
 
 
 " unite-sources
@@ -248,11 +278,11 @@ NeoBundle "cohama/lexima.vim"
 
 " Git
 " NeoBundle "kmnk/vim-unite-giti"
-" NeoBundle "sgur/vim-gitgutter"
+" NeoBundle "sgur/vim-gitgutter
 NeoBundle 'hrsh7th/vim-versions'
 NeoBundle "airblade/vim-gitgutter"
 NeoBundle "kmnk/vim-unite-giti"
-NeoBundle "lambdalisue/gina.vim"
+" NeoBundle "lambdalisue/gina.vim"
 
 
 " colorscheme
@@ -268,6 +298,8 @@ NeoBundle "chriskempson/vim-tomorrow-theme"
 NeoBundle "jonathanfilip/vim-lucius"
 NeoBundle "sjl/badwolf"
 NeoBundle "whatyouhide/vim-gotham"
+NeoBundle "junegunn/seoul256.vim"
+
 
 
 " その他雑多
@@ -293,6 +325,7 @@ NeoBundleLazy "vim-scripts/copypath.vim", {
 NeoBundleLazy "tyru/restart.vim", {
 \	'autoload' : { 'commands' : [ "Restart" ] }
 \}
+
 
 NeoBundle "tyru/open-browser.vim"
 NeoBundle "tyru/open-browser-github.vim"
@@ -323,10 +356,10 @@ NeoBundle 'thinca/vim-localrc'
 " NeoBundle "syngan/vim-vimlint"
 " NeoBundle "ynkdir/vim-vimlparser"
 
-if !has("mac")
+" if !has("mac")
 	NeoBundle "bling/vim-airline"
 	NeoBundle "vim-airline/vim-airline-themes"
-endif
+" endif
 
 NeoBundle "tyru/vim-altercmd"
 NeoBundle "t9md/vim-choosewin"
@@ -336,6 +369,8 @@ NeoBundle "sgur/vim-editorconfig"
 
 " QSL formatter
 NeoBundle 'vim-scripts/Align'
+" 余計なキーマッピングがされているので無効化
+nmap none <Plug>RestoreWinPosn
 NeoBundle 'vim-scripts/SQLUtilities'
 
 
@@ -445,7 +480,7 @@ NeoBundleOrigin "vim-garden"
 " NeoBundleOrigin "vim-pronamachang"
 " NeoBundleOrigin "vim-sound"
 NeoBundleOrigin "unite-filters-collection"
-NeoBundleOrigin "vim-marching"
+" NeoBundleOrigin "vim-marching"
 " NeoBundleOrigin "vim-operator-search"
 " NeoBundleOrigin "vim-operator-jump-side"
 NeoBundleOrigin "vim-operator-swap"
@@ -477,7 +512,7 @@ NeoBundleOrigin "unite-github"
 " NeoBundleOrigin "unite-vimmer"
 NeoBundleOrigin "unite-vital-module"
 NeoBundleOrigin "unite-web_feed"
-NeoBundleOrigin "vim-monster"
+" NeoBundleOrigin "vim-monster"
 NeoBundleOrigin "vim-nyaaancat"
 NeoBundleOrigin "vim-hopping"
 NeoBundleOrigin "vim-vigemo"
