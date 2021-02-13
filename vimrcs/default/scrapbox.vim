@@ -97,6 +97,7 @@ let g:scrapbox_template =<< trim END
 
 END
 
+" open 後に自動でバッファを閉じる
 let g:scrapbox_close_opened = v:true
 
 " 編集画面をシュッと開く
