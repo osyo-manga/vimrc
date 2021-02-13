@@ -101,6 +101,7 @@ command! -bang -nargs=*
 \	 MyScrapboxAutocmd
 \	 autocmd<bang> my_scrapbox <args>
 
+" filetype=scrapbox の設定
 MyScrapboxAutocmd FileType scrapbox call s:scrapbox_my_settings()
 function! s:scrapbox_my_settings() abort
 	augroup ftplugin-scrapbox
