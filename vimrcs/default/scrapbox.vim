@@ -32,10 +32,11 @@ let g:scrapbox_project_name = "xxx"
 let g:scrapbox_title_format = {
 \	"call" : { -> title }
 \}
-
 let g:scrapbox_template =<< trim END
 	ここに書く
 END
+" v:true を設定すると open 後にバッファを閉じる
+let g:scrapbox_close_opened = v:false
 
 let s:File = vital#vital#new().import("System.File")
 let s:URI = vital#vital#new().import("Web.URI")
@@ -46,6 +47,13 @@ function! s:scrapbox_open(project_name, title, body)
 	let url = printf('https://scrapbox.io/%s/%s?body=%s', a:project_name, title, body)
 	echo url
 	call s:File.open(url)
+	if g:scrapbox_close_opened
+		if mode() == "i"
+			call feedkeys("\<Esc>\<C-w>c", "n")
+		else
+			call feedkeys("\<C-w>c", "n")
+		endif
+	endif
 endfunction
 
 
@@ -59,7 +67,7 @@ command! -range=% ScrapboxOpenBuffer
 	\ call s:scrapbox_open_buffer(g:scrapbox_project_name, getline(<line1>, <line2>)->join("\n"))
 
 command! -range=% ScrapboxOpenBufferWithYesNo
-	\ call popup_dialog('Open Scrapbox? y/n', #{ filter: 'popup_filter_yesno', callback: { _, yes -> (yes ? execute(":ScrapboxOpenBuffer") : "") } })
+	\ call popup_dialog('Open Scrapbox? y/n', #{ filter: 'popup_filter_yesno', callback: { _, yes -> (yes ? [execute("ScrapboxOpenBuffer")] : "") } })
 
 
 function! s:scrapbox_edit(cmd)
@@ -88,6 +96,8 @@ let g:scrapbox_template =<< trim END
 	今日やったこと
 
 END
+
+let g:scrapbox_close_opened = v:true
 
 " 編集画面をシュッと開く
 nnoremap <silent> <Space>ss :ScrapboxEditSplit<CR>
