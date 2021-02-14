@@ -43,9 +43,8 @@ let s:URI = vital#vital#new().import("Web.URI")
 
 function! s:scrapbox_open(project_name, title, body)
 	let title = g:scrapbox_title_format.call(s:URI.encode(a:title))
-	let body = s:URI.encode(a:body)
+	let body = s:URI.encode(trim(a:body, "\n"))
 	let url = printf('https://scrapbox.io/%s/%s?body=%s', a:project_name, title, body)
-	echo url
 	call s:File.open(url)
 	if g:scrapbox_close_opened
 		if mode() == "i"
@@ -122,5 +121,20 @@ function! s:scrapbox_my_settings() abort
 	nnoremap <silent><buffer> <C-s> :<C-u>ScrapboxOpenBufferWithYesNo<CR>
 	inoremap <silent><buffer> <C-s> <Esc>:<C-u>ScrapboxOpenBufferWithYesNo<CR>
 endfunction
+
+finish
+
+" WIP
+let s:HTTP = vital#vital#new().import("Web.HTTP")
+function! s:main()
+	let response = s:HTTP.get(printf("https://scrapbox.io/api/pages/ima1zumi"))
+	let pages = json_decode(response.content)
+" 	PP pages
+	let titles = pages["pages"]->map({ _, val -> { "title" : val["title"], "views" : val["views"] } })
+	PP titles
+endfunction
+call s:main()
+
+
 
 
