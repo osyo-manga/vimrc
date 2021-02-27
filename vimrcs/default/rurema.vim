@@ -9,6 +9,9 @@ command! -bang -nargs=*
 MyRuremaAutocmd BufReadPost *.rd set filetype=rd
 MyRuremaAutocmd BufReadPost */doctree/refm/api/src/* set filetype=rd
 
+function! Grurema_target()
+	return (expand('%:t:r') =~ '^\u') ? ('--target=' . expand('%:t:r')) : ''
+endfunction
 
 let s:config = {
 \	"rd" : {
@@ -17,21 +20,22 @@ let s:config = {
 \	"rd/_" : {
 \		"command" : "bitclust",
 \		"outputter" : "browser",
+\		"exec"    : "%c htmlfile %s:p %{ Grurema_target() } %o",
 \	},
 \	"rd/bitclust_htmlfile" : {
-\		"exec"    : "%c htmlfile %s:p --target=%{expand('%:t:r')} --ruby=latest",
+\		"cmdopt"    : "--ruby=latest",
 \	},
 \	"rd/bitclust_htmlfile 3.0.0" : {
-\		"exec"    : "%c htmlfile %s:p --target=%{expand('%:t:r')} --ruby=3.0.0",
+\		"cmdopt"    : "--ruby=3.0.0",
 \	},
 \	"rd/bitclust_htmlfile 2.7.0" : {
-\		"exec"    : "%c htmlfile %s:p --target=%{expand('%:t:r')} --ruby=2.7.0",
+\		"cmdopt"    : "--ruby=2.7.0",
 \	},
 \	"rd/bitclust_htmlfile 2.6.0" : {
-\		"exec"    : "%c htmlfile %s:p --target=%{expand('%:t:r')} --ruby=2.6.0",
+\		"cmdopt"    : "--ruby=2.6.0",
 \	},
 \	"rd/bitclust_htmlfile 2.5.0" : {
-\		"exec"    : "%c htmlfile %s:p --target=%{expand('%:t:r')} --ruby=2.5.0",
+\		"cmdopt"    : "--ruby=2.5.0",
 \	},
 \}
 
