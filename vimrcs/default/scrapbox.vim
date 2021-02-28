@@ -92,7 +92,7 @@ let g:scrapbox_title_format = {
 " テンプレ
 " 2行目以降はどんどん追記されてしまうのであんまり意味がない…
 let g:scrapbox_template =<< trim END
-	今日やったこと
+	今日のできごと
 
 END
 
