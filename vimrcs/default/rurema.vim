@@ -41,3 +41,16 @@ let s:config = {
 
 call extend(g:quickrun_config, s:config)
 unlet s:config
+
+function! s:kusa(start, end)
+	let view = winsaveview()
+	call append(a:start - 1, "#@samplecode 例")
+	for lnum in range(a:start + 1, a:end + 1)
+		call setline(lnum, matchstr(getline(lnum), '\s\{2}\zs.*'))
+	endfor
+	call append(a:end + 1, "#@end")
+	call winrestview(view)
+endfunction
+
+command! -range=% Kusa call s:kusa(<line1>, <line2>)
+
