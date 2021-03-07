@@ -2091,6 +2091,19 @@ let s:config = {
 \		"cmdopt" : "-Ku -W:no-deprecated -W:no-experimental ",
 \		"exec" : "RBENV_VERSION=3.1.0-dev %c %o %s:p",
 \	},
+\	"ruby/all" : {
+\		"command" : "docker",
+\		"cmdopt" : "run --rm rubylang/all-ruby ./all-ruby ",
+\		"exec" : '%c %o -e %{shellescape(getline(1, "$")->join(";"))}',
+\	},
+\	"ruby/jruby-1.7.27" : {
+\		"command" : "jruby-1.7.27",
+\		"exec" : "%c %o %s:p",
+\	},
+\	"ruby/mruby-dev" : {
+\		"command" : "mruby",
+\		"exec" : "RBENV_VERSION=mruby-dev %c %o %s:p",
+\	},
 \	"ruby/rake test without warning" : {
 \		"command" : "rake",
 \		"exec" : "bundle exec %c test %s:p",
@@ -2219,8 +2232,14 @@ let s:config = {
 \		"exec"    : "%c exec rubocop %o %s:p",
 \		"errorformat" : '%f:%l:%c:%m,%f:%l:%m,%-G%.%#',
 \	},
-\	"ruby/bundle exec with rails master" : {
-\		"exec" : "%c exec appraisal rails-master ruby %o %s:p",
+\	"ruby/bundle exec with rails-6.1" : {
+\		"exec" : "%c exec appraisal rails-6.1 ruby %o %s:p",
+\		"cmdopt" : "-Ku ",
+\		"command" : "bundle",
+\		"hook/cd/directory" : "/home/worker/Dropbox/work/software/development/forked/smarthr/activerecord-bitemporal",
+\	},
+\	"ruby/bundle exec with rails main" : {
+\		"exec" : "%c exec appraisal rails-main ruby %o %s:p",
 \		"cmdopt" : "-Ku ",
 \		"command" : "bundle",
 \		"hook/cd/directory" : "/home/worker/Dropbox/work/software/development/forked/smarthr/activerecord-bitemporal",
@@ -2355,17 +2374,25 @@ let s:config = {
 \		"hook/unite_quickfix/enable" : 0,
 \		"hook/cd/directory" : "/home/worker/Dropbox/work/software/development/forked/smarthr/activerecord-bitemporal",
 \	},
-\	"ruby.rspec/bundle_single_on_cursor with rails master" : {
+\	"ruby.rspec/bundle_single_on_cursor with rails 6.1" : {
 \		"command" : "rake",
-\		"exec"    : "bash -c 'SPEC=%s:p\\:%{line('.')} bundle exec appraisal rails-master %c spec'",
+\		"exec"    : "bash -c 'SPEC=%s:p\\:%{line('.')} bundle exec appraisal rails-6.1 %c spec'",
 \		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
 \		"hook/close_buffer/enable_failure" : 0,
 \		"hook/unite_quickfix/enable" : 0,
 \		"hook/cd/directory" : "/home/worker/Dropbox/work/software/development/forked/smarthr/activerecord-bitemporal",
 \	},
-\	"ruby.rspec/bundle_single_on_cursor with rails master2" : {
+\	"ruby.rspec/bundle_single_on_cursor with rails main" : {
 \		"command" : "rake",
-\		"exec"    : "bash -c 'SPEC=%s:p\\:%{line('.')} bundle exec appraisal rails-master %c spec'",
+\		"exec"    : "bash -c 'SPEC=%s:p\\:%{line('.')} bundle exec appraisal rails-main %c spec'",
+\		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\		"hook/cd/directory" : "/home/worker/Dropbox/work/software/development/forked/smarthr/activerecord-bitemporal",
+\	},
+\	"ruby.rspec/bundle_single_on_cursor with rails main2" : {
+\		"command" : "rake",
+\		"exec"    : "bash -c 'SPEC=%s:p\\:%{line('.')} bundle exec appraisal rails-main %c spec'",
 \		"errorformat" : "%f:%l: %tarning: %m, %E%.%#:in `load': %f:%l:%m, %E%f:%l:in `%*[^']': %m, %-Z     # %f:%l:%.%#, %E  %\\d%\\+)%.%#, %C     %m, %-G%.%#",
 \		"hook/close_buffer/enable_failure" : 0,
 \		"hook/unite_quickfix/enable" : 0,
@@ -2598,6 +2625,30 @@ unlet s:config
 " }}}
 
 
+" TypeScript {{{
+let s:config = {
+\	'typescript' : {
+\		"type" : "typescript/tsc"
+\	},
+\	'typescript/tsc': {
+\		'command': 'tsc',
+\		'exec': ['%c --target es2020 --module commonjs %o %s', 'node %s:r.js'],
+\		'tempfile': '%{tempname()}.ts',
+\		'hook/sweep/files': ['%S:p:r.js'],
+\	},
+\	'typescript/compile' : {
+\		'command': 'tsc',
+\		'exec': ['%c --target es2020 --module commonjs %o %s', 'cat %s:r.js'],
+\		'tempfile': '%{tempname()}.ts',
+\		'hook/sweep/files': ['%S:p:r.js'],
+\	},
+\}
+
+call extend(g:quickrun_config, s:config)
+unlet s:config
+" }}}
+
+
 " replace_region {{{
 let s:config = {
 \	'replace_region' : {
@@ -2809,8 +2860,9 @@ command! -nargs=* -range=0 -complete=customlist,quickrun#complete
 
 function! s:quickrun(args, count)
 	let context = context_filetype#get(precious#base_filetype())
+	let type = string(get(get(b:, "quickrun_config", {}), "type", context.filetype))
 	execute context.range[0][0].",".context.range[1][0]
-\		"QuickRun -type " context.filetype a:args
+\		"QuickRun -type " type a:args
 endfunction
 
 command! -nargs=* -range=0 -complete=customlist,quickrun#complete
