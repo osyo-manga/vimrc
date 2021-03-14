@@ -101,9 +101,10 @@ NeoBundle "Shougo/neosnippet-snippets"
 " \     'unix' : 'bash install.sh',
 " \    },
 " \ }
-" NeoBundle "prabirshrestha/async.vim"
-" NeoBundle "prabirshrestha/vim-lsp"
-" NeoBundle "lighttiger2505/deoplete-vim-lsp"
+NeoBundle "prabirshrestha/async.vim"
+NeoBundle "prabirshrestha/vim-lsp"
+NeoBundle "mattn/vim-lsp-settings"
+NeoBundle "lighttiger2505/deoplete-vim-lsp"
 " NeoBundle "Shougo/deoplete-lsp"
 " NeoBundle "dradtke/vim-dap"
 
@@ -241,12 +242,13 @@ NeoBundle "tpope/vim-haml"
 
 
 " コーディング支援
-NeoBundleLazy "thinca/vim-quickrun", {
-\	"focus" : 10,
-\	'autoload' : {
-\		'commands' : [ "QuickRun", "UniteQuickRunConfig" ],
-\	},
-\}
+" NeoBundleLazy "thinca/vim-quickrun", {
+" \	"focus" : 10,
+" \	'autoload' : {
+" \		'commands' : [ "QuickRun", "UniteQuickRunConfig" ],
+" \	},
+" \}
+NeoBundle "thinca/vim-quickrun"
 
 NeoBundle "Shougo/unite-outline"
 NeoBundle "tyru/caw.vim"
@@ -262,6 +264,10 @@ NeoBundle "h1mesuke/vim-alignta"
 NeoBundle "t9md/vim-quickhl"
 NeoBundle "tyru/current-func-info.vim"
 NeoBundle "uplus/vim-clurin"
+
+
+" るりま rurima
+NeoBundle "vim-scripts/rd.vim"
 
 
 
@@ -283,6 +289,9 @@ NeoBundle 'hrsh7th/vim-versions'
 NeoBundle "airblade/vim-gitgutter"
 NeoBundle "kmnk/vim-unite-giti"
 " NeoBundle "lambdalisue/gina.vim"
+" NeoBundle "tpope/vim-fugitive"
+NeoBundle "hrsh7th/vim-gitto"
+NeoBundle "hrsh7th/vim-denite-gitto"
 
 
 " colorscheme
@@ -299,6 +308,7 @@ NeoBundle "jonathanfilip/vim-lucius"
 NeoBundle "sjl/badwolf"
 NeoBundle "whatyouhide/vim-gotham"
 NeoBundle "junegunn/seoul256.vim"
+NeoBundle "cocopon/iceberg.vim"
 
 
 
@@ -432,6 +442,7 @@ NeoBundleOrigin "vim-chained"
 " NeoBundleOrigin "unite-fold"
 NeoBundleOrigin "unite-quickfix"
 NeoBundleOrigin "unite-quickrun_config"
+NeoBundleOrigin "denite-quickrun_config"
 " NeoBundleOrigin "unite-boost-online-doc"
 " NeoBundleOrigin "TweetVim-powerline-theme"
 
