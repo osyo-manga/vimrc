@@ -16,8 +16,6 @@ endfunction
 let s:config = {
 \	"rd" : {
 \		"type" : 'rd/bitclust_htmlfile',
-\	},
-\	"rd/_" : {
 \		"command" : "bitclust",
 \		"outputter" : "browser",
 \		"exec"    : "%c htmlfile %s:p %{ Grurema_target() } %o",
@@ -37,6 +35,12 @@ let s:config = {
 \	"rd/bitclust_htmlfile 2.5.0" : {
 \		"cmdopt"    : "--ruby=2.5.0",
 \	},
+\	"rd/bitclust_htmlfile 2.0.0" : {
+\		"cmdopt"    : "--ruby=2.0.0",
+\	},
+\	"rd/bitclust_htmlfile 1.9.0" : {
+\		"cmdopt"    : "--ruby=1.9.0",
+\	},
 \}
 
 call extend(g:quickrun_config, s:config)
@@ -46,7 +50,7 @@ function! s:kusa(start, end)
 	let view = winsaveview()
 	call append(a:start - 1, "#@samplecode 例")
 	for lnum in range(a:start + 1, a:end + 1)
-		call setline(lnum, matchstr(getline(lnum), '\s\{2}\zs.*'))
+		call setline(lnum, matchstr(getline(lnum), '\(\s\{0,2}\zs.*\|^#.*\)'))
 	endfor
 	call append(a:end + 1, "#@end")
 	call winrestview(view)
@@ -54,3 +58,4 @@ endfunction
 
 command! -range=% Kusa call s:kusa(<line1>, <line2>)
 
+MyRuremaAutocmd FileType rd vnoremap <buffer> <Space>kk :Kusa<CR>
