@@ -16,6 +16,8 @@ endfunction
 let s:config = {
 \	"rd" : {
 \		"type" : 'rd/bitclust_htmlfile',
+\	},
+\	"rd/_" : {
 \		"command" : "bitclust",
 \		"outputter" : "browser",
 \		"exec"    : "%c htmlfile %s:p %{ Grurema_target() } %o",
