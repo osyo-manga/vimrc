@@ -198,7 +198,7 @@ set splitright	" 縦分割したら新しいウィンドウは右に
 " MyAutocmd BufEnter * execute ":lcd " . (isdirectory(expand("%:p:h")) ? expand("%:p:h") : "")
 
 " Undo 回数の設定 (デフォルト = 1000)
-set undolevels=3000
+set undolevels=5000
 
 " バッファを切り替えても、undo を効くように設定
 " (変更をセーブせずにバッファを切り替えたいときにも、 :set hidden は役に立つが、
@@ -362,6 +362,11 @@ set maxfuncdepth=1000
 
 set noimdisable
 
+" v:oldfiles で保存するファイル数を設定
+" vimrc に書いておく必要がある
+set viminfo+='10000
+set viminfo-='100     " デフォルトの設定を削除しておかないt反映されない
+
 
 " 検索をキャンセルした場合に前回の検索ワードをハイライトしない
 " set nohlsearch
@@ -430,6 +435,7 @@ syntax enable
 " }}}
 
 
+
 "==========================================================
 " キーマッピング
 "==========================================================
@@ -445,17 +451,17 @@ inoremap <C-@> <ESC>
 " 検索のハイライトを消す
 nnoremap <Esc><Esc> :nohlsearch<CR>
 
-
 " カーソル位置の上に改行を挿入
 " カーソル位置のテキストを下に動かすような挙動
 nnoremap <silent> <C-j> :call append(line(".")-1, "")<CR>
-" カーソル位置を基準として開業する
-nnoremap <silent> <A-j> i<CR><Esc>
-nnoremap <silent> <A-k> i<C-h><Esc>
 
 " カーソル位置の上の行を削除
 " カーソル位置を上に動かすような挙動
 nnoremap <silent> <C-k> <Up>dd
+
+" カーソル位置を基準として開業する
+nnoremap <silent> <A-j> i<CR><Esc>
+nnoremap <silent> <A-k> i<C-h><Esc>
 " }}}
 
 " https://sites.google.com/site/fudist/Home/vim-nihongo-ban/tips#TOC-4
@@ -528,8 +534,9 @@ nmap Yl y$
 nmap YL y$
 nmap yl y$
 
-
-nmap Dl DL
+" カーソル位置から行末までを削除
+nnoremap Dl D$
+nnoremap dl D$
 
 " フォントサイズを変更するマッピングを変更
 nnoremap - <Nop>
@@ -608,6 +615,8 @@ nnoremap tt :tabnew<CR>
 inoremap <C-l> <Right>
 
 " SQLUFormatter
+" 余計なキーマッピングがされているので無効化
+nmap none <Plug>RestoreWinPosn
 nnoremap <A-q><A-q> :SQLUFormatter<CR>
 " }}}
 
@@ -906,6 +915,7 @@ let howm_dir = $VIMFILES."/howm"
 let howm_filename        = '%Y/%m/%Y-%m-%d-%H%M%S.howm'
 let howm_fileencoding    = 'utf-8'
 let howm_fileformat      = 'unix'
+let g:qfixmemo_use_keyword = 0
 " let howm_fileformat      = 'dos'
 
 let QFix_PreviewEnable = 0
@@ -1032,7 +1042,6 @@ function! s:bundle.hooks.on_source(bundle)
 " 	MyAutocmd CursorHold  * ReanimateSaveCursorHold
 " 	MyAutocmd User ReunionsTimer8000 :ReanimateSaveCursorHold
 
-
 	let g:reanimate_vimrc_local_filename = "vimrc_local"
 endfunction
 unlet s:bundle
@@ -1147,6 +1156,7 @@ unlet s:bundle
 " nnoremap <Space>tp  :execute "TweetVimSwitchAccount manga_osyo" \| TweetVimSay<CR>
 
 " nnoremap <Space>ttp :execute "TweetVimSwitchAccount osyo_manga" \| TweetVimSay<CR>
+
 nnoremap <Space>TT  :execute "TweetVimSwitchAccount pink_bangbi" \| TweetVimSay<CR>
 
 " nnoremap <Space>tp  :execute "TweetVimSwitchAccount pink_bangbi" \| TweetVimSay<CR>
@@ -1508,6 +1518,7 @@ let s:bundle = neobundle#get("vim-quickrun")
 let s:bundle.hooks = get(s:bundle, "hooks", {})
 function! s:bundle.hooks.on_source(bundle)
 	execute "source" fnamemodify(s:vimrc, ":h")."/quickrun.vim"
+	execute "source" fnamemodify(s:vimrc, ":h")."/rurema.vim"
 	command! UniteQuickRunConfig :Unite quickrun_config -buffer-name=quickrun_config
 " 	command! UniteQuickRunConfig :Unite quickrun_config -start-insert -immediately
 " 	source <sfile>:h/quickrun.vim
@@ -1720,6 +1731,9 @@ function! s:bundle.hooks.on_source(bundle)
 \		"howm_memo" : [
 \			{ "start" : '^>|\(\h\w*\)|$', 'end' : '^||<$', "filetype" : '\1'},
 \		] + context_filetype#default_filetypes().markdown,
+\		"rd" : [
+\			{ "start" : '^#@samplecode .*$', 'end' : '^#@end$', "filetype" : 'ruby'},
+\		]
 \	}
 endfunction
 unlet s:bundle
@@ -2660,16 +2674,36 @@ unlet s:bundle
 let s:hooks = neobundle#get_hooks("denite.nvim")
 function! s:hooks.on_post_source(bundle)
 	execute "source" fnamemodify(s:vimrc, ":h")."/denite.vim"
-
-	MyAutocmd FileType denite-filter call s:denite_filter_my_settings()
-	function! s:denite_filter_my_settings() abort
-	  call deoplete#custom#buffer_option('auto_complete', v:false)
-	  imap <silent><buffer> <Esc> <Plug>(denite_filter_quit)
-	endfunction
 endfunction
 unlet s:hooks
 " }}}
 
+
+" vim-lsp {{{
+let s:hooks = neobundle#get_hooks("vim-lsp")
+function! s:hooks.on_source(bundle)
+	execute "source" fnamemodify(s:vimrc, ":h")."/lsp.vim"
+endfunction
+unlet s:hooks
+" }}}
+
+
+" vim-ghost {{{
+let s:hooks = neobundle#get_hooks("vim-ghost")
+function! s:hooks.on_source(bundle)
+	function! s:SetupGhostBuffer()
+		if match(expand("%:a"), '\v/ghost-(github|reddit)\.com-')
+			set ft=markdown
+		endif
+	endfunction
+
+	augroup vim-ghost
+		au!
+		au User vim-ghost#connected call s:SetupGhostBuffer()
+	augroup END
+endfunction
+unlet s:hooks
+" }}}
 
 
 set updatetime=500
@@ -3023,10 +3057,10 @@ endif
 
 " CUI で起動した時にインサートモードのカーソルを | にする
 if has('vim_starting') && !has("gui_running")
-    " 挿入モード時に非点滅の縦棒タイプのカーソル
-    let &t_SI .= "\e[6 q"
-    " ノーマルモード時に非点滅のブロックタイプのカーソル
-    let &t_EI .= "\e[2 q"
+    " 挿入モード時に点滅の縦棒タイプのカーソル
+    let &t_SI .= "\e[5 q"
+    " ノーマルモード時に点滅のブロックタイプのカーソル
+    let &t_EI .= "\e[1 q"
     " 置換モード時に非点滅の下線タイプのカーソル
     let &t_SR .= "\e[4 q"
 endif
@@ -3040,3 +3074,9 @@ command! -nargs=* R call s:eval_ruby(<q-args>)
 if !has("gui_running")
 	set notitle
 endif
+
+
+source <sfile>:h/scrapbox.vim
+
+
+

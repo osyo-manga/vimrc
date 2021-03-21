@@ -113,6 +113,7 @@ NeoBundle 'bogado/file-line'
 NeoBundle "tyru/empty-prompt.vim"
 
 
+
 " operator
 NeoBundle "kana/vim-operator-user"
 NeoBundle "thinca/vim-operator-sequence"
@@ -281,6 +282,8 @@ NeoBundle "ujihisa/unite-colorscheme"
 
 " テキスト支援
 NeoBundle "cohama/lexima.vim"
+" GhostText: 好きなブラウザでの入力を好きなエディタで行う:https://rcmdnk.com/blog/2021/03/15/computer-vim/
+NeoBundle "raghur/vim-ghost"
 
 " Git
 " NeoBundle "kmnk/vim-unite-giti"
