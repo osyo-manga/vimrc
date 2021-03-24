@@ -2724,7 +2724,7 @@ function! s:hooks.on_source(bundle)
 		" let g:webdevicons_enable_unite = 1
 		call devicons#plugins#unite#init()
 		call devicons#plugins#denite#init()
-		call unite#custom#source('frill', 'converters', 'devicons_unite_converter')
+		call unite#custom#source('frill,grep', 'converters', 'devicons_unite_converter')
 		call denite#custom#source('unite,grep', 'converters', ['devicons_denite_converter'])
 	endfunction
 	MyAutocmd VimEnter * call s:init_devicons()
