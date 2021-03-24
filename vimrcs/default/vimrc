@@ -96,6 +96,7 @@ silent! unmap <C-Q>
 
 source <sfile>:h/windowbuffer.vim
 source <sfile>:h/window.vim
+source <sfile>:h/git.vim
 source <sfile>:h/timer/main.vim
 " source <sfile>:h/secret/main.vim
 
@@ -365,7 +366,7 @@ set noimdisable
 " v:oldfiles で保存するファイル数を設定
 " vimrc に書いておく必要がある
 set viminfo+='10000
-set viminfo-='100     " デフォルトの設定を削除しておかないt反映されない
+set viminfo-='100     " デフォルトの設定を削除しておかないと反映されない
 
 
 " 検索をキャンセルした場合に前回の検索ワードをハイライトしない
@@ -1190,7 +1191,8 @@ function! s:bundle.hooks.on_source(bundle)
 endfunction
 unlet s:bundle
 
-command! -nargs=* MyVimFilerTab tabnew | VimFiler <args>
+command! -nargs=* MyVimFilerTab Defx <args>
+" command! -nargs=* MyVimFilerTab tabnew | VimFiler <args>
 nnoremap <silent> <Space>vfvf :MyVimFilerTab $VIMFILES<CR>
 nnoremap <silent> <Space>vftc :MyVimFilerTab $TEST_CPP<CR>
 nnoremap <silent> <Space>vftb :MyVimFilerTab $TEST_BOOST<CR>
@@ -2525,7 +2527,7 @@ function! s:hooks.on_source(bundle)
 	set guitablabel=%{swindle#get_tablabel()}
 
 	let g:swindle_default_config = {
-\		"ignore_pat" : "vimfiler:default",
+\		"ignore_pat" : "(vimfiler:default|defx)",
 \	}
 
 	nmap <silent> <A-l> <Plug>(swindle-jump-next)
@@ -2670,10 +2672,18 @@ unlet s:bundle
 " }}}
 
 
-" vim-altercmd {{{
+" denite.nvim {{{
 let s:hooks = neobundle#get_hooks("denite.nvim")
 function! s:hooks.on_post_source(bundle)
 	execute "source" fnamemodify(s:vimrc, ":h")."/denite.vim"
+endfunction
+unlet s:hooks
+" }}}
+
+" defx.nvim {{{
+let s:hooks = neobundle#get_hooks("defx.nvim")
+function! s:hooks.on_post_source(bundle)
+	execute "source" fnamemodify(s:vimrc, ":h")."/defx.vim"
 endfunction
 unlet s:hooks
 " }}}
@@ -2701,6 +2711,23 @@ function! s:hooks.on_source(bundle)
 		au!
 		au User vim-ghost#connected call s:SetupGhostBuffer()
 	augroup END
+endfunction
+unlet s:hooks
+" }}}
+
+" vim-devicons {{{
+let s:hooks = neobundle#get_hooks("vim-devicons")
+function! s:hooks.on_source(bundle)
+	function! s:init_devicons()
+		" このタイミングで設定してもうまく呼べなかったので直接初期化関数を呼ぶ
+		" let g:webdevicons_enable_denite = 1
+		" let g:webdevicons_enable_unite = 1
+		call devicons#plugins#unite#init()
+		call devicons#plugins#denite#init()
+		call unite#custom#source('frill', 'converters', 'devicons_unite_converter')
+		call denite#custom#source('unite,grep', 'converters', ['devicons_denite_converter'])
+	endfunction
+	MyAutocmd VimEnter * call s:init_devicons()
 endfunction
 unlet s:hooks
 " }}}
@@ -2934,7 +2961,7 @@ if has('syntax')
     " ZenkakuSpaceをカラーファイルで設定するなら次の行は削除
     MyAutocmd ColorScheme   * call ZenkakuSpace()
     " 全角スペースのハイライト指定
-"     MyAutocmd VimEnter,WinEnter * match ZenkakuSpace /　/
+    MyAutocmd VimEnter,WinEnter * match ZenkakuSpace /　/
   augroup END
   call ZenkakuSpace()
 endif

@@ -74,6 +74,7 @@ NeoBundle "Shougo/deorise.nvim"
 NeoBundle "Shougo/denite.nvim"
 " NeoBundle "Shougo/deol.nvim"
 NeoBundle "Shougo/defx.nvim"
+NeoBundle "kristijanhusak/defx-icons"
 
 let s:use_deoplete = 1
 if s:use_deoplete
@@ -365,6 +366,7 @@ NeoBundle "haya14busa/incsearch.vim"
 NeoBundle "haya14busa/incsearch-migemo.vim"
 NeoBundle 'haya14busa/vim-asterisk'
 NeoBundle 'thinca/vim-localrc'
+NeoBundle "deris/vim-diffbuf"
 
 " NeoBundle "syngan/vim-vimlint"
 " NeoBundle "ynkdir/vim-vimlparser"
@@ -396,6 +398,10 @@ NeoBundle "vim-scripts/sudo.vim"
 NeoBundle "vim-scripts/AnsiEsc.vim"
 NeoBundle "simeji/winresizer"
 
+
+" アイコン表示いろいろ
+" https://qiita.com/park-jh/items/4358d2d33a78ec0a2b5c
+NeoBundle "ryanoasis/vim-devicons"
 
 
 " ライブラリ
@@ -564,7 +570,7 @@ NeoBundleOrigin "vim-sugarpot", {
 
 
 let g:textobj_precious_no_default_key_mappings = 0
-NeoBundleOrigin "vim-precious"
+" NeoBundleOrigin "vim-precious"
 " NeoBundleOrigin "context_filetype.vim"
 NeoBundle "Shougo/context_filetype.vim"
 NeoBundleOrigin "vim-jplus"
