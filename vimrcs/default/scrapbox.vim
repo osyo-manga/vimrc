@@ -57,13 +57,13 @@ endfunction
 
 
 function! s:scrapbox_open_buffer(project_name, buffer)
-	let title = a:buffer->split("\n")[0]
-	let body = a:buffer->split("\n")[1:]->join("\n")
+	let title = split(a:buffer, "\n")[0]
+	let body = join(split(a:buffer, "\n")[1:], "\n")
 	call s:scrapbox_open(a:project_name, title, body)
 endfunction
 
 command! -range=% ScrapboxOpenBuffer
-	\ call s:scrapbox_open_buffer(g:scrapbox_project_name, getline(<line1>, <line2>)->join("\n"))
+	\ call s:scrapbox_open_buffer(g:scrapbox_project_name, join(getline(<line1>, <line2>), "\n"))
 
 command! -range=% ScrapboxOpenBufferWithYesNo
 	\ call popup_dialog('Open Scrapbox? y/n', #{ filter: 'popup_filter_yesno', callback: { _, yes -> (yes ? [execute("ScrapboxOpenBuffer")] : "") } })
@@ -137,7 +137,7 @@ let s:HTTP = vital#vital#new().import("Web.HTTP")
 function! s:main()
 	let response = s:HTTP.get(printf("https://scrapbox.io/api/pages/ima1zumi"))
 	let pages = json_decode(response.content)
-	let titles = pages["pages"]->map({ _, val -> { "title" : val["title"], "views" : val["views"] } })
+	let titles = map(pages["pages"], { _, val -> { "title" : val["title"], "views" : val["views"] } })
 	PP titles
 endfunction
 call s:main()
