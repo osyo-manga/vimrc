@@ -2202,6 +2202,11 @@ let s:config = {
 \		"cmdopt" : "-Ku -W:no-deprecated -W:no-experimental ",
 \		"command" : "bundle",
 \	},
+\	"ruby/rails runner" : {
+\		"exec" : "%c runner %s:p",
+\		"command" : "rails",
+\		"hook/cd/directory" : '%{vital#of("vital").import("Prelude").path2project_directory(expand("%:p"))}'
+\	},
 \	"ruby/utf8" : {
 \		"cmdopt" : "-Ku",
 \		"type" : "ruby"
