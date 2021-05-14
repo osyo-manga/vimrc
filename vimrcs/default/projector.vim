@@ -1,5 +1,4 @@
 
-
 " function! s:open_project_explorer()
 " 	let project_dir =
 " endfunction
@@ -11,7 +10,6 @@ function! s:get_project_directory()
 endfunction
 
 nnoremap <Space>vfe :execute "VimFilerExplorer -winwidth=20 ".<SID>get_project_directory()<CR>
-nnoremap <Space>gr  :execute "Unite grep:".substitute(get(g:, "project_directory", ""), '\:', '\\:', 'g')<CR>
 
 function! s:change_cd(dir)
 	if get(g:, "is_quickrun_started", 0)
@@ -20,7 +18,7 @@ function! s:change_cd(dir)
 	try
 		execute ":lcd " a:dir
 	catch
-		echom "Error"
+" 		echom "Error"
 	endtry
 
 " 	if has_key(g:, "project_directory") && isdirectory(g:project_directory)
