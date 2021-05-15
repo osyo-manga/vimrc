@@ -1,10 +1,13 @@
-
+" デフォルトのルールを一旦クリアする
 call lexima#clear_rules()
 
+" 便利関数定義
 function! s:as_list(a)
 	return type(a:a) == type([]) ? a:a : [a:a]
 endfunction
 
+" 無視するルールを追加する
+" 特定のコンテキストでみは無視する的な
 function! s:add_ignore_rule(rule)
 	let rule = copy(a:rule)
 	let rule.input = rule.char
@@ -13,6 +16,7 @@ function! s:add_ignore_rule(rule)
 endfunction
 
 
+" ルールを追加する
 function! s:add_rule(rule, ...)
 	call lexima#add_rule(a:rule)
 	if a:0 == 0
@@ -235,11 +239,14 @@ call s:add_rule(
 \	{"at" : '<%= \%# %>', "char" : '<BS>', "input" : '<Right><Right><Right><BS><BS><BS><BS><BS><BS><BS>', "filetype" : "ruby"},
 \)
 
-
-
-
-
-finish
+" markdown で `- <Tab>` すると
+" call s:add_rule(
+" \	{"at" : '- \%#', "char" : '<Tab>', "input" : '<Left><Left><Tab><Right><Right>', "filetype" : "markdown"},
+" \)
+"
+" call s:add_rule(
+" \	{"at" : '* \%#', "char" : '<Tab>', "input" : '<Left><Left><Tab><Right><Right>', "filetype" : "markdown"},
+" \)
 
 
 

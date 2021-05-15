@@ -1472,6 +1472,14 @@ let s:config = {
 \		"hook/close_buffer/enable_exit" : 1,
 \	},
 \
+\	"c/gcc" : {
+\		"command" : "gcc",
+\		'exec': ['%c %o %s -o %s:p:r', '%s:p:r %a'],
+\		"hook/quickrunex/enable" : 0,
+\		"hook/unite_quickfix/enable_exist_data" : 1,
+\		"hook/close_buffer/enable_exit" : 1,
+\	},
+\
 \	"cpp" : {
 \		"type" : "cpp/gem-wandbox",
 \		"hook/extend_config/enable" : 1,
@@ -1911,6 +1919,29 @@ let s:config = {
 \
 \}
 let s:config = {
+\	"c/gcc-preprocessor" : {
+\		"command" : "gcc",
+\		"exec" : "%c %o %s:p",
+\		"cmdopt" : "-P -E",
+\		"buffer/filetype" : "c",
+\		"hook/close_buffer/enable_empty_data" : 1,
+\		"hook/close_buffer/enable_success" : 0,
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\		"hook/close_unite_quickfix/enable" : 0,
+\	},
+\	"c/clang-preprocessor" : {
+\		"command" : "clang",
+\		"exec" : "%c %o %s:p",
+\		"cmdopt" : "-P -E",
+\		"buffer/filetype" : "c",
+\		"hook/close_buffer/enable_empty_data" : 1,
+\		"hook/close_buffer/enable_success" : 0,
+\		"hook/close_buffer/enable_failure" : 0,
+\		"hook/unite_quickfix/enable" : 0,
+\		"hook/close_unite_quickfix/enable" : 0,
+\	},
+\
 \	"cpp/g++-preprocessor" : {
 \		"command"   : "g++",
 \		"exec" : "%c %o %s:p  ",

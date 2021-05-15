@@ -37,8 +37,20 @@ let s:config = {
 \	"rd/bitclust_htmlfile 2.5.0" : {
 \		"cmdopt"    : "--ruby=2.5.0",
 \	},
+\	"rd/bitclust_htmlfile 2.4.0" : {
+\		"cmdopt"    : "--ruby=2.4.0",
+\	},
+\	"rd/bitclust_htmlfile 2.3.0" : {
+\		"cmdopt"    : "--ruby=2.3.0",
+\	},
+\	"rd/bitclust_htmlfile 2.2.0" : {
+\		"cmdopt"    : "--ruby=2.2.0",
+\	},
 \	"rd/bitclust_htmlfile 2.0.0" : {
 \		"cmdopt"    : "--ruby=2.0.0",
+\	},
+\	"rd/bitclust_htmlfile 1.9.3" : {
+\		"cmdopt"    : "--ruby=1.9.3",
 \	},
 \	"rd/bitclust_htmlfile 1.9.0" : {
 \		"cmdopt"    : "--ruby=1.9.0",
@@ -50,9 +62,10 @@ unlet s:config
 
 function! s:kusa(start, end)
 	let view = winsaveview()
+	let space_count = len(matchstr(getline(a:start), '^\s*\ze'))
 	call append(a:start - 1, "#@samplecode 例")
 	for lnum in range(a:start + 1, a:end + 1)
-		call setline(lnum, matchstr(getline(lnum), '\(\s\{0,2}\zs.*\|^#.*\)'))
+		call setline(lnum, matchstr(getline(lnum), '\s\{' . space_count . '}\zs.*'))
 	endfor
 	call append(a:end + 1, "#@end")
 	call winrestview(view)

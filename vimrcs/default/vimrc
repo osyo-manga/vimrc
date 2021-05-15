@@ -100,9 +100,9 @@ source <sfile>:h/git.vim
 source <sfile>:h/timer/main.vim
 " source <sfile>:h/secret/main.vim
 
-" if has("terminal")
-" 	source <sfile>:h/terminal.vim
-" endif
+if has("terminal")
+	source <sfile>:h/terminal.vim
+endif
 " }}}
 
 
@@ -494,8 +494,6 @@ nnoremap N Nzzzv
 nnoremap <silent> co :ContinuousNumber <C-a><CR>
 vnoremap <silent> co :ContinuousNumber <C-a><CR>
 function! s:continuous_number(count, key)
-	echo "Hoge"
-	echo a:count
 	let c = col('.')
 	for n in range(1, a:count ? a:count - line('.') : 1)
 		exec 'normal! j' . n . a:key
@@ -619,6 +617,10 @@ inoremap <C-l> <Right>
 " 余計なキーマッピングがされているので無効化
 nmap none <Plug>RestoreWinPosn
 nnoremap <A-q><A-q> :SQLUFormatter<CR>
+
+" 選択した範囲を jq コマンドを使ってフォーマッティングする
+" 範囲選択しない場合は現在の行を対象とする
+command! -range JSONFormatter :<line1>,<line2>!jq .
 " }}}
 
 
@@ -1091,19 +1093,22 @@ unlet s:bundle
 
 
 " caw.vim {{{
+" コメントアウトする
 nmap <Leader>c <Plug>(caw:zeropos:toggle)
 vmap <Leader>c <Plug>(caw:zeropos:toggle)
 " nmap <Leader>c <Plug>(caw:i:toggle)
 " vmap <Leader>c <Plug>(caw:i:toggle)
+" コメントアウトを解除する
 nmap <Leader>C <Plug>(caw:i:uncomment)
 vmap <Leader>C <Plug>(caw:i:uncomment)
+
 nmap cp p`[v`]<Plug>(caw:i:comment)
 
+" コメントアウトをトグルする
 nmap <silent><expr> <Plug>(operator-caw-I-toggle)
 \	operator#exec_command#mapexpr_v_keymapping("\<Plug>(caw:I:toggle)")
 nmap <silent><expr> <Plug>(operator-caw-I-uncomment)
 \	operator#exec_command#mapexpr_v_keymapping("\<Plug>(caw:I:uncomment))")
-
 nmap <leader><Leader>c <Plug>(operator-caw-I-toggle)ii
 nmap <leader><Leader>C <Plug>(operator-caw-I-uncomment)ii
 
@@ -1191,14 +1196,14 @@ function! s:bundle.hooks.on_source(bundle)
 endfunction
 unlet s:bundle
 
-command! -nargs=* MyVimFilerTab Defx <args>
-" command! -nargs=* MyVimFilerTab tabnew | VimFiler <args>
-nnoremap <silent> <Space>vfvf :MyVimFilerTab $VIMFILES<CR>
-nnoremap <silent> <Space>vftc :MyVimFilerTab $TEST_CPP<CR>
-nnoremap <silent> <Space>vftb :MyVimFilerTab $TEST_BOOST<CR>
-nnoremap <silent> <Space>vftv :MyVimFilerTab $TEST_VIM<CR>
-nnoremap <silent> <Space>vfvp :MyVimFilerTab $VIMPLUGIN<CR>
-nnoremap <silent> <Space>vf<CR> :MyVimFilerTab<CR>
+command! -nargs=* MyFiler execute "Defx -buffer-name=defx-buffer-" . tabpagenr() . " " . expand(<q-args>) . " " . "-search=" . expand('%:p')
+" command! -nargs=* MyFiler tabnew | VimFiler <args>
+nnoremap <silent> <Space>vfvf :MyFiler $VIMFILES<CR>
+nnoremap <silent> <Space>vftc :MyFiler $TEST_CPP<CR>
+nnoremap <silent> <Space>vftb :MyFiler $TEST_BOOST<CR>
+nnoremap <silent> <Space>vftv :MyFiler $TEST_VIM<CR>
+nnoremap <silent> <Space>vfvp :MyFiler $VIMPLUGIN<CR>
+nnoremap <silent> <Space>vf<CR> :MyFiler<CR>
 command! VFE VimFilerExplorer -buffer-name=explorer -direction=botright -winwidth=24 -project
 nnoremap <silent> <Space>vfe :VFE<CR>
 " }}}
@@ -1312,16 +1317,18 @@ endfunction
 unlet s:bundle
 " }}}
 
-
-
 " deoplete.nvim {{{
 let s:bundle = neobundle#get("deoplete.nvim")
 let s:bundle.hooks = get(s:bundle, "hooks", {})
 function! s:bundle.hooks.on_source(bundle)
 	let g:deoplete#enable_at_startup = 1
+
+	if has("Mac")
+		call deoplete#custom#option('num_processes', 1)
+	endif
 " 	call deoplete#mappings#manual_complete()
 " 	call deoplete#custom#option('profile', v:true)
-" 	call deoplete#enable_logging('DEBUG', 'deoplete.log')
+	call deoplete#enable_logging('DEBUG', expand('~/vim-deoplete.log'))
 " 	let $NVIM_PYTHON_LOG_FILE="/tmp/nvim_log"
 " 	let $NVIM_PYTHON_LOG_LEVEL="DEBUG"
 	
@@ -1340,6 +1347,8 @@ function! s:bundle.hooks.on_source(bundle)
 	call deoplete#custom#var('omni', 'input_patterns', {
 		\ 'ruby': ['[^. *\t]\.\w*', '[a-zA-Z_]\w*::'],
 	\})
+
+	call deoplete#custom#option('nofile_complete_filetypes', ["denite-filter", "scrapbox", "vimshell"])
 endfunction
 
 unlet s:bundle
@@ -1383,16 +1392,16 @@ unlet s:bundle
 
 " キーマッピング {{{
 nnoremap <Space>ufm   :Unite frill<CR>
-nnoremap <Space>udm   :Unite directory_mru<CR>
-nnoremap <Space>urm   :UniteResume<CR>
+" nnoremap <Space>udm   :Unite directory_mru<CR>
+" nnoremap <Space>urm   :UniteResume<CR>
 nnoremap <Space>uff   :Unite file file/new -hide-source-names<CR>
 nnoremap <Space>unb   :Unite neobundle<CR>
-nnoremap <Space>url   :Unite reanimate:default_category -default-action=reanimate_switch<CR>
-nnoremap <Space>urs   :Unite reanimate:default_category -default-action=reanimate_save<CR>
+" nnoremap <Space>url   :Unite reanimate:default_category -default-action=reanimate_switch<CR>
+" nnoremap <Space>urs   :Unite reanimate:default_category -default-action=reanimate_save<CR>
 nnoremap <Space>umes  :Unite messages -wrap<CR>
 
 nnoremap <Space>uqh   :Unite qfixhowm/new qfixhowm:nocache -hide-source-names -truncate<CR>
-nnoremap <Space>ubb   :Unite bookmark<CR>
+" nnoremap <Space>ubb   :Unite bookmark<CR>
 
 
 
@@ -1771,6 +1780,10 @@ function! s:bundle.hooks.on_source(bundle)
 	let g:precious_enable_switch_CursorMoved = {
 \		"*" : 0
 \	}
+	let g:precious_enable_switch_CursorHold = {
+\		"*" : 0
+\	}
+
 " 	MyAutocmd CursorHold * PreciousSwitchAutcmd
 		" コンテキストが切り替わった時にその filetype を表示
 endfunction
@@ -2233,6 +2246,9 @@ function! s:hooks.on_source(bundle)
 
 	omap <expr> ig textobj#from_regexp#mapexpr('\%V')
 	xmap <expr> ig textobj#from_regexp#mapexpr('\%V')
+
+	omap <expr> ik textobj#from_regexp#mapexpr('[[:keyword:].]\+')
+	vmap <expr> ik textobj#from_regexp#mapexpr('[[:keyword:].]\+')
 endfunction
 unlet s:hooks
 " }}}
@@ -2359,6 +2375,11 @@ function! s:hooks.on_post_source(bundle)
 
 	nmap / <Plug>(incsearch-forward)
 	vmap / <Plug>(incsearch-forward)
+
+	nmap / <Plug>(incsearch-forward)
+	vmap / <Plug>(incsearch-forward)
+" 	nmap / <Plug>(incsearch-stay)
+" 	vmap / <Plug>(incsearch-stay)
 
 	IncSearchNoreMap <Tab> <Over>(buffer-complete)
 	IncSearchNoreMap <C-n> <Over>(incsearch-next)
@@ -2559,43 +2580,6 @@ unlet s:hooks
 " }}}
 
 
-" prabirshrestha/vim-lsp {{{
-let s:hooks = neobundle#get_hooks("vim-lsp")
-function! s:hooks.on_source(bundle)
-	let g:lsp_log_verbose = 1
-	let g:lsp_log_file = expand('~/vim-lsp.log')
-	let g:lsp_signs_enabled = 0
-
-	" https://github.com/prabirshrestha/vim-lsp/wiki/Servers-Ruby
-" 	if executable('solargraph')
-		" gem install solargraph
-		MyAutocmd User lsp_setup call lsp#register_server({
-			\ 'name': 'solargraph',
-			\ 'cmd': {server_info->[&shell, &shellcmdflag, 'solargraph stdio']},
-			\ 'initialization_options': {"diagnostics": "true"},
-			\ 'whitelist': ['ruby'],
-			\ })
-" 	endif
-
-
-	function! s:on_lsp_buffer_enabled() abort
-" 		setlocal omnifunc=lsp#complete
-" 		setlocal signcolumn=yes
-		nmap <buffer> gd <plug>(lsp-definition)
-		nmap <buffer> <f2> <plug>(lsp-rename)
-		" refer to doc to add more commands
-	endfunction
-
-	augroup lsp_install
-		au!
-		" call s:on_lsp_buffer_enabled only for languages that has the server registered.
-		MyAutocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
-	augroup END
-endfunction
-unlet s:hooks
-" }}}
-
-
 " tyru/empty-prompt.vim {{{
 let s:hooks = neobundle#get_hooks("empty-prompt.vim")
 function! s:hooks.on_source(bundle)
@@ -2688,6 +2672,17 @@ endfunction
 unlet s:hooks
 " }}}
 
+" defx-icons {{{
+let s:hooks = neobundle#get_hooks("defx-icons")
+function! s:hooks.on_source(bundle)
+	execute "source" fnamemodify(s:vimrc, ":h")."/defx_icons.vim"
+	let g:defx_icons_gui_colors = {
+	\	"default" : "E0E0E0"
+	\}
+endfunction
+unlet s:hooks
+" }}}
+
 
 " vim-lsp {{{
 let s:hooks = neobundle#get_hooks("vim-lsp")
@@ -2722,10 +2717,12 @@ function! s:hooks.on_source(bundle)
 		" このタイミングで設定してもうまく呼べなかったので直接初期化関数を呼ぶ
 		" let g:webdevicons_enable_denite = 1
 		" let g:webdevicons_enable_unite = 1
-		call devicons#plugins#unite#init()
 		call devicons#plugins#denite#init()
-		call unite#custom#source('frill,grep', 'converters', 'devicons_unite_converter')
-		call denite#custom#source('unite,grep', 'converters', ['devicons_denite_converter'])
+
+		call denite#custom#source('unite', 'converters', ['devicons_denite_converter', 'converter/abbr_word'])
+
+" 		call devicons#plugins#unite#init()
+" 		call unite#custom#source('frill,grep', 'converters', 'devicons_unite_converter')
 	endfunction
 	MyAutocmd VimEnter * call s:init_devicons()
 endfunction

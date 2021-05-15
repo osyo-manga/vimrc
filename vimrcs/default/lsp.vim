@@ -4,6 +4,10 @@ let g:lsp_diagnostics_enabled = 0
 let g:lsp_document_highlight_enabled = 0
 
 
+let g:lsp_log_verbose = 1
+let g:lsp_log_file = expand('~/vim-lsp.log')
+
+
 function! s:on_lsp_buffer_enabled() abort
 "     setlocal omnifunc=lsp#complete
 "     setlocal signcolumn=yes

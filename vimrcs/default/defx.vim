@@ -8,3 +8,23 @@ call defx#custom#option('_', {
       \ 'auto_cd': 1,
       \ 'columns': 'indent:git:icons:filename:mark:type:size:time',
       \ })
+
+
+" カーソル下のファイルをフルパスでポップアップする奴
+function! s:popup_filepath()
+	let filepath = get(defx#get_candidate(), "action__path", "file/to/path")
+	echo popup_atcursor(filepath, #{ topleft: "botleft", col: virtcol(".") + 10 })
+endfunction
+command! PopupFilePath call s:popup_filepath()
+
+augroup my-defx
+	autocmd!
+	autocmd FileType defx call s:defx_my_settings()
+augroup END
+function! s:defx_my_settings() abort
+	augroup ftplugin-my-denite
+		autocmd! * <buffer>
+" 		autocmd CursorMoved <buffer> PopupFilePath
+" 		autocmd CursorMoved <buffer> call defx#call_action("preview", [])
+	augroup END
+endfunction

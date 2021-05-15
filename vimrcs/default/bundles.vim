@@ -269,7 +269,7 @@ NeoBundle "uplus/vim-clurin"
 
 
 " るりま rurima
-NeoBundle "vim-scripts/rd.vim"
+" NeoBundle "vim-scripts/rd.vim"
 
 
 
@@ -293,9 +293,9 @@ NeoBundle 'hrsh7th/vim-versions'
 NeoBundle "airblade/vim-gitgutter"
 NeoBundle "kmnk/vim-unite-giti"
 " NeoBundle "lambdalisue/gina.vim"
-" NeoBundle "tpope/vim-fugitive"
+NeoBundle "tpope/vim-fugitive"
 NeoBundle "hrsh7th/vim-gitto"
-NeoBundle "hrsh7th/vim-denite-gitto"
+" NeoBundle "hrsh7th/vim-denite-gitto"
 
 
 " colorscheme
@@ -371,10 +371,8 @@ NeoBundle "deris/vim-diffbuf"
 " NeoBundle "syngan/vim-vimlint"
 " NeoBundle "ynkdir/vim-vimlparser"
 
-" if !has("mac")
-	NeoBundle "bling/vim-airline"
-	NeoBundle "vim-airline/vim-airline-themes"
-" endif
+NeoBundle "bling/vim-airline"
+NeoBundle "vim-airline/vim-airline-themes"
 
 NeoBundle "tyru/vim-altercmd"
 NeoBundle "t9md/vim-choosewin"
@@ -467,7 +465,7 @@ NeoBundleOrigin "ref-lynx"
 
 NeoBundleOrigin "shabadou.vim"
 NeoBundleOrigin "vim-watchdogs"
-NeoBundleOrigin "vim-reanimate"
+" NeoBundleOrigin "vim-reanimate"
 " NeoBundleOrigin "rsense"
 NeoBundleOrigin "vim-budou"
 NeoBundleOrigin "vim-owl"
@@ -570,7 +568,7 @@ NeoBundleOrigin "vim-sugarpot", {
 
 
 let g:textobj_precious_no_default_key_mappings = 0
-" NeoBundleOrigin "vim-precious"
+NeoBundleOrigin "vim-precious"
 " NeoBundleOrigin "context_filetype.vim"
 NeoBundle "Shougo/context_filetype.vim"
 NeoBundleOrigin "vim-jplus"
