@@ -1777,6 +1777,9 @@ function! s:bundle.hooks.on_source(bundle)
 " 	let g:precious_enable_switch_CursorMoved_i = {
 " \		"help" : 0
 " \	}
+	let g:precious_enable_switch_CursorMoved = {
+\		"*" : 0
+\	}
 
 " 	MyAutocmd CursorHold * PreciousSwitchAutcmd
 		" コンテキストが切り替わった時にその filetype を表示
