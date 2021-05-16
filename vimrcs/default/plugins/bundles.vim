@@ -40,7 +40,6 @@ NeoBundle "Shougo/vimproc.vim", {
 \ }
 
 
-" NeoBundle "Shougo/neobundle-vim-scripts"
 NeoBundleLazy "Shougo/unite.vim", {
 \	"focus" : 10,
 \	'autoload' : {
@@ -58,8 +57,7 @@ NeoBundleLazy "Shougo/unite.vim", {
 " \	'depends' : ["Shougo/unite.vim"],
 " \	'autoload' : { 'commands' : [ "VimFilerTab", "VimFiler", "VimFilerExplorer" ] }
 " \}
-" NeoBundleLazy 'Shougo/vimfiler.vim'
-" NeoBundle 'Shougo/defx.nvim'
+NeoBundle 'Shougo/vimfiler.vim'
 
 NeoBundleLazy 'Shougo/vimshell.vim', {
 \	"focus" : 5,
@@ -96,18 +94,10 @@ NeoBundle "Shougo/neosnippet-snippets"
 
 
 " coding
-" NeoBundle "autozimu/LanguageClient-neovim", "next"
-" NeoBundle "autozimu/LanguageClient-neovim", "next", {
-" \ 'build' : {
-" \     'unix' : 'bash install.sh',
-" \    },
-" \ }
 NeoBundle "prabirshrestha/async.vim"
 NeoBundle "prabirshrestha/vim-lsp"
 NeoBundle "mattn/vim-lsp-settings"
 NeoBundle "lighttiger2505/deoplete-vim-lsp"
-" NeoBundle "Shougo/deoplete-lsp"
-" NeoBundle "dradtke/vim-dap"
 
 NeoBundle 'bogado/file-line'
 
@@ -227,10 +217,6 @@ NeoBundle "posva/vim-vue"
 NeoBundle "udalov/kotlin-vim"
 
 
-" RAML
-" NeoBundle "IN3D/vim-raml"
-
-
 " HTML5
 NeoBundle "othree/html5.vim"
 
@@ -244,12 +230,6 @@ NeoBundle "tpope/vim-haml"
 
 
 " コーディング支援
-" NeoBundleLazy "thinca/vim-quickrun", {
-" \	"focus" : 10,
-" \	'autoload' : {
-" \		'commands' : [ "QuickRun", "UniteQuickRunConfig" ],
-" \	},
-" \}
 NeoBundle "thinca/vim-quickrun"
 
 NeoBundle "Shougo/unite-outline"
@@ -295,7 +275,7 @@ NeoBundle "kmnk/vim-unite-giti"
 " NeoBundle "lambdalisue/gina.vim"
 NeoBundle "tpope/vim-fugitive"
 NeoBundle "hrsh7th/vim-gitto"
-" NeoBundle "hrsh7th/vim-denite-gitto"
+NeoBundle "hrsh7th/vim-denite-gitto"
 
 
 " colorscheme
@@ -368,9 +348,6 @@ NeoBundle 'haya14busa/vim-asterisk'
 NeoBundle 'thinca/vim-localrc'
 NeoBundle "deris/vim-diffbuf"
 
-" NeoBundle "syngan/vim-vimlint"
-" NeoBundle "ynkdir/vim-vimlparser"
-
 " NeoBundle "bling/vim-airline"
 " NeoBundle "vim-airline/vim-airline-themes"
 
@@ -405,7 +382,6 @@ NeoBundle "ryanoasis/vim-devicons"
 " ライブラリ
 NeoBundle "mattn/webapi-vim"
 NeoBundle "vim-jp/vital.vim"
-" NeoBundle "haya14busa/revital.vim"
 NeoBundle 'lambdalisue/vital-ArgumentParser'
 
 
@@ -423,189 +399,123 @@ command! -nargs=*
 \	NeoBundleOrigin
 \	call s:neobundle_origin(<args>)
 
+NeoBundle "fuenor/qfixhowm"
+NeoBundle "Shougo/context_filetype.vim"
 
-" command! -nargs=1
-" \	NeoBundleOrigin
-" \	NeoBundle <args>, {
-" \		"base" : $NEOBUNDLE_ORIGIN,
-" \		"type" : "nosync",
-" \	}
 
 NeoBundleOrigin "after"
 NeoBundleOrigin "mswin"
 
-" NeoBundleOrigin "vim-clang_declared"
-" NeoBundle "vim-reti", "", "original"
-" NeoBundleOrigin "vim-reti"
 NeoBundleOrigin "vim-chained"
-
-" NeoBundleOrigin "unite-env"
-" NeoBundleOrigin "unite-file_mru2"
-" NeoBundleLazy "unite-file_mru2", {
-" \		"base" : $NEOBUNDLE_ORIGIN,
-" \		"type" : "nosync"
-" \}
-
-" NeoBundleOrigin "unite-fold"
-NeoBundleOrigin "unite-quickfix"
-NeoBundleOrigin "unite-quickrun_config"
-NeoBundleOrigin "denite-quickrun_config"
-" NeoBundleOrigin "unite-boost-online-doc"
-" NeoBundleOrigin "TweetVim-powerline-theme"
-
-" NeoBundleOrigin "neocomplcache-snippets-complete-dart"
-" NeoBundleOrigin "neocomplcache-snippets-complete-jsx"
-
 NeoBundleOrigin "ref-lynx"
-
-" NeoBundleOrigin "my-powerline"
-" NeoBundleOrigin "vim-powerline-unite-theme"
-" NeoBundleOrigin "vim-powerline"
-" NeoBundleOrigin "unite-vimkaruta"
-
 NeoBundleOrigin "shabadou.vim"
 NeoBundleOrigin "vim-watchdogs"
-" NeoBundleOrigin "vim-reanimate"
-" NeoBundleOrigin "rsense"
+NeoBundleOrigin "vim-brightest"
 NeoBundleOrigin "vim-budou"
 NeoBundleOrigin "vim-owl"
-NeoBundleOrigin "unite-qfixhowm"
-NeoBundleOrigin "quickrun-hook-u-nya-"
-NeoBundleOrigin "quickrun-hook-vcvarsall"
-NeoBundleOrigin "quickrun-outputter-replace_region"
-" NeoBundleOrigin "quickrun-hook-santi_pinch"
-" NeoBundleOrigin "vim-hideout"
-
-
-let g:textobj_multiblock_no_default_key_mappings = 0
-NeoBundleOrigin "vim-textobj-multiblock"
-NeoBundleOrigin "vim-textobj-multitextobj"
-
-
-let g:textobj_context_no_default_key_mappings = 0
-NeoBundleOrigin "vim-textobj-context"
+NeoBundleOrigin "vim-hopping"
+NeoBundleOrigin "vim-vigemo"
+NeoBundleOrigin "vim-trip"
+NeoBundleOrigin "vim-swindle"
+let g:textobj_precious_no_default_key_mappings = 0
+NeoBundleOrigin "vim-precious"
+NeoBundleOrigin "vim-jplus"
+" NeoBundleOrigin "vim-auto_alignta"
+" NeoBundleOrigin "vim-poster"
+" NeoBundleOrigin "vim-hoogle-web"
+NeoBundleOrigin "vim-gimei"
+NeoBundleOrigin "wandbox-vim"
 NeoBundleOrigin "vim-bufixlist"
 NeoBundleOrigin "vim-anzu"
-" NeoBundleOrigin "vim-ghost"
-" NeoBundleOrigin "vim-reunions"
 NeoBundleOrigin "vim-milfeulle"
-NeoBundleOrigin "vim-gyazo"
 NeoBundleOrigin "vim-gift"
-" NeoBundleOrigin "unite-airline_themes"
-NeoBundleOrigin "unite-highlight"
 NeoBundleOrigin "vim-frill"
 NeoBundleOrigin "vim-garden"
-" NeoBundleOrigin "vim-pronamachang"
-" NeoBundleOrigin "vim-sound"
 NeoBundleOrigin "unite-filters-collection"
-" NeoBundleOrigin "vim-marching"
-" NeoBundleOrigin "vim-operator-search"
-" NeoBundleOrigin "vim-operator-jump-side"
-NeoBundleOrigin "vim-operator-swap"
-NeoBundleOrigin "vim-operator-alignta"
-NeoBundleOrigin "vim-operator-block"
-" NeoBundleOrigin "vim-operator-highlight"
-NeoBundleOrigin "vim-operator-highlighter"
-NeoBundleOrigin "vim-operator-stay-cursor"
-" NeoBundleOrigin "vim-fancy"
+NeoBundleOrigin "vim-snowdrop"
 NeoBundleOrigin "vim-over",{
 \	"lazy" : 1,
 \	'autoload' : {
 \		"commands" : ["OverCommandLine"],
 \	}
 \}
-" NeoBundleOrigin "vim-stargate"
-NeoBundleOrigin "vim-snowdrop"
-" NeoBundleOrigin "unite-itchyny-calendar"
-" NeoBundleOrigin "neobundle-auto_lazy_source"
+NeoBundleOrigin "codic-vim"
+" NeoBundleOrigin "vim-gyazo"
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" operator
+NeoBundleOrigin "vim-operator-swap"
+NeoBundleOrigin "vim-operator-alignta"
+NeoBundleOrigin "vim-operator-block"
+NeoBundleOrigin "vim-operator-highlighter"
+NeoBundleOrigin "vim-operator-stay-cursor"
 NeoBundleOrigin "vim-operator-surround-before"
-NeoBundleOrigin "vim-textobj-blockwise"
 NeoBundleOrigin "vim-operator-blockwise"
-NeoBundleOrigin "vim-textobj-from_regexp"
 NeoBundleOrigin "vim-operator-exec_command"
-NeoBundleOrigin "vim-brightest"
-" NeoBundleOrigin "vim-retime"
-NeoBundleOrigin "unite-candidate_sorter"
-NeoBundleOrigin "unite-github"
-" NeoBundleOrigin "unite-vimmer"
-NeoBundleOrigin "unite-vital-module"
-NeoBundleOrigin "unite-web_feed"
-" NeoBundleOrigin "vim-monster"
-NeoBundleOrigin "vim-nyaaancat"
-NeoBundleOrigin "vim-hopping"
-NeoBundleOrigin "vim-vigemo"
-NeoBundleOrigin "vim-trip"
 NeoBundleOrigin "vim-operator-aggressive"
-" NeoBundleOrigin "vim-edit_filetype"
-" NeoBundleOrigin "vim-stripe"
-NeoBundleOrigin "vim-agrep"
+" NeoBundleOrigin "vim-operator-search"
+" NeoBundleOrigin "vim-operator-jump-side"
+" NeoBundleOrigin "vim-operator-highlight"
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" textobj
+let g:textobj_multiblock_no_default_key_mappings = 0
+NeoBundleOrigin "vim-textobj-multiblock"
+NeoBundleOrigin "vim-textobj-multitextobj"
+
+let g:textobj_context_no_default_key_mappings = 0
+NeoBundleOrigin "vim-textobj-context"
+NeoBundleOrigin "vim-textobj-blockwise"
+NeoBundleOrigin "vim-textobj-from_regexp"
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" denite.vim
+NeoBundleOrigin "denite-quickrun_config"
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" unite.vim
+NeoBundleOrigin "unite-qfixhowm"
+NeoBundleOrigin "unite-candidate_sorter"
+NeoBundleOrigin "unite-vimpatches"
+NeoBundleOrigin "unite-highlight"
+NeoBundleOrigin "unite-quickfix"
+NeoBundleOrigin "unite-quickrun_config"
+" NeoBundleOrigin "unite-github"
+" NeoBundleOrigin "unite-vital-module"
+" NeoBundleOrigin "unite-web_feed"
+" NeoBundleOrigin "unite-choosewin-actions"
+" NeoBundleOrigin "unite-env"
+" NeoBundleOrigin "unite-file_mru2"
+" NeoBundleLazy "unite-file_mru2", {
+" \		"base" : $NEOBUNDLE_ORIGIN,
+" \		"type" : "nosync"
+" \}
+" NeoBundleOrigin "unite-vimkaruta"
+" NeoBundleOrigin "unite-fold"
+" NeoBundleOrigin "unite-boost-online-doc"
+" NeoBundleOrigin "unite-vim_hacks"
+" NeoBundleOrigin "unite-itchyny-calendar"
+" NeoBundleOrigin "unite-airline_themes"
+" NeoBundleOrigin "unite-vimmer"
 " NeoBundleOrigin "unite-option"
 " NeoBundleOrigin "unite-oldfiles"
-NeoBundleOrigin "vim-swindle"
-
-" NeoBundle "vim-euphoric_player", "", "original", {
-" \	"lazy" : 1,
-" \	'autoload' : {
-" \		"unite_sources" : ["euphoric_player_playlist", "euphoric_player_tracks"],
-" \	}
-" \}
-
-
-NeoBundleOrigin "vim-sugarpot", {
-\	"lazy" : 1,
-\	'autoload' : {
-\		'commands' : [
-\			{
-\				"name" : "SugarpotPreview",
-\				"complete" : "file",
-\			}
-\		]
-\	}
-\}
-
-" NeoBundleOrigin "vim-sudden_valentine"
-" NeoBundleOrigin "osyo-manga/capture.vim"
-
-
-let g:textobj_precious_no_default_key_mappings = 0
-NeoBundleOrigin "vim-precious"
-" NeoBundleOrigin "context_filetype.vim"
-NeoBundle "Shougo/context_filetype.vim"
-NeoBundleOrigin "vim-jplus"
-" NeoBundleOrigin "vim-automatic"
-NeoBundleOrigin "unite-choosewin-actions"
-" NeoBundleOrigin "vim-bug20131231"
-" NeoBundleOrigin "vim-airline-inu"
-" NeoBundleOrigin "vim-airline-nuko"
-" NeoBundleOrigin "vim-airline-usamin"
-" NeoBundleOrigin "vim-usamin"
-
-" Forked plugins.
-" NeoBundleOrigin "unite.vim"
-" NeoBundleOrigin "Omnisharp"
-" NeoBundleOrigin "J6uil.vim"
-" NeoBundleOrigin "neocomplete.vim"
-" NeoBundleOrigin "vim-quickrun"
-" NeoBundleOrigin "vimshell.vim"
-" NeoBundleOrigin "vim-airline"
-" NeoBundleOrigin "unite-vim_hacks"
-NeoBundleOrigin "codic-vim"
-
-
-
-NeoBundleOrigin "test"
-NeoBundleOrigin "test2"
-NeoBundleOrigin "unite-vimpatches"
 " NeoBundleOrigin "unite-toggle-options"
-NeoBundleOrigin "vim-auto_alignta"
-" NeoBundleOrigin "vim-itunes-bgm"
-" NeoBundleOrigin "vim-scaffold"
-" NeoBundleOrigin "vim-scaffold-templates"
-NeoBundleOrigin "vim-cpp-syntax-reserved_identifiers"
-NeoBundleOrigin "vim-poster"
-NeoBundleOrigin "vim-hoogle-web"
-NeoBundleOrigin "vim-gimei"
+" NeoBundleOrigin "vim-powerline-unite-theme"
 
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" quickrun.vim
+NeoBundleOrigin "quickrun-hook-u-nya-"
+NeoBundleOrigin "quickrun-hook-vcvarsall"
+NeoBundleOrigin "quickrun-outputter-replace_region"
+" NeoBundleOrigin "quickrun-hook-santi_pinch"
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vital.vim
 
 NeoBundleOrigin "vital-over"
 NeoBundleOrigin "vital-garden"
@@ -618,18 +528,84 @@ NeoBundleOrigin "vital-gift"
 NeoBundleOrigin "vital-palette"
 NeoBundleOrigin "vital-paradise"
 NeoBundleOrigin "vital-branc"
-
 NeoBundleOrigin "vital-migemo"
 
-if executable("cmigemp")
-endif
 
 
 
-NeoBundleOrigin "wandbox-vim"
 
 
-NeoBundle "fuenor/qfixhowm"
+" NeoBundleOrigin "vim-nyaaancat"
+" NeoBundleOrigin "vim-agrep"
+" NeoBundleOrigin "vim-reanimate"
+" NeoBundleOrigin "rsense"
+" NeoBundleOrigin "vim-stargate"
+" NeoBundleOrigin "neobundle-auto_lazy_source"
+" NeoBundleOrigin "vim-hideout"
+" NeoBundleOrigin "vim-pronamachang"
+" NeoBundleOrigin "vim-sound"
+" NeoBundleOrigin "vim-ghost"
+" NeoBundleOrigin "vim-reunions"
+" NeoBundleOrigin "vim-marching"
+" NeoBundleOrigin "vim-fancy"
+" NeoBundleOrigin "vim-retime"
+" NeoBundleOrigin "vim-monster"
+" NeoBundleOrigin "vim-edit_filetype"
+" NeoBundleOrigin "vim-stripe"
+
+" NeoBundle "vim-euphoric_player", "", "original", {
+" \	"lazy" : 1,
+" \	'autoload' : {
+" \		"unite_sources" : ["euphoric_player_playlist", "euphoric_player_tracks"],
+" \	}
+" \}
+
+
+" NeoBundleOrigin "vim-sugarpot", {
+" \	"lazy" : 1,
+" \	'autoload' : {
+" \		'commands' : [
+" \			{
+" \				"name" : "SugarpotPreview",
+" \				"complete" : "file",
+" \			}
+" \		]
+" \	}
+" \}
+
+" NeoBundleOrigin "vim-sudden_valentine"
+" NeoBundleOrigin "osyo-manga/capture.vim"
+
+
+" NeoBundleOrigin "context_filetype.vim"
+" NeoBundleOrigin "vim-automatic"
+" NeoBundleOrigin "vim-bug20131231"
+" NeoBundleOrigin "vim-airline-inu"
+" NeoBundleOrigin "vim-airline-nuko"
+" NeoBundleOrigin "vim-airline-usamin"
+" NeoBundleOrigin "vim-usamin"
+" Forked plugins.
+" NeoBundleOrigin "unite.vim"
+" NeoBundleOrigin "Omnisharp"
+" NeoBundleOrigin "J6uil.vim"
+" NeoBundleOrigin "neocomplete.vim"
+" NeoBundleOrigin "vim-quickrun"
+" NeoBundleOrigin "vimshell.vim"
+" NeoBundleOrigin "vim-airline"
+" NeoBundleOrigin "test"
+" NeoBundleOrigin "test2"
+" NeoBundleOrigin "vim-itunes-bgm"
+" NeoBundleOrigin "vim-scaffold"
+" NeoBundleOrigin "vim-scaffold-templates"
+" NeoBundleOrigin "vim-cpp-syntax-reserved_identifiers"
+" NeoBundle "vim-reti", "", "original"
+" NeoBundleOrigin "vim-clang_declared"
+" NeoBundleOrigin "vim-reti"
+" NeoBundleOrigin "my-powerline"
+" NeoBundleOrigin "vim-powerline"
+" NeoBundleOrigin "TweetVim-powerline-theme"
+" NeoBundleOrigin "neocomplcache-snippets-complete-dart"
+" NeoBundleOrigin "neocomplcache-snippets-complete-jsx"
 
 
 if !has('vim_starting')

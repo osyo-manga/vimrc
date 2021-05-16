@@ -2411,17 +2411,6 @@ unlet s:hooks
 
 
 
-" autozimu/LanguageClient-neovim {{{
-let s:hooks = neobundle#get_hooks("LanguageClient-neovim")
-function! s:hooks.on_source(bundle)
-	let g:LanguageClient_serverCommands = {
-		\ 'ruby': ['solargraph', 'stdio'],
-	\}
-endfunction
-unlet s:hooks
-" }}}
-
-
 " tyru/empty-prompt.vim {{{
 let s:hooks = neobundle#get_hooks("empty-prompt.vim")
 function! s:hooks.on_source(bundle)
