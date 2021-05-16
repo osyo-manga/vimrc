@@ -79,7 +79,7 @@ let s:vimrc = expand("<sfile>:p")
 " 外部ファイルの読み込み
 "==========================================================
 " {{{
-source <sfile>:h/kaoriya.vim
+source <sfile>:h/scripts/kaoriya.vim
 
 unlet! g:skip_loading_mswin
 source $VIMRUNTIME/mswin.vim
@@ -92,17 +92,6 @@ nnoremap <C-a> <C-a>
 nnoremap <C-c> <C-c>
 
 silent! unmap <C-Q>
-
-
-source <sfile>:h/windowbuffer.vim
-source <sfile>:h/window.vim
-source <sfile>:h/git.vim
-source <sfile>:h/timer/main.vim
-" source <sfile>:h/secret/main.vim
-
-if has("terminal")
-	source <sfile>:h/terminal.vim
-endif
 " }}}
 
 
@@ -308,7 +297,7 @@ endif
 " set foldmethod=marker
 " 1行が長い場合に重いのを回避する
 " http://blog.kaihatsubu.com/?p=1713
-set synmaxcol=460
+" set synmaxcol=460
 set synmaxcol=250
 
 " ウィンドウの最後の行を出来る限り表示する
@@ -338,7 +327,6 @@ set formatoptions-=ro
 set formatoptions+=j
 MyAutocmd FileType * setlocal formatoptions-=ro
 MyAutocmd CursorHold * setlocal formatoptions-=ro
-" MyAutocmd CursorMoved * setlocal formatoptions-=ro
 
 " 桁が長くても自動補完するようにする
 MyAutocmd InsertEnter * setlocal formatoptions-=c
@@ -370,7 +358,6 @@ set viminfo-='100     " デフォルトの設定を削除しておかないと�
 
 
 " 検索をキャンセルした場合に前回の検索ワードをハイライトしない
-" set nohlsearch
 cnoremap <expr> <Esc> getcmdtype() == '/' ? "\<C-c>:nohlsearch\<CR>" : "\<C-c>"
 " }}}
 
@@ -427,7 +414,7 @@ filetype off
 filetype plugin indent off     " required!
 
 call neobundle#begin(expand($HOME."/neobundle"))
-source <sfile>:h/bundles.vim
+source <sfile>:h/plugins/bundles.vim
 
 let g:neobundle#log_filename = $HOME . "/neobundle.log"
 filetype plugin indent on
@@ -621,6 +608,9 @@ nnoremap <A-q><A-q> :SQLUFormatter<CR>
 " 選択した範囲を jq コマンドを使ってフォーマッティングする
 " 範囲選択しない場合は現在の行を対象とする
 command! -range JSONFormatter :<line1>,<line2>!jq .
+
+" 現在開いているファイルのパスをコピーする
+nnoremap <silent> <Space>cp :call setreg(v:register, expand("%:p"))<CR>
 " }}}
 
 
@@ -637,7 +627,6 @@ command!
 MyAutocmd FileType cpp setlocal comments-=:\/\/
 MyAutocmd BufReadPost *.scala set filetype=scala
 MyAutocmd BufNewFile,BufReadPost *.pug set filetype=pug
-" autocmd BufReadPost,BufNewFile *.txt set filetype=txt
 
 " 前回終了したカーソル行に移動
 MyAutocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g`\"" | endif
@@ -704,7 +693,6 @@ command! MessageClear message clear
 "==========================================================
 
 " source <sfile>:h/auto_tweet.vim
-source <sfile>:h/projector.vim
 
 " Hack #125: 矩形選択で自由に移動する {{{
 " http://vim-users.jp/2010/02/hack125/
@@ -940,17 +928,11 @@ MyAutocmd VimEnter * call s:clear_autocmd_qfix()
 let s:bundle = neobundle#get("vim-reanimate")
 let s:bundle.hooks = get(s:bundle, "hooks", {})
 function! s:bundle.hooks.on_source(bundle)
-	" let g:reanimate_save_dir = "D:/test test"
-" 	let g:reanimate_save_dir = $VIMLOCALUSER."/_vim/test"
 	let g:reanimate_save_dir = $VIMLOCALUSER."/_vim/save_point"
 	let g:reanimate_default_save_name = "latest"
-" 	let g:reanimate_default_category = "session"
-" 	let g:reanimate_default_save_name = ""
 	let g:reanimate_sessionoptions="curdir,folds,help,localoptions,slash,tabpages,winsize"
 	" let g:reanimate_sessionoptions="tabpages,winsize"
 
-	" let g:reanimate_disables = []
-	" let g:reanimate_disables = ["reanimate_message"]
 	let g:reanimate_event_disables = {
 	\	"_" : {
 	\		"reanimate_confirm" : 1,
@@ -1115,7 +1097,6 @@ nmap <leader><Leader>C <Plug>(operator-caw-I-uncomment)ii
 
 nmap gcy yyp<Plug>(caw:I:toggle)k
 vmap gcy ygvgcIP
-" }}}
 
 
 " vim-quickhl {{{
@@ -1124,22 +1105,11 @@ xmap <Space>m <Plug>(quickhl-manual-this)
 nmap <Space>M <Plug>(quickhl-manual-reset)
 xmap <Space>M <Plug>(quickhl-manual-reset)
 let g:quickhl_cword_enable_at_startup = 0
-
 " }}}
 
 " restart.vim {{{
 let g:restart_sessionoptions = 'blank,buffers,winpos,winsize,curdir,folds,help,localoptions,tabpages,winsize'
-
-command! MyRestart Restart --cmd "let g:restarted = 1"
-nnoremap <Space><Space>res :MyRestart<CR>
-" nnoremap <Space><Space>res :Restart<CR>
-if !exists("g:restarted")
-	let $HOGE = $HOGE . ";C:/hoge"
-endif
-" }}}
-
-" copypath {{{
-nnoremap <silent> <Space>cp :call setreg(v:register, expand("%:p"))<CR>
+nnoremap <Space><Space>res :Restart<CR>
 " }}}
 
 " OpenBrowser {{{
@@ -1165,8 +1135,6 @@ unlet s:bundle
 
 nnoremap <Space>TT  :execute "TweetVimSwitchAccount pink_bangbi" \| TweetVimSay<CR>
 
-" nnoremap <Space>tp  :execute "TweetVimSwitchAccount pink_bangbi" \| TweetVimSay<CR>
-
 let g:tweetvim_display_icon = 1
 " let g:tweetvim_default_account = "osyo_memo"
 " let g:tweetvim_default_account = "manga_osyo"
@@ -1190,9 +1158,6 @@ function! s:bundle.hooks.on_source(bundle)
 	let g:vimfiler_enable_auto_cd = 1
 	let g:vimfiler_ignore_pattern = ""
 	let g:vimfiler_restore_alternate_file = 0
-
-	" loading vimfiler
-	call vimfiler#util#get_vital()
 endfunction
 unlet s:bundle
 
@@ -1229,8 +1194,6 @@ function! s:bundle.hooks.on_source(bundle)
 \		'cs'   : '[^.[:digit:] *\t]\.',
 \		'python' : '[^. \t]\.\w*',
 \	}
-" \		'ruby' : '[^. *\t]\.\w*\|\h\w*::',
-" \		'ruby' : '[^. *\t]\.\|\h\w*::',
 
 	call extend(g:neocomplete#force_omni_input_patterns, config)
 	unlet config
@@ -1238,40 +1201,10 @@ function! s:bundle.hooks.on_source(bundle)
 
 	let g:jedi#completions_enabled = 0
 	let g:jedi#auto_vim_configuration = 0
-" 	let g:neocomplete#force_omni_input_patterns.python =
-" 	\ '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*'
-
-" 	call extend(g:neocomplete#sources#omni#functions, {
-" \		"python" : "jedi#completions"
-" \	})
-
-" 	call extend(g:neocomplete#sources#omni#functions, {
-" \		"ruby" : "monster#omnifunc"
-" \	})
-
-" 	call extend(g:neocomplete#sources#omni#functions, {
-" \		"cpp" : "ClangComplete"
-" \	})
-
-" 	call extend(g:neocomplete#sources#omni#functions, {
-" \		"python" : "jedi#completions",
-" \		"cpp"    : "marching#complete"
-" \	})
 
 	call extend(g:neocomplete#sources#omni#input_patterns, {
 \		'python' : '[^. \t]\.\w*',
 \	})
-" \		'ruby' : '[^. *\t]\.\w*\|\h\w*::',
-
-
-" 	call extend(g:neocomplete#sources#omni#input_patterns, {
-" \		'ruby' : '[^. *\t]\.\w*\|\h\w*::',
-" \	})
-
-" 	call extend(g:neocomplete#sources#omni#input_patterns, {
-" \		'python' : '[^. \t]\.\w*',
-" \		'cpp'  : '[^.[:digit:] *\t]\%(\.\|->\)\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?',
-" \	})
 
 	let g:neocomplete#enable_fuzzy_completion = 0
 	call neocomplete#custom#source('_', 'matchers', ['matcher_head'])
@@ -1279,36 +1212,17 @@ function! s:bundle.hooks.on_source(bundle)
 
 	call neocomplete#custom#source('include',
 	\ 'disabled_filetypes', {'_' : 1})
-" 	\ 'disabled_filetypes', {'cpp' : 1})
 
 	call neocomplete#custom#source('tag',
 	\ 'disabled_filetypes', {'_' : 1})
-" 	\ 'disabled_filetypes', {'cpp' : 1})
-
-" 	call neocomplete#custom#source('member',
-" 	\ 'disabled_filetypes', {'cpp' : 1})
-	
-" 	call neocomplete#custom#source('buffer',
-" 	\ 'disabled_filetypes', {'cpp' : 1})
-
-" 	call neocomplete#custom#source('member',
-" 	\ 'disabled_filetypes', {'cpp' : 1})
-" 	call neocomplete#custom#source('buffer',
-" 	\ 'disabled_filetypes', {'cpp' : 1})
-
-" 	call neocomplete#custom#source('buffer',
-" 	\ 'disabled_filetypes', {'_' : 1})
-<
 
 	inoremap <expr><C-g> neocomplete#undo_completion()
 	inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-" 	inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
 	inoremap <expr><C-y> neocomplete#close_popup()
 	inoremap <expr><C-e> neocomplete#cancel_popup()
 
 
 	let g:neocomplete#text_mode_filetypes = { "_" : 1 }
-"
 	call neocomplete#custom#source("look", "min_pattern_length", 10)
 	inoremap <expr> <C-x><C-l>  neocomplete#start_manual_complete("look")
 
@@ -1381,7 +1295,6 @@ function! s:bundle.hooks.on_source(bundle)
 	snoremap <Esc> <Esc>:<C-u>NeoSnippetClearMarkers<CR>
 
 	MyAutocmd InsertLeave * syntax clear neosnippetConcealExpandSnippets
-" 	call neosnippet#initialize()
 	let g:neosnippet#scope_aliases = {}
 	let g:neosnippet#scope_aliases['ruby'] = 'ruby,ruby-rails,ruby-rspec'
 endfunction
@@ -1392,31 +1305,15 @@ unlet s:bundle
 
 " キーマッピング {{{
 nnoremap <Space>ufm   :Unite frill<CR>
-" nnoremap <Space>udm   :Unite directory_mru<CR>
-" nnoremap <Space>urm   :UniteResume<CR>
 nnoremap <Space>uff   :Unite file file/new -hide-source-names<CR>
 nnoremap <Space>unb   :Unite neobundle<CR>
-" nnoremap <Space>url   :Unite reanimate:default_category -default-action=reanimate_switch<CR>
-" nnoremap <Space>urs   :Unite reanimate:default_category -default-action=reanimate_save<CR>
 nnoremap <Space>umes  :Unite messages -wrap<CR>
-
 nnoremap <Space>uqh   :Unite qfixhowm/new qfixhowm:nocache -hide-source-names -truncate<CR>
-" nnoremap <Space>ubb   :Unite bookmark<CR>
-
-
-
-" inoremap <C-y> <Esc>:Unite history/yank -direction=belowright -winheight=12<CR>
-
-" nnoremap <silent> <Space>ll :Unite menu:shortcut<CR>
-" nnoremap <silent> <Space>ll :Unite menu:shortcut bookmark -hide-source-names<CR>
 nnoremap <silent> <Space>ll :Unite menu:shortcut -hide-source-names<CR>
-" nnoremap [q]: :Unite history/command -wrap -winheight=15 -direction=botright<CR>
-" nnoremap [q]/ :Unite history/search -wrap -winheight=15 -direction=botright<CR>
 " }}}
 
 " 使わないデフォルト Unite ソースをロードしない
 let g:loaded_unite_source_bookmark = 1
-
 
 
 command! -nargs=* -complete=customlist,unite#complete#source
@@ -1428,7 +1325,7 @@ let s:bundle = neobundle#get("unite.vim")
 let s:bundle.hooks = get(s:bundle, "hooks", {})
 function! s:bundle.hooks.on_source(bundle)
 
-	execute "source" fnamemodify(s:vimrc, ":h")."/unite.vim"
+	execute "source" fnamemodify(s:vimrc, ":h")."/plugins/unite.vim"
 	
 	" unite-shortcut {{{
 	if !exists("g:unite_source_menu_menus")
@@ -1490,18 +1387,8 @@ function! s:bundle.hooks.on_source(bundle)
 	" }}}
 	
 	" loading autoload function
-" 	call unite#util#strchars("")
-" 	call unite#util#sort_by([], "")
-" 	call unite#util#get_vital().import('Vim.Message')
-" " 	call unite#complete#source("", "Unite ", 0)
-" 	return
-" 	augroup plugin-unite
-" 		autocmd! CursorHold
-" 	augroup END
-" 	MyAutocmd User ReunionsTimer4000 call unite#handlers#_on_cursor_hold()
 
 	if neobundle#is_installed("vim-airline")
-" 	if neobundle#is_sourced("vim-airline")
 		call airline#add_statusline_func("airline#extensions#unite#apply")
 	endif
 	let g:airline#extensions#anzu#enabled = 1
@@ -1528,19 +1415,14 @@ let g:hier_highlight_group_qfw = "hier_warning"
 let s:bundle = neobundle#get("vim-quickrun")
 let s:bundle.hooks = get(s:bundle, "hooks", {})
 function! s:bundle.hooks.on_source(bundle)
-	execute "source" fnamemodify(s:vimrc, ":h")."/quickrun.vim"
-	execute "source" fnamemodify(s:vimrc, ":h")."/rurema.vim"
+	execute "source" fnamemodify(s:vimrc, ":h")."/plugins/quickrun.vim"
 	command! UniteQuickRunConfig :Unite quickrun_config -buffer-name=quickrun_config
-" 	command! UniteQuickRunConfig :Unite quickrun_config -start-insert -immediately
-" 	source <sfile>:h/quickrun.vim
-" 	nmap <Space>q <Plug>(quickrun-op)
 endfunction
 unlet s:bundle
 
 nnoremap <silent> <Leader>r :QuickRun<CR>
 nnoremap <silent> <Leader>R :execute ":QuickRun ".get(GetNowQuickrunConfig(), "subtype", "")." -hook/close_buffer/enable_exit 0"<CR>
 nnoremap <silent> <Leader><C-r> :QuickRun -hook/run_prevconfig/enable 1<CR>
-" nnoremap <silent> <Space>qr :Unite quickrun_config -immediately<CR>
 nnoremap <silent> <Space>qr :UniteQuickRunConfig<CR>
 " }}}
 
@@ -1549,12 +1431,7 @@ nnoremap <silent> <Space>qr :UniteQuickRunConfig<CR>
 let s:bundle = neobundle#get("vim-watchdogs")
 let s:bundle.hooks = get(s:bundle, "hooks", {})
 function! s:bundle.hooks.on_post_source(bundle)
-" 	augroup watchdogs-plugin
-" 		autocmd! CursorHold
-" 	augroup END
-"
-" 	let s:Watchdogs_check_cursorhold = scall#search("plugin/watchdogs:watchdogs_check_cursorhold")
-" 	MyAutocmd User ReunionsTimer2000 call s:Watchdogs_check_cursorhold(&filetype)
+	" 無
 endfunction
 unlet s:bundle
 " }}}
@@ -1588,11 +1465,6 @@ function! s:bundle.hooks.on_source(bundle)
 
 	let g:anzu_status_format = "%p(%i/%l) %w"
 	let g:anzu_enable_CursorHold_AnzuUpdateSearchStatus = 0
-
-" 	let g:anzu_status_format = "(%i/%l)"
-" " 	let g:anzu_status_format = "%p(%i/%l)"
-" 	let g:anzu_search_limit=300
-" 	let g:airline_section_x = g:airline_section_x . "%{anzu#search_status()}"
 
 	let g:airline#extensions#default#section_truncate_width = {
 	\ 'b': 40,
@@ -1762,7 +1634,6 @@ let s:bundle.hooks = get(s:bundle, "hooks", {})
 function! s:bundle.hooks.on_source(bundle)
 	MyAutocmd User PreciousFiletypeLeave_vim iunmap <buffer> <CR>
 	MyAutocmd User PreciousFiletypeLeave_vim nunmap <buffer> <Leader><Leader>r
-" 	MyAutocmd User PreciousFiletypeLeave_vim if !empty(maparg("<CR>", "i")) | execute "iunmap <buffer> <CR>" | endif
 	MyAutocmd InsertEnter * :PreciousSwitch
 
 	let g:precious_enable_switchers = {
@@ -1860,12 +1731,9 @@ unlet s:bundle
 let s:bundle = neobundle#get("vim-airline")
 let s:bundle.hooks = get(s:bundle, "hooks", {})
 function! s:bundle.hooks.on_source(bundle)
-" 	let g:airline_section_b = "%{matchstr(reanimate#last_point(), '.*/\\zs.*')}"
-" 	let g:airline_theme='base16'
 	let g:airline_theme='bubblegum'
 	let g:airline_theme='monochrome'
 	let g:airline_theme='kolor'
-" 	let g:airline_theme='lucius'
 	let g:airline#extensions#whitespace#checks = []
 	let g:airline#extensions#anzu#enabled = 1
 	let g:airline#extensions#hunks#enabled = 0
@@ -1900,13 +1768,7 @@ unlet s:bundle
 " vim-textobj-user {{{
 let s:hooks = neobundle#get_hooks("vim-textobj-user")
 function! s:hooks.on_source(bundle)
-" 	call textobj#user#plugin('php', {
-" 	\   'code': {
-" 	\     'pattern': ['<?php\>', '?>'],
-" 	\     'select-a': 'aP',
-" 	\     'select-i': 'iP',
-" 	\   },
-" 	\ })
+	" 無
 endfunction
 unlet s:hooks
 " }}}
@@ -2011,8 +1873,6 @@ unlet s:hooks
 " vim-snowdrop {{{
 let s:hooks = neobundle#get_hooks("vim-snowdrop")
 function! s:hooks.on_source(bundle)
-" 	let g:snowdrop#libclang_path = "D:/LLVM/BUILD/bin"
-" 	let g:snowdrop#libclang_path = "D:/LLVM/BUILD_3_4/bin"
 	let g:snowdrop#goto_definition_open_cmd = "Tabdrop"
 
 	let g:snowdrop#command_options = {
@@ -2036,14 +1896,11 @@ unlet s:hooks
 " vim-gitgutter {{{
 let s:hooks = neobundle#get_hooks("vim-gitgutter")
 function! s:hooks.post_source(bundle)
-" 	nnoremap <leader>gg :<C-u>GitGutterToggle<CR>
-" 	nnoremap <leader>gh :<C-u>GitGutterLineHighlightsToggle<CR>
 	autocmd! gitgutter CursorHold,CursorHoldI
 	let g:gitgutter_map_keys = 0
 
 	let g:gitgutter_escape_grep = 1
 	let g:gitgutter_eager = 1
-" 	let g:gitgutter_realtime = 0
 endfunction
 unlet s:hooks
 " }}}
@@ -2235,10 +2092,8 @@ unlet s:hooks
 let s:hooks = neobundle#get_hooks("vim-textobj-from_regexp")
 function! s:hooks.on_source(bundle)
 	omap <expr> i<C-w> textobj#from_regexp#mapexpr('\w\+')
-	" nmap <expr> i<C-w> textobj#from_regexp#mapexpr('\w\+')
 	xmap <expr> i<C-w> textobj#from_regexp#mapexpr('\w\+')
 	omap <expr> i<A-w> textobj#from_regexp#mapexpr('[A-Za-z0-9]\+')
-	" nmap <expr> i<A-w> textobj#from_regexp#mapexpr('[A-Za-z0-9]\+')
 	xmap <expr> i<A-w> textobj#from_regexp#mapexpr('[A-Za-z0-9]\+')
 
 	omap <expr> ig textobj#from_regexp#mapexpr('\%V')
@@ -2391,7 +2246,6 @@ unlet s:hooks
 let s:hooks = neobundle#get_hooks("vim-monster")
 function! s:hooks.on_post_source(bundle)
 	let g:monster#completion#rcodetools#backend = "async_rct_complete"
-" 	let g:monster#enable_neocomplete = 1
 	let g:monster#debug#enable = 1
 endfunction
 unlet s:hooks
@@ -2437,10 +2291,6 @@ function! s:hooks.on_source(bundle)
 
 	nmap gu <Plug>(operator-stay-cursor-gu)
 	nmap gU <Plug>(operator-stay-cursor-gU)
-
-" 	nmap <expr> <A-m> operator#stay_cursor#wrapper("\<Plug>(operator-swap-marking)", { "noremap" : 0 })
-	
-	
 endfunction
 unlet s:hooks
 " }}}
@@ -2458,8 +2308,6 @@ unlet s:hooks
 " hopping.vim {{{
 let s:hooks = neobundle#get_hooks("vim-hopping")
 function! s:hooks.on_source(bundle)
-" 	nmap / <Plug>(hopping-start)
-" 	vmap / <Plug>(hopping-start)
 	nmap <Space>/ <Plug>(hopping-start)
 	vmap <Space>/ <Plug>(hopping-start)
 	let g:hopping#keymapping = {
@@ -2490,7 +2338,7 @@ unlet s:hooks
 " lexima.vim {{{
 let s:hooks = neobundle#get_hooks("lexima.vim")
 function! s:hooks.on_source(bundle)
-	execute "source" fnamemodify(s:vimrc, ":h")."/lexima.vim"
+	execute "source" fnamemodify(s:vimrc, ":h")."/plugins/lexima.vim"
 " 	cunmap <CR>
 endfunction
 unlet s:hooks
@@ -2520,12 +2368,9 @@ unlet s:hooks
 " }}}
 
 
-" vim-textobj-from_regexp {{{
+" vim-operator-highlighter {{{
 let s:hooks = neobundle#get_hooks("vim-operator-highlighter")
 function! s:hooks.on_source(bundle)
-" 	if has("Mac")
-" 		return
-" 	endif
 	let g:operator#highlighter#config = { "clear_time" : 1000 }
 	
 	noremap <Plug>(yank) y
@@ -2656,7 +2501,7 @@ unlet s:bundle
 " denite.nvim {{{
 let s:hooks = neobundle#get_hooks("denite.nvim")
 function! s:hooks.on_post_source(bundle)
-	execute "source" fnamemodify(s:vimrc, ":h")."/denite.vim"
+	execute "source" fnamemodify(s:vimrc, ":h")."/plugins/denite.vim"
 endfunction
 unlet s:hooks
 " }}}
@@ -2664,7 +2509,7 @@ unlet s:hooks
 " defx.nvim {{{
 let s:hooks = neobundle#get_hooks("defx.nvim")
 function! s:hooks.on_post_source(bundle)
-	execute "source" fnamemodify(s:vimrc, ":h")."/defx.vim"
+	execute "source" fnamemodify(s:vimrc, ":h")."/plugins/defx.vim"
 endfunction
 unlet s:hooks
 " }}}
@@ -2672,7 +2517,7 @@ unlet s:hooks
 " defx-icons {{{
 let s:hooks = neobundle#get_hooks("defx-icons")
 function! s:hooks.on_source(bundle)
-	execute "source" fnamemodify(s:vimrc, ":h")."/defx_icons.vim"
+	execute "source" fnamemodify(s:vimrc, ":h")."/plugins/defx_icons.vim"
 	let g:defx_icons_gui_colors = {
 	\	"default" : "E0E0E0"
 	\}
@@ -2684,7 +2529,7 @@ unlet s:hooks
 " vim-lsp {{{
 let s:hooks = neobundle#get_hooks("vim-lsp")
 function! s:hooks.on_source(bundle)
-	execute "source" fnamemodify(s:vimrc, ":h")."/lsp.vim"
+	execute "source" fnamemodify(s:vimrc, ":h")."/plugins/lsp.vim"
 endfunction
 unlet s:hooks
 " }}}
@@ -2748,7 +2593,7 @@ let g:rubycomplete_classes_in_global = 1
 
 " cpp{{{
 let c_comment_strings=1
-" tet c_no_curly_error=1
+" let c_no_curly_error=1
 
 " filetype = cpp の時
 autocmd FileType cpp call s:cpp_loaded()
@@ -3002,11 +2847,6 @@ augroup hi-clumns
 " 	autocmd WinEnter * :81HlColumnsOn ErrorMsg
 augroup END
 
-" command! -nargs=* Commit echo system("git commit " . expand("%:p") ." -m " . shellescape(<q-args>))
-command! -nargs=* Commit
-\	echo system(printf("git commit %s -m %s", expand("%:p"), shellescape(<q-args>)))
-command! -nargs=* GitReset echo system("git reset --soft HEAD^")
-
 
 " filetype
 MyAutocmd BufEnter *_spec.rb set ft=ruby.rspec
@@ -3096,8 +2936,16 @@ if !has("gui_running")
 	set notitle
 endif
 
+" 雑多なスクリプトファイルの読み込み
+source <sfile>:h/scripts/windowbuffer.vim
+source <sfile>:h/scripts/window.vim
+source <sfile>:h/scripts/git.vim
+source <sfile>:h/scripts/scrapbox.vim
+source <sfile>:h/scripts/projector.vim
+source <sfile>:h/scripts/rurema.vim
 
-source <sfile>:h/scrapbox.vim
-
+if has("terminal")
+	source <sfile>:h/scripts/terminal.vim
+endif
 
 

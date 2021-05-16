@@ -1,3 +1,22 @@
+function! s:change_cd(dir)
+	if get(g:, "is_quickrun_started", 0)
+		return
+	endif
+	try
+		execute ":lcd " a:dir
+	endtry
+endfunction
+
+
+" 常に開いているファイルと同じディレクトリをカレントディレクトリにする
+" http://www15.ocn.ne.jp/~tusr/vim/vim_text2.html#mozTocId567011
+augroup vimrc_group__cd
+	autocmd!
+	autocmd FileReadPost,BufEnter,BufWinEnter,WinEnter,TabEnter * call s:change_cd(expand("%:p:h"))
+augroup END
+
+
+finish
 
 " function! s:open_project_explorer()
 " 	let project_dir =

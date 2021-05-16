@@ -54,10 +54,10 @@ NeoBundleLazy "Shougo/unite.vim", {
 \}
 
 
-NeoBundleLazy 'Shougo/vimfiler.vim', {
-\	'depends' : ["Shougo/unite.vim"],
-\	'autoload' : { 'commands' : [ "VimFilerTab", "VimFiler", "VimFilerExplorer" ] }
-\}
+" NeoBundleLazy 'Shougo/vimfiler.vim', {
+" \	'depends' : ["Shougo/unite.vim"],
+" \	'autoload' : { 'commands' : [ "VimFilerTab", "VimFiler", "VimFilerExplorer" ] }
+" \}
 " NeoBundleLazy 'Shougo/vimfiler.vim'
 " NeoBundle 'Shougo/defx.nvim'
 
@@ -371,8 +371,8 @@ NeoBundle "deris/vim-diffbuf"
 " NeoBundle "syngan/vim-vimlint"
 " NeoBundle "ynkdir/vim-vimlparser"
 
-NeoBundle "bling/vim-airline"
-NeoBundle "vim-airline/vim-airline-themes"
+" NeoBundle "bling/vim-airline"
+" NeoBundle "vim-airline/vim-airline-themes"
 
 NeoBundle "tyru/vim-altercmd"
 NeoBundle "t9md/vim-choosewin"
