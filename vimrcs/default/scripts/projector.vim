@@ -4,6 +4,7 @@ function! s:change_cd(dir)
 	endif
 	try
 		execute ":lcd " a:dir
+	catch
 	endtry
 endfunction
 
