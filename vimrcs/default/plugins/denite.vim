@@ -211,6 +211,7 @@ call denite#custom#source("grep", "max_candidates", 300)
 " call denite#custom#source('grep', 'converters', ['converter/devicons_denite_converter', 'converter/abbr_word'])
 call denite#custom#source('grep', 'converters', ['converter/abbr_word'])
 call denite#custom#source('grep', 'matchers', ['matcher/regexp'])
+call denite#custom#source('grep', 'sorters', ['sorter/word'])
 nnoremap <Space>gr :DeniteProjectDir grep<CR>
 nnoremap <Space>ugr :DeniteProjectDir grep<CR>
 
