@@ -157,7 +157,7 @@ call denite#custom#kind('file', 'default_action', 'tabswitch')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " file の設定
-" call denite#custom#source('file', 'matchers', ['matcher/regexp'])
+call denite#custom#source('file', 'matchers', ['matcher/regexp'])
 call denite#custom#source('file', 'sorters', ['sorter/word'])
 if &rtp =~ "devicons"
 	call denite#custom#source('file', 'converters', ['devicons_denite_converter', 'converter/abbr_word'])
@@ -169,6 +169,7 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " file/rec の設定
 call denite#custom#source("file/rec", "max_candidates", 100)
+call denite#custom#source('file/rec', 'matchers', ['matcher/regexp'])
 call denite#custom#source('file/rec', 'sorters', ['sorter/word'])
 if &rtp =~ "devicons"
 	call denite#custom#source('file/rec', 'converters', ['devicons_denite_converter', 'converter/abbr_word'])
@@ -212,8 +213,9 @@ call denite#custom#source("grep", "max_candidates", 300)
 call denite#custom#source('grep', 'converters', ['converter/abbr_word'])
 call denite#custom#source('grep', 'matchers', ['matcher/regexp'])
 call denite#custom#source('grep', 'sorters', ['sorter/word'])
-nnoremap <Space>gr :DeniteProjectDir grep<CR>
-nnoremap <Space>ugr :DeniteProjectDir grep<CR>
+call denite#custom#option('grep', s:denite_default_options->extend({ "post_action": "jump" }))
+nnoremap <Space>gr :DeniteProjectDir grep -buffer-name=grep<CR>
+nnoremap <Space>ugr :DeniteProjectDir grep -buffer-name=grep<CR>
 
 
 
