@@ -143,7 +143,14 @@ call extend(s:denite_default_options, {
 " \	'start_filter': v:true,
 " \})
 
+
+" :DeniteProjectDir する時に README.md や README.rdoc 基準も追加する
+call extend(s:denite_default_options, {
+\	'root_markers': "README.rdoc,README.md",
+\})
+
 call denite#custom#option('default', s:denite_default_options)
+call denite#custom#option('grep', s:denite_default_options)
 
 
 
