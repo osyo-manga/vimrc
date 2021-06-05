@@ -30,14 +30,14 @@ NeoBundleFetch "Shougo/neobundle.vim", {
 \}
 
 
-NeoBundle "Shougo/vimproc.vim", {
-\ 'build' : {
-\     'windows' : 'make -f make_mingw32.mak',
-\     'cygwin' : 'make -f make_cygwin.mak',
-\     'mac' : 'make -f make_mac.mak',
-\     'unix' : 'make -f make_unix.mak',
-\    },
-\ }
+" NeoBundle "Shougo/vimproc.vim", {
+"\ 'build' : {
+"\     'windows' : 'make -f make_mingw32.mak',
+"\     'cygwin' : 'make -f make_cygwin.mak',
+"\     'mac' : 'make -f make_mac.mak',
+"\     'unix' : 'make -f make_unix.mak',
+"\    },
+"\ }
 
 
 NeoBundleLazy "Shougo/unite.vim", {
@@ -228,9 +228,16 @@ NeoBundle "vim-scripts/JSON.vim"
 " haml
 NeoBundle "tpope/vim-haml"
 
+" TypeScript
+" NeoBundle "HerringtonDarkholme/yats.vim"
+NeoBundle "leafgarland/typescript-vim"
+
 
 " コーディング支援
 NeoBundle "thinca/vim-quickrun"
+" 自動でライブラリをリンクする奴
+" https://mattn.kaoriya.net/software/vim/20120525181657.htm
+" NeoBundle "mattn/vim-quickrunex"
 
 NeoBundle "Shougo/unite-outline"
 NeoBundle "tyru/caw.vim"
@@ -255,6 +262,7 @@ NeoBundle "uplus/vim-clurin"
 
 " let g:loaded_matchparen = 1
 " NeoBundle 'itchyny/vim-parenmatch'
+NeoBundle "andymass/vim-matchup"
 
 
 " unite-sources
@@ -339,11 +347,10 @@ NeoBundleLazy "thinca/vim-scall", {
 \	"focus" : 10,
 \	'autoload' : {'functions' : ["Scall"] },
 \}
-
 NeoBundle "Lokaltog/vim-easymotion"
 NeoBundle "t9md/vim-textmanip"
-NeoBundle "haya14busa/incsearch.vim"
-NeoBundle "haya14busa/incsearch-migemo.vim"
+" NeoBundle "haya14busa/incsearch.vim"
+" NeoBundle "haya14busa/incsearch-migemo.vim"
 NeoBundle 'haya14busa/vim-asterisk'
 NeoBundle 'thinca/vim-localrc'
 NeoBundle "deris/vim-diffbuf"
@@ -479,10 +486,10 @@ NeoBundleOrigin "denite-quickrun_config"
 " unite.vim
 NeoBundleOrigin "unite-qfixhowm"
 NeoBundleOrigin "unite-candidate_sorter"
-NeoBundleOrigin "unite-vimpatches"
 NeoBundleOrigin "unite-highlight"
 NeoBundleOrigin "unite-quickfix"
 NeoBundleOrigin "unite-quickrun_config"
+" NeoBundleOrigin "unite-vimpatches"
 " NeoBundleOrigin "unite-github"
 " NeoBundleOrigin "unite-vital-module"
 " NeoBundleOrigin "unite-web_feed"
@@ -508,9 +515,9 @@ NeoBundleOrigin "unite-quickrun_config"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " quickrun.vim
-NeoBundleOrigin "quickrun-hook-u-nya-"
-NeoBundleOrigin "quickrun-hook-vcvarsall"
 NeoBundleOrigin "quickrun-outputter-replace_region"
+" NeoBundleOrigin "quickrun-hook-vcvarsall"
+" NeoBundleOrigin "quickrun-hook-u-nya-"
 " NeoBundleOrigin "quickrun-hook-santi_pinch"
 
 
@@ -523,12 +530,12 @@ NeoBundleOrigin "vital-secret"
 NeoBundleOrigin "vital-coaster"
 NeoBundleOrigin "vital-unlocker"
 NeoBundleOrigin "vital-reti"
-NeoBundleOrigin "vital-reunions"
 NeoBundleOrigin "vital-gift"
 NeoBundleOrigin "vital-palette"
 NeoBundleOrigin "vital-paradise"
 NeoBundleOrigin "vital-branc"
 NeoBundleOrigin "vital-migemo"
+" NeoBundleOrigin "vital-reunions"
 
 
 
