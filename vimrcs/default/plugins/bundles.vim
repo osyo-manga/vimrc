@@ -30,14 +30,14 @@ NeoBundleFetch "Shougo/neobundle.vim", {
 \}
 
 
-" NeoBundle "Shougo/vimproc.vim", {
-"\ 'build' : {
-"\     'windows' : 'make -f make_mingw32.mak',
-"\     'cygwin' : 'make -f make_cygwin.mak',
-"\     'mac' : 'make -f make_mac.mak',
-"\     'unix' : 'make -f make_unix.mak',
-"\    },
-"\ }
+NeoBundle "Shougo/vimproc.vim", {
+\ 'build' : {
+\     'windows' : 'make -f make_mingw32.mak',
+\     'cygwin' : 'make -f make_cygwin.mak',
+\     'mac' : 'make -f make_mac.mak',
+\     'unix' : 'make -f make_unix.mak',
+\    },
+\ }
 
 
 NeoBundleLazy "Shougo/unite.vim", {
