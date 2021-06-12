@@ -47,11 +47,9 @@ command! -nargs=* -range=0 -complete=customlist,quickrun#complete
 \	ContextQuickRun :call s:context_quickrun(<q-args>, <count>)
 
 
-" ANSI をハイライトする
 augroup my-quickrun
 	autocmd!
 	autocmd BufEnter,FocusGained,WinEnter schema.rb let b:watchdogs_checker_type = "ruby/syntax_check"
-	autocmd FileType quickrun AnsiEsc
 augroup END
 
 
@@ -95,7 +93,7 @@ endif
 " デフォルト {{{
 let s:config = {
 \	"_" : {
-\		"outputter/buffer/opener" : "8sp",
+\		"outputter/buffer/opener" : ":botright 8sp",
 \		"outputter" : "multi:buffer:quickfix:bufixlist",
 \		"outputter/buffer/running_mark" : "ﾊﾞﾝ（∩`･ω･）ﾊﾞﾝﾊﾞﾝﾊﾞﾝﾊﾞﾝﾞﾝ",
 \		"outputter/quickfix/open_cmd" : "",
