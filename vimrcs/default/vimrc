@@ -303,6 +303,9 @@ set synmaxcol=250
 " ウィンドウの最後の行を出来る限り表示する
 set display=lastline
 
+" Ambiguous な文字の幅を 2 にする
+set ambiwidth=double
+
 " Workaround
 " http://qiita.com/amagawawaw/items/4a46d08f6c3e456e18d0
 if has("Mac")
@@ -524,6 +527,10 @@ nmap yl y$
 nnoremap Dl D$
 nnoremap dl D$
 
+" カーソル位置から行末までを編集
+nnoremap Cl c$
+nnoremap cl c$
+
 " フォントサイズを変更するマッピングを変更
 nnoremap - <Nop>
 nnoremap + <Nop>
@@ -637,6 +644,7 @@ let g:markdown_syntax_conceal = 0
 MyAutocmd FileType mkd set filetype=markdown
 MyAutocmd FileType md  set filetype=markdown
 MyAutocmd FileType js set filetype=javascript
+MyAutocmd FileType ts set filetype=typescript
 MyAutocmd FileType hs set filetype=haskell
 MyAutocmd FileType c++ set filetype=cpp
 MyAutocmd FileType py set filetype=python
@@ -656,6 +664,9 @@ endif
 " 20個までしか出さない
 MyAutocmd CmdwinEnter * :silent! 1,$-20 delete _ | call cursor("$", 1)
 " MyAutocmd CmdwinEnter * silent execute printf("1,%ddelete _", min([&history - 20, line("$") - 20])) | call cursor("$", 1)
+
+" /usr/local/share/vim/vim82/vimrc_example.vim:42 で textwidth を設定しているのでそれを上書きする
+MyAutocmd FileType text setlocal textwidth=0
 " }}}
 
 
@@ -1304,8 +1315,8 @@ unlet s:bundle
 " unite.vim {{{
 
 " キーマッピング {{{
-nnoremap <Space>ufm   :Unite frill<CR>
-nnoremap <Space>uff   :Unite file file/new -hide-source-names<CR>
+" nnoremap <Space>ufm   :Unite frill<CR>
+" nnoremap <Space>uff   :Unite file file/new -hide-source-names<CR>
 nnoremap <Space>unb   :Unite neobundle<CR>
 nnoremap <Space>umes  :Unite messages -wrap<CR>
 nnoremap <Space>uqh   :Unite qfixhowm/new qfixhowm:nocache -hide-source-names -truncate<CR>
@@ -1415,6 +1426,7 @@ let g:hier_highlight_group_qfw = "hier_warning"
 let s:bundle = neobundle#get("vim-quickrun")
 let s:bundle.hooks = get(s:bundle, "hooks", {})
 function! s:bundle.hooks.on_source(bundle)
+" 	execute "source" fnamemodify(s:vimrc, ":h")."/plugins/quickrun.old.vim"
 	execute "source" fnamemodify(s:vimrc, ":h")."/plugins/quickrun.vim"
 	command! UniteQuickRunConfig :Unite quickrun_config -buffer-name=quickrun_config
 endfunction
@@ -2286,6 +2298,7 @@ let s:hooks = neobundle#get_hooks("vim-operator-stay-cursor")
 function! s:hooks.on_source(bundle)
 	nmap y <Plug>(operator-stay-cursor-yank)
 	omap y <Plug>(operator-stay-cursor-yank)
+	map y <Plug>(operator-stay-cursor-yank)
 
 	nmap s <Plug>(operator-stay-cursor-replace)
 
@@ -2374,9 +2387,9 @@ function! s:hooks.on_source(bundle)
 	let g:operator#highlighter#config = { "clear_time" : 1000 }
 	
 	noremap <Plug>(yank) y
-
 	noremap <expr> <Plug>(yank-highlight) operator#sequence#map("\<Plug>(operator-highlighter)", "\<Plug>(yank)")
-	nmap <expr> y operator#stay_cursor#wrapper("\<Plug>(yank-highlight)", { "noremap" : 0 })
+	map <expr> y operator#stay_cursor#wrapper("\<Plug>(yank-highlight)", { "noremap" : 0 })
+" 	nmap <expr> y operator#stay_cursor#wrapper("\<Plug>(yank-highlight)", { "noremap" : 0 })
 
 	noremap <expr> s operator#sequence#map("\<Plug>(operator-stay-cursor-replace)", "\<Plug>(operator-highlighter)")
 endfunction
@@ -2559,6 +2572,16 @@ function! s:hooks.on_source(bundle)
 endfunction
 unlet s:hooks
 " }}}
+
+
+" vim-plugin-AnsiEsc {{{
+let s:hooks = neobundle#get_hooks("vim-plugin-AnsiEsc")
+function! s:hooks.on_source(bundle)
+	execute "source" fnamemodify(s:vimrc, ":h")."/plugins/ansi_esc.vim"
+endfunction
+unlet s:hooks
+" }}}
+
 
 
 set updatetime=500
