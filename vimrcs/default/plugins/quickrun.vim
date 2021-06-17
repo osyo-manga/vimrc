@@ -179,6 +179,7 @@ let s:ruby_versions = [
 \	"2.7.2",
 \	"2.7.3",
 \	"3.0.0",
+\	"3.0.1",
 \	"3.1.0-dev",
 \]
 
@@ -266,24 +267,6 @@ let s:config = {
 \		"exec"    : "%c exec rubocop %o %s:p",
 \		"errorformat" : '%f:%l:%c:%m,%f:%l:%m,%-G%.%#',
 \	},
-\	"ruby/bundle exec with rails-6.1" : {
-\		"exec" : "%c exec appraisal rails-6.1 ruby %o %s:p",
-\		"cmdopt" : "-Ku ",
-\		"command" : "bundle",
-\		"hook/cd/directory" : "%{g:Prelude.path2project_directory('%')}",
-\	},
-\	"ruby/bundle exec with rails main" : {
-\		"exec" : "%c exec appraisal rails-main ruby %o %s:p",
-\		"cmdopt" : "-Ku ",
-\		"command" : "bundle",
-\		"hook/cd/directory" : "%{g:Prelude.path2project_directory('%')}",
-\	},
-\	"ruby/bundle exec with rails 5.2" : {
-\		"exec" : "%c exec appraisal rails-5.2 ruby %o %s:p",
-\		"cmdopt" : "-Ku ",
-\		"command" : "bundle",
-\		"hook/cd/directory" : "%{g:Prelude.path2project_directory('%')}",
-\	},
 \}
 call extend(g:quickrun_config, s:config)
 
@@ -303,6 +286,29 @@ endfunction
 let s:config = deepcopy(s:ruby_versions)->map({ -> s:ruby_config(v:val) })->reduce({ sum, val -> extend(sum, val) })
 
 call extend(g:quickrun_config, s:config)
+
+
+let s:rails_version = [
+\	"rails-5.2",
+\	"rails-6.0",
+\	"rails-6.1",
+\	"main"
+\]
+
+function! s:ruby_appraisal_config(version)
+	return {
+\		"ruby/bundle exec with " . a:version : {
+\			"exec" : "%c exec appraisal " . a:version . " ruby %o %s:p",
+\			"cmdopt" : "-Ku ",
+\			"command" : "bundle",
+\			"hook/cd/directory" : "%{g:Prelude.path2project_directory('%')}",
+\		},
+\	}
+endfunction
+let s:config = deepcopy(s:rails_version)->map({ -> s:ruby_appraisal_config(v:val) })->reduce({ sum, val -> extend(sum, val) })
+call extend(g:quickrun_config, s:config)
+
+
 unlet s:config
 " }}}
 
@@ -384,7 +390,7 @@ let s:rails_version = [
 \	"main"
 \]
 
-function! s:ruby_appraisal_config(version)
+function! s:ruby_rspec_appraisal_config(version)
 	return {
 \		"ruby.rspec/bundle_single_on_cursor with " . a:version : {
 \			"command" : "rake",
@@ -393,7 +399,7 @@ function! s:ruby_appraisal_config(version)
 \		},
 \	}
 endfunction
-let s:config = deepcopy(s:rails_version)->map({ -> s:ruby_appraisal_config(v:val) })->reduce({ sum, val -> extend(sum, val) })
+let s:config = deepcopy(s:rails_version)->map({ -> s:ruby_rspec_appraisal_config(v:val) })->reduce({ sum, val -> extend(sum, val) })
 call extend(g:quickrun_config, s:config)
 
 
