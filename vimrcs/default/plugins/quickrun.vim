@@ -225,20 +225,11 @@ let s:config = {
 \		"hook/cd/directory" : expand("~/build/ruby/build"),
 \	},
 \	"ruby/make-run" : {
-\		"exec" : "%c run",
-\		"command" : "make",
-\		"hook/cd/directory" : "../build",
-\	},
-\	"ruby/make-run2" : {
 \		"exec" : "%c DEFS=-DVM_CHECK_MODE=2 run %s:p",
 \		"command" : "make",
 \		"hook/cd/directory" : "../build",
 \	},
 \	"ruby/make-runruby" : {
-\		"exec" : "%c DEFS=-DVM_CHECK_MODE=2 runruby %s:p",
-\		"command" : "make",
-\	},
-\	"ruby/make-runruby2" : {
 \		"exec" : "%c DEFS=-DVM_CHECK_MODE=2 runruby %s:p",
 \		"command" : "make",
 \		"hook/cd/directory" : "../build",
