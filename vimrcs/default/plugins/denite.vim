@@ -150,7 +150,6 @@ call extend(s:denite_default_options, {
 \})
 
 call denite#custom#option('default', s:denite_default_options)
-call denite#custom#option('grep', s:denite_default_options)
 
 
 
@@ -197,6 +196,17 @@ call denite#custom#source('quickrun_config', 'sorters', ['sorter/word'])
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" frill の設定
+call denite#custom#source("frill", "max_candidates", 50)
+call denite#custom#source('frill', 'matchers', ['matcher/substring'])
+
+if &rtp =~ "devicons"
+	call denite#custom#source('frill', 'converters', ['devicons_denite_converter'])
+endif
+nnoremap <Space>ufm   :Denite frill<CR>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " grep の設定
 " ripgrep で grep
 if executable("rg")
@@ -236,8 +246,7 @@ command! GitBranch Denite gitto/branch
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " unite の設定
-" nnoremap <Space>ufm   :Denite unite:frill<CR>
-nnoremap <Space>ufm   :Unite frill<CR>
+" nnoremap <Space>ufm   :Unite frill<CR>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
