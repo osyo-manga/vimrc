@@ -77,7 +77,7 @@ function! s:scrapbox_edit(...) abort
 
 	execute cmd
 	setlocal filetype=scrapbox
-	setlocal buftype=nofile
+	setlocal buftype=nowrite
 	let b:scrapbox_project_name = project_name
 	if type(template) == type({})
 		call append(0, template.call())
