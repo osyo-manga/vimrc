@@ -84,7 +84,6 @@ let s:ignore_rules = [{ "syntax" : s:ignore_syntaxs }]
 " \	{'at': '(\%#)', 'char': '<Space>', 'input': '<Space><Space><Left>'},
 " \]
 
-" \		"ignore" : [{ "at" : '\%#)' }, {"at" : '\%#\w'}]},
 let s:bracket_rules = [
 \	{'at': '\%#',   'char': '(',    'input_after': ')',
 \		"ignore" : [{"at" : '\%#[^[:space:],`}\]).]'}]},
@@ -240,13 +239,11 @@ call s:add_rule(
 \)
 
 " markdown で `- <Tab>` すると
-" call s:add_rule(
-" \	{"at" : '- \%#', "char" : '<Tab>', "input" : '<Left><Left><Tab><Right><Right>', "filetype" : "markdown"},
-" \)
-"
-" call s:add_rule(
-" \	{"at" : '* \%#', "char" : '<Tab>', "input" : '<Left><Left><Tab><Right><Right>', "filetype" : "markdown"},
-" \)
+call s:add_rule(
+\	{"at" : '- \%#', "char" : '<Tab>', "input" : '<Left><Left><Tab><Right><Right>', "filetype" : "markdown"},
+\)
 
-
+call s:add_rule(
+\	{"at" : '* \%#', "char" : '<Tab>', "input" : '<Left><Left><Tab><Right><Right>', "filetype" : "markdown"},
+\)
 
