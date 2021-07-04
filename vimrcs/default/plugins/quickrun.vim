@@ -176,9 +176,7 @@ let s:ruby_versions = [
 \	"2.5.9",
 \	"2.6.6",
 \	"2.7.1",
-\	"2.7.2",
 \	"2.7.3",
-\	"3.0.0",
 \	"3.0.1",
 \	"3.1.0-dev",
 \]
@@ -189,6 +187,10 @@ let s:config = {
 \		"command" : "docker",
 \		"cmdopt" : "run --rm rubylang/all-ruby ./all-ruby ",
 \		"exec" : '%c %o -e %{shellescape(getline(1, "$")->join(";"))}',
+\	},
+\	"ruby/syntax_check" : {
+\		"command" : "ruby",
+\		"cmdopt" : "-c",
 \	},
 \	"ruby/jruby-1.7.27" : {
 \		"command" : "jruby-1.7.27",
@@ -283,14 +285,13 @@ let s:rails_version = [
 \	"rails-5.2",
 \	"rails-6.0",
 \	"rails-6.1",
-\	"main"
+\	"rails-main"
 \]
 
 function! s:ruby_appraisal_config(version)
 	return {
 \		"ruby/bundle exec with " . a:version : {
 \			"exec" : "%c exec appraisal " . a:version . " ruby %o %s:p",
-\			"cmdopt" : "-Ku ",
 \			"command" : "bundle",
 \			"hook/cd/directory" : "%{g:Prelude.path2project_directory('%')}",
 \		},
@@ -366,7 +367,7 @@ function! s:ruby_rspec_config(version)
 \		},
 \		"ruby.rspec/bundle_single_on_cursor " . a:version : {
 \			"command" : "rake",
-\			"exec"    : "RBENV_VERSION=" . a:version . " bash -c 'SPEC=%s:p\\:%{line('.')} SPEC_OPTS=\"%o\" RUBYOPT=\"-W:deprecated\" bundle exec %c spec'",
+\			"exec"    : "RBENV_VERSION=" . a:version . " bash -c 'SPEC=%s:p\\:%{line('.')} SPEC_OPTS=\"%o\" RUBYOPT=\"-W\" bundle exec %c spec'",
 \		},
 \	}
 endfunction
@@ -378,14 +379,14 @@ let s:rails_version = [
 \	"rails-5.2",
 \	"rails-6.0",
 \	"rails-6.1",
-\	"main"
+\	"rails-main"
 \]
 
 function! s:ruby_rspec_appraisal_config(version)
 	return {
 \		"ruby.rspec/bundle_single_on_cursor with " . a:version : {
 \			"command" : "rake",
-\			"exec"    : "bash -c 'SPEC=\"%s:p\\:%{line('.')}\" SPEC_OPTS=\"%o\" RUBYOPT=\"-W:deprecated\" bundle exec appraisal " . a:version . " %c spec'",
+\			"exec"    : "bash -c 'SPEC=\"%s:p\\:%{line('.')}\" SPEC_OPTS=\"%o\" RUBYOPT=\"-W\" bundle exec appraisal " . a:version . " %c spec'",
 \			"hook/cd/directory" : "%{g:Prelude.path2project_directory('%')}",
 \		},
 \	}
