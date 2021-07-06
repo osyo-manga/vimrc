@@ -11,7 +11,7 @@ let s:Buffer = s:V.import("Coaster.Buffer")
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " <C-c> で quickrun の実行を中断する
-nnoremap <expr><silent> <C-c> quickrun#is_running() ? quickrun#sweep_sessions() : "\<C-c>"
+nnoremap <expr><silent> <C-c> quickrun#session#exists() ? quickrun#session#sweep() : "\<C-c>"
 
 
 " "{filetype}/_" の設定をベースとして実行時に config に追加する
@@ -174,8 +174,9 @@ unlet s:config
 let s:ruby_versions = [
 \	"2.0.0-p648",
 \	"2.5.9",
-\	"2.6.6",
+\	"2.6.7",
 \	"2.7.1",
+\	"2.7.2",
 \	"2.7.3",
 \	"3.0.1",
 \	"3.1.0-dev",
@@ -367,7 +368,7 @@ function! s:ruby_rspec_config(version)
 \		},
 \		"ruby.rspec/bundle_single_on_cursor " . a:version : {
 \			"command" : "rake",
-\			"exec"    : "RBENV_VERSION=" . a:version . " bash -c 'SPEC=%s:p\\:%{line('.')} SPEC_OPTS=\"%o\" RUBYOPT=\"-W\" bundle exec %c spec'",
+\			"exec"    : "RBENV_VERSION=" . a:version . " bash -c 'SPEC=%s:p\\:%{line('.')} SPEC_OPTS=\"%o\" RUBYOPT=\"\" bundle exec %c spec'",
 \		},
 \	}
 endfunction
@@ -386,7 +387,7 @@ function! s:ruby_rspec_appraisal_config(version)
 	return {
 \		"ruby.rspec/bundle_single_on_cursor with " . a:version : {
 \			"command" : "rake",
-\			"exec"    : "bash -c 'SPEC=\"%s:p\\:%{line('.')}\" SPEC_OPTS=\"%o\" RUBYOPT=\"-W\" bundle exec appraisal " . a:version . " %c spec'",
+\			"exec"    : "bash -c 'SPEC=\"%s:p\\:%{line('.')}\" SPEC_OPTS=\"%o\" RUBYOPT=\"\" bundle exec appraisal " . a:version . " %c spec'",
 \			"hook/cd/directory" : "%{g:Prelude.path2project_directory('%')}",
 \		},
 \	}
