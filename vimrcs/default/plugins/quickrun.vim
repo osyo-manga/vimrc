@@ -94,6 +94,7 @@ endif
 let s:config = {
 \	"_" : {
 \		"outputter/buffer/opener" : ":botright 8sp",
+\		"outputter/buffer/bufname" : "quickrun://output-%{get(t:, 'name', tabpagenr())}",
 \		"outputter" : "multi:buffer:quickfix:bufixlist",
 \		"outputter/buffer/running_mark" : "ﾊﾞﾝ（∩`･ω･）ﾊﾞﾝﾊﾞﾝﾊﾞﾝﾊﾞﾝﾞﾝ",
 \		"outputter/quickfix/open_cmd" : "",
@@ -387,7 +388,7 @@ function! s:ruby_rspec_appraisal_config(version)
 	return {
 \		"ruby.rspec/bundle_single_on_cursor with " . a:version : {
 \			"command" : "rake",
-\			"exec"    : "bash -c 'SPEC=\"%s:p\\:%{line('.')}\" SPEC_OPTS=\"%o\" RUBYOPT=\"\" bundle exec appraisal " . a:version . " %c spec'",
+\			"exec"    : "bash -c 'SPEC=\"%s:p\\:%{line('.')}\" SPEC_OPTS=\"%o\" RUBYOPT=\"W\" bundle exec appraisal " . a:version . " %c spec'",
 \			"hook/cd/directory" : "%{g:Prelude.path2project_directory('%')}",
 \		},
 \	}
