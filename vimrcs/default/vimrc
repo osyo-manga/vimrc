@@ -297,8 +297,9 @@ endif
 " set foldmethod=marker
 " 1行が長い場合に重いのを回避する
 " http://blog.kaihatsubu.com/?p=1713
+" 幅
 " set synmaxcol=460
-set synmaxcol=250
+set synmaxcol=350
 
 " ウィンドウの最後の行を出来る限り表示する
 set display=lastline
@@ -1089,8 +1090,6 @@ unlet s:bundle
 " コメントアウトする
 nmap <Leader>c <Plug>(caw:zeropos:toggle)
 vmap <Leader>c <Plug>(caw:zeropos:toggle)
-" nmap <Leader>c <Plug>(caw:i:toggle)
-" vmap <Leader>c <Plug>(caw:i:toggle)
 " コメントアウトを解除する
 nmap <Leader>C <Plug>(caw:i:uncomment)
 vmap <Leader>C <Plug>(caw:i:uncomment)
@@ -1099,7 +1098,7 @@ nmap cp p`[v`]<Plug>(caw:i:comment)
 
 " コメントアウトをトグルする
 nmap <silent><expr> <Plug>(operator-caw-I-toggle)
-\	operator#exec_command#mapexpr_v_keymapping("\<Plug>(caw:I:toggle)")
+\	operator#exec_command#mapexpr_v_keymapping("\<Plug>(caw:zeropos:toggle)")
 nmap <silent><expr> <Plug>(operator-caw-I-uncomment)
 \	operator#exec_command#mapexpr_v_keymapping("\<Plug>(caw:I:uncomment))")
 nmap <leader><Leader>c <Plug>(operator-caw-I-toggle)ii
@@ -1701,6 +1700,9 @@ function! s:bundle.hooks.on_source(bundle)
 \			"delimiter_format" : "%d"
 \		},
 \		"," : {
+\			"delimiter_format" : "%d "
+\		},
+\		";" : {
 \			"delimiter_format" : "%d "
 \		},
 \		"_" : {
