@@ -127,7 +127,12 @@ let s:config = {
 \		"command" : "wandbox",
 \		"exec": "%c run %o %s:p",
 \		"cmdopt": "--save --lang=%{&filetype}",
-\	}
+\	},
+\
+\	"run/browser/cat" : {
+\		"command" : "cat",
+\		"outputter" : "browser",
+\	},
 \}
 
 call extend(g:quickrun_config, s:config)
@@ -175,11 +180,12 @@ unlet s:config
 let s:ruby_versions = [
 \	"2.0.0-p648",
 \	"2.5.9",
-\	"2.6.7",
+\	"2.6.4",
+\	"2.6.8",
 \	"2.7.1",
 \	"2.7.2",
-\	"2.7.3",
-\	"3.0.1",
+\	"2.7.4",
+\	"3.0.2",
 \	"3.1.0-dev",
 \]
 
