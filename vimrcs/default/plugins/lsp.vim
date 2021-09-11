@@ -16,7 +16,7 @@ function! s:on_lsp_buffer_enabled() abort
 	nmap <buffer> gd <plug>(lsp-definition)
 
 	" リファレンスをポップアップウィンドウで表示
-	nmap <buffer> K <plug>(lsp-hover)
+	nmap <buffer> <A-k> <plug>(lsp-hover)
 
 "     nmap <buffer> gs <plug>(lsp-document-symbol-search)
 "     nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
@@ -32,7 +32,7 @@ function! s:on_lsp_buffer_enabled() abort
 endfunction
 
 augroup lsp_install
-    autocmd!
+"     autocmd!
     " call s:on_lsp_buffer_enabled only for languages that has the server registered.
     autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
 augroup END
