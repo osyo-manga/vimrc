@@ -277,3 +277,73 @@ endfunction
 call denite#custom#action('file', 'qfreplace', function('MyDeniteReplace'))
 
 
+
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 雑多なスクリプト
+function! s:grep_root()
+	" こっちはカレントディレクトリを基準にする
+"	 return getcwd()
+	" こっちは .git のディレクトリなんかを基準にする
+	return denite#project#path2project_directory(expand("%"), "")
+
+	" README.md なんかも基準とする場合
+"	 return denite#project#path2project_directory(expand("%"), "README.rdoc,README.md")
+endfunction
+
+" denite grep で第二引数にパスを受け取れるようにする
+function! s:grep(...)
+	let [args, options] = denite#helper#_parse_options_args(join(a:000))
+	let names = map(args, "v:val['name']")
+	let pattern = get(names, 0, "")
+	let path    = get(names, 1, "")
+
+	if empty(pattern)
+		let pattern = input("Pattern: ")
+	endif
+	let current = s:grep_root()
+	call denite#start([{'name': 'grep', 'args': [current . "/" . path, "", pattern] }], extend({ "buffer_name": "grep", "post_action": 'jump' }, options))
+endfunction
+
+" dir + :Denite のコマンドオプション補完
+function! DeniteGrepComplete(arglead, cmdline, cursorpos) abort
+	let dirs = filter(split(glob(a:arglead . "*/"), "\n"), "isdirectory(v:val)")
+	return dirs + denite#helper#complete(a:arglead, a:cmdline, a:cursorpos)
+endfunction
+
+" e.g.
+" :DeniteGrep
+" :DeniteGrep pattern
+" :DeniteGrep pattern dir
+" :DeniteGrep pattern dir -smartcase
+" :DeniteGrep pattern -smartcase
+" :DeniteGrep pattern -smartcase dir
+" :DeniteGrep pattern -no-smartcase dir
+command! -nargs=* -complete=customlist,DeniteGrepComplete
+\	DeniteGrep call s:grep(<q-args>)
+
+finish
+
+function! s:hoge(...) abort
+	let [args, options] = denite#helper#_parse_options_args(join(a:000))
+	let names = map(args, "v:val['name']")
+	let pattern = get(names, 0, "")
+	let path    = get(names, 1, "")
+	echo pattern
+	echo path
+	echo options
+endfunction
+
+" echo s:hoge("pat", "dir", "-smartcase", "-buffer_name=hoge")
+" echo s:hoge("pat", "-smartcase", "dir", "-buffer_name=hoge")
+
+function! DeniteGrepComplete(arglead, cmdline, cursorpos) abort
+	let dirs = filter(split(glob(a:arglead . "*/"), "\n"), "isdirectory(v:val)")
+	return dirs + denite#helper#complete(a:arglead, a:cmdline, a:cursorpos)
+endfunction
+
+command! -nargs=* -complete=customlist,DeniteGrepComplete
+\	Hoge call s:hoge(<q-args>)
+
+
