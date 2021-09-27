@@ -69,13 +69,15 @@ NeoBundleLazy "Shougo/vinarise.vim", {
 \}
 NeoBundle "Shougo/deorise.nvim"
 
-NeoBundle "Shougo/denite.nvim"
-" NeoBundle "Shougo/deol.nvim"
-NeoBundle "Shougo/defx.nvim"
-NeoBundle "kristijanhusak/defx-icons"
+if has("python3")
+	" NeoBundle "Shougo/deol.nvim"
+	NeoBundle "Shougo/denite.nvim"
+	NeoBundle "Shougo/defx.nvim"
+	NeoBundle "kristijanhusak/defx-icons"
+end
 
 let s:use_deoplete = 1
-if s:use_deoplete
+if s:use_deoplete && has("python3")
 	NeoBundle "Shougo/deoplete.nvim"
 	NeoBundle "roxma/nvim-yarp"
 	NeoBundle "roxma/vim-hug-neovim-rpc"
@@ -185,6 +187,7 @@ NeoBundle "tpope/vim-rbenv"
 " \}
 
 NeoBundle "vim-jp/vimdoc-ja"
+" NeoBundle "voldikss/vim-floaterm"
 
 
 " NeoBundle "jelera/vim-javascript-syntax"
@@ -231,6 +234,7 @@ NeoBundle "tpope/vim-haml"
 " TypeScript
 " NeoBundle "HerringtonDarkholme/yats.vim"
 NeoBundle "leafgarland/typescript-vim"
+" NeoBundle "sheerun/vim-polyglot"
 
 
 " コーディング支援
@@ -355,8 +359,8 @@ NeoBundle 'haya14busa/vim-asterisk'
 NeoBundle 'thinca/vim-localrc'
 NeoBundle "deris/vim-diffbuf"
 
-" NeoBundle "bling/vim-airline"
-" NeoBundle "vim-airline/vim-airline-themes"
+NeoBundle "bling/vim-airline"
+NeoBundle "vim-airline/vim-airline-themes"
 
 NeoBundle "tyru/vim-altercmd"
 NeoBundle "t9md/vim-choosewin"
@@ -377,7 +381,8 @@ NeoBundle "mbbill/undotree", {
 
 NeoBundle "Yggdroot/indentLine"
 NeoBundle "vim-scripts/sudo.vim"
-NeoBundle "vim-scripts/AnsiEsc.vim"
+" NeoBundle "vim-scripts/AnsiEsc.vim"
+NeoBundle "powerman/vim-plugin-AnsiEsc"
 NeoBundle "simeji/winresizer"
 
 
@@ -480,6 +485,7 @@ NeoBundleOrigin "vim-textobj-from_regexp"
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " denite.vim
 NeoBundleOrigin "denite-quickrun_config"
+" NeoBundleOrigin "denite-qfixhowm"
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
