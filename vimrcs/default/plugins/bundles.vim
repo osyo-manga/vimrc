@@ -371,7 +371,7 @@ NeoBundle "sgur/vim-editorconfig"
 " QSL formatter
 NeoBundle 'vim-scripts/Align'
 " 余計なキーマッピングがされているので無効化
-nmap none <Plug>RestoreWinPosn
+nunmap none <Plug>RestoreWinPosn
 NeoBundle 'vim-scripts/SQLUtilities'
 
 
