@@ -450,7 +450,7 @@ NeoBundleOrigin "vim-over",{
 \	}
 \}
 NeoBundleOrigin "codic-vim"
-NeoBundleOrigin "vim-gyazo"
+" NeoBundleOrigin "vim-gyazo"
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
