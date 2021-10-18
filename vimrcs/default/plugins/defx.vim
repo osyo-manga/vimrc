@@ -6,7 +6,7 @@ call defx#custom#option('_', {
       \ 'show_ignored_files': 1,
       \ 'toggle': 1,
       \ 'auto_cd': 1,
-      \ 'columns': 'indent:git:icons:filename:mark:type:size:time',
+      \ 'columns': 'indent:git:icons:space:filename:mark:type:size:time',
       \ })
 
 
