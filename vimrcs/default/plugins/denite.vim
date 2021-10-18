@@ -240,7 +240,12 @@ nnoremap <Space>ugr :DeniteProjectDir grep -buffer-name=grep<CR>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " gitto の設定
 
-command! GitBranch Denite gitto/branch
+command! GitBranch DeniteGitto gitto/branch
+call denite#custom#source('gitto/branch', 'sorters', ['sorter/word'])
+call denite#custom#source('gitto/branch', 'default_action', 'checkout')
+
+command! GitCommit DeniteGitto gitto/status
+call denite#custom#source('gitto/status', 'default_action', 'commit')
 
 
 
@@ -275,7 +280,6 @@ function! MyDeniteReplace(context)
 	call qfreplace#start('')
 endfunction
 call denite#custom#action('file', 'qfreplace', function('MyDeniteReplace'))
-
 
 
 
@@ -323,6 +327,34 @@ endfunction
 command! -nargs=* -complete=customlist,DeniteGrepComplete
 \	DeniteGrep call s:grep(<q-args>)
 
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" その他
+
+" .git からの相対パスを取得する
+function! s:project_relative_path() abort
+	let project_dir = denite#project#path2project_directory(expand("%"), "")
+	let full_path = expand("%:p")
+	return substitute(full_path, project_dir, "", "")
+endfunction
+command! CopyProjectRelativePath call setreg(v:register, s:project_relative_path())
+
+
+" ctrlp っぽい挙動をする
+call denite#custom#alias('source', 'ctrlp', 'file/rec')
+call denite#custom#source('file/rec', 'sorters', ['sorter/word'])
+call denite#custom#source("file/rec", "max_candidates", 100)
+command! -nargs=* -complete=customlist,denite#helper#complete
+\    DeniteCtrlp Denite file/rec -start-filter -default-action=tabswitch <args>
+
+
+call denite#custom#alias('source', 'file/rec/git', 'file/rec')
+call denite#custom#var('file/rec/git', 'command',
+      \ ['git', 'ls-files', '-co', '--exclude-standard'])
+
+
+
+
 finish
 
 function! s:hoge(...) abort
@@ -345,5 +377,7 @@ endfunction
 
 command! -nargs=* -complete=customlist,DeniteGrepComplete
 \	Hoge call s:hoge(<q-args>)
+
+
 
 
