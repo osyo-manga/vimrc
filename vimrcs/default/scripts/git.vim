@@ -43,3 +43,6 @@ endfunction
 command! -nargs=* Commit
 \	echo system(printf("git commit %s -m %s", expand("%:p"), shellescape(<q-args>)))
 command! -nargs=* GitReset echo system("git reset --soft HEAD^")
+
+
+
