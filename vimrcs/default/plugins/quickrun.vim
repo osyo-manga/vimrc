@@ -14,6 +14,12 @@ let s:Buffer = s:V.import("Coaster.Buffer")
 nnoremap <expr><silent> <C-c> quickrun#session#exists() ? quickrun#session#sweep() : "\<C-c>"
 
 
+" 出力ウィンドウの幅を計算
+function! Quickrun_output_winwidth() abort
+	return range(1, winnr("$"))->filter({ -> getwinvar(v:val, "&filetype") == "quickrun" })->get(0, 0)->winwidth()
+endfunction
+
+
 " "{filetype}/_" の設定をベースとして実行時に config に追加する
 function s:quickrun_execute(argline, use_range, line1, line2) abort
   try
@@ -185,11 +191,18 @@ let s:ruby_versions = [
 \	"2.7.1",
 \	"2.7.2",
 \	"2.7.4",
+\	"2.7.5",
+\	"3.0.0",
+\	"3.0.1",
 \	"3.0.2",
-\	"3.1.0-dev",
+\	"3.0.3",
+\	"3.1.0",
+\	"3.2.0-dev",
 \]
 
 " {{{
+" $ docker pull rubylang/all-ruby
+" で rubylang/all-ruby のイメージをアップデートする
 let s:config = {
 \	"ruby/all" : {
 \		"command" : "docker",
@@ -206,7 +219,22 @@ let s:config = {
 \	},
 \	"ruby/mruby-dev" : {
 \		"command" : "mruby",
-\		"exec" : "RBENV_VERSION=mruby-dev %c %o %s:p",
+\		"exec" : "COLUMNS=%{Quickrun_output_winwidth()} RBENV_VERSION=mruby-dev %c %o %s:p",
+\	},
+\	"ruby/3.0 -W" : {
+\		"command" : "ruby",
+\		"exec" : "COLUMNS=%{Quickrun_output_winwidth()} RBENV_VERSION=3.0.3 %c %o %s:p",
+\		"cmdopt" : "-W",
+\	},
+\	"ruby/3.1 -W" : {
+\		"command" : "ruby",
+\		"exec" : "COLUMNS=%{Quickrun_output_winwidth()} RBENV_VERSION=3.1.0 %c %o %s:p",
+\		"cmdopt" : "-W",
+\	},
+\	"ruby/3.2 -W" : {
+\		"command" : "ruby",
+\		"exec" : "COLUMNS=%{Quickrun_output_winwidth()} RBENV_VERSION=3.2.0-dev %c %o %s:p",
+\		"cmdopt" : "-W",
 \	},
 \	"ruby/rake test without warning" : {
 \		"command" : "rake",
@@ -271,15 +299,14 @@ let s:config = {
 \}
 call extend(g:quickrun_config, s:config)
 
-
 function! s:ruby_config(version)
 	return {
 \		"ruby/" . a:version : {
 \			"command" : "ruby",
-\			"exec" : "RBENV_VERSION=" . a:version . " %c %o %s:p",
+\			"exec" : "COLUMNS=%{Quickrun_output_winwidth()} " . "RBENV_VERSION=" . a:version . " %c %o %s:p",
 \		},
-\		"ruby/bundle exec ". a:version : {
-\			"exec" : "RBENV_VERSION=" . a:version . " %c exec ruby %o %s:p",
+\		"ruby/bundle_exec_". a:version : {
+\			"exec" : "COLUMNS=%{Quickrun_output_winwidth()} " . "RBENV_VERSION=" . a:version . " %c exec ruby %o %s:p",
 \			"command" : "bundle",
 \		},
 \	}
@@ -298,7 +325,7 @@ let s:rails_version = [
 
 function! s:ruby_appraisal_config(version)
 	return {
-\		"ruby/bundle exec with " . a:version : {
+\		"ruby/bundle_exec_with_" . a:version : {
 \			"exec" : "%c exec appraisal " . a:version . " ruby %o %s:p",
 \			"command" : "bundle",
 \			"hook/cd/directory" : "%{g:Prelude.path2project_directory('%')}",
