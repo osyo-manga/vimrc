@@ -198,6 +198,7 @@ let s:ruby_versions = [
 \	"3.0.3",
 \	"3.1.0",
 \	"3.2.0-dev",
+\	"jruby-1.7.27",
 \]
 
 " {{{
@@ -212,10 +213,6 @@ let s:config = {
 \	"ruby/syntax_check" : {
 \		"command" : "ruby",
 \		"cmdopt" : "-c",
-\	},
-\	"ruby/jruby-1.7.27" : {
-\		"command" : "jruby-1.7.27",
-\		"exec" : "%c %o %s:p",
 \	},
 \	"ruby/mruby-dev" : {
 \		"command" : "mruby",
