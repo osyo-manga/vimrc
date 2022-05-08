@@ -299,7 +299,8 @@ endif
 " http://blog.kaihatsubu.com/?p=1713
 " 幅
 " set synmaxcol=460
-set synmaxcol=350
+set synmaxcol=2000
+" set synmaxcol=350
 
 " ウィンドウの最後の行を出来る限り表示する
 set display=lastline
@@ -610,7 +611,6 @@ inoremap <C-l> <Right>
 
 " SQLUFormatter
 " 余計なキーマッピングがされているので無効化
-nmap none <Plug>RestoreWinPosn
 nnoremap <A-q><A-q> :SQLUFormatter<CR>
 
 " 選択した範囲を jq コマンドを使ってフォーマッティングする
@@ -1241,6 +1241,20 @@ endfunction
 unlet s:bundle
 " }}}
 
+" ddc.nvim {{{
+let s:bundle = neobundle#get("ddc.vim")
+let s:bundle.hooks = get(s:bundle, "hooks", {})
+function! s:bundle.hooks.on_source(bundle)
+	execute "source" fnamemodify(s:vimrc, ":h")."/plugins/ddc.vim"
+	
+	" ddc.vimの機能を有効にする
+	call ddc#enable()
+endfunction
+
+unlet s:bundle
+" }}}
+
+
 " deoplete.nvim {{{
 let s:bundle = neobundle#get("deoplete.nvim")
 let s:bundle.hooks = get(s:bundle, "hooks", {})
@@ -1459,7 +1473,7 @@ function! s:bundle.hooks.on_source(bundle)
 " 	nmap # <Plug>(anzu-sharp-with-echo)
 " 	nmap * <Plug>(anzu-star-with-echo)<Plug>(anzu-smart-sign-matchline)
 " 	nmap # <Plug>(anzu-sharp-with-echo)<Plug>(anzu-smart-sign-matchline)
-" 
+"
 " 	nmap n <Plug>(anzu-n-with-echo)
 " 	nmap N <Plug>(anzu-N-with-echo)
 " 	nmap * <Plug>(anzu-star-with-echo)
@@ -1627,7 +1641,13 @@ function! s:bundle.hooks.on_source(bundle)
 \		] + context_filetype#default_filetypes().markdown,
 \		"rd" : [
 \			{ "start" : '^#@samplecode .*$', 'end' : '^#@end$', "filetype" : 'ruby'},
-\		]
+\		],
+      \ 'markdown': [
+      \   {
+      \    'start' : '^\s*```\s*\(\h\w*\).*$',
+      \    'end' : '^\s*```$', 'filetype' : '\1',
+      \   },
+      \ ],
 \	}
 endfunction
 unlet s:bundle
@@ -1674,7 +1694,7 @@ unlet s:bundle
 let s:bundle = neobundle#get("vim-jplus")
 let s:bundle.hooks = get(s:bundle, "hooks", {})
 function! s:bundle.hooks.on_source(bundle)
-	" 
+	"
 	nmap <leader>J <Plug>(jplus-input)
 	vmap <leader>J <Plug>(jplus-input)
 
@@ -2091,12 +2111,12 @@ unlet s:hooks
 
 
 " vim-versions {{{
-command! GitCommit execute "Unite versions/git/status:" . vital#of("vital").import("Prelude").path2project_directory(expand("%:p")) . " -default-action=commit"
-command! GitBranch execute "Unite versions/git/branch:" . vital#of("vital").import("Prelude").path2project_directory(expand("%:p")) . " -default-action=commit"
-
-command! GitDiff   Unite versions/git/status
 let s:hooks = neobundle#get_hooks("vim-versions")
 function! s:hooks.on_source(bundle)
+	command! GitCommit execute "Unite versions/git/status:" . vital#of("vital").import("Prelude").path2project_directory(expand("%:p")) . " -default-action=commit"
+	command! GitBranch execute "Unite versions/git/branch:" . vital#of("vital").import("Prelude").path2project_directory(expand("%:p")) . " -default-action=commit"
+
+	command! GitDiff   Unite versions/git/status
 endfunction
 unlet s:hooks
 " }}}
@@ -2390,8 +2410,8 @@ function! s:hooks.on_source(bundle)
 	
 	noremap <Plug>(yank) y
 	noremap <expr> <Plug>(yank-highlight) operator#sequence#map("\<Plug>(operator-highlighter)", "\<Plug>(yank)")
-	map <expr> y operator#stay_cursor#wrapper("\<Plug>(yank-highlight)", { "noremap" : 0 })
-" 	nmap <expr> y operator#stay_cursor#wrapper("\<Plug>(yank-highlight)", { "noremap" : 0 })
+" 	map <expr> y operator#stay_cursor#wrapper("\<Plug>(yank-highlight)", { "noremap" : 0 })
+	nmap <expr> y operator#stay_cursor#wrapper("\<Plug>(yank-highlight)", { "noremap" : 0 })
 
 	noremap <expr> s operator#sequence#map("\<Plug>(operator-stay-cursor-replace)", "\<Plug>(operator-highlighter)")
 endfunction
@@ -2580,6 +2600,17 @@ unlet s:hooks
 let s:hooks = neobundle#get_hooks("vim-plugin-AnsiEsc")
 function! s:hooks.on_source(bundle)
 	execute "source" fnamemodify(s:vimrc, ":h")."/plugins/ansi_esc.vim"
+endfunction
+unlet s:hooks
+" }}}
+
+
+" Align {{{
+let s:hooks = neobundle#get_hooks("Align")
+function! s:hooks.on_post_source(bundle)
+	" 余計なキーマッピングがされているので無効化
+	unmap <Leader>swp
+	unmap <Leader>rwp
 endfunction
 unlet s:hooks
 " }}}
@@ -2882,8 +2913,11 @@ function! s:remove_last_space()
 	if !&modified || &filetype == "markdown" || &filetype == "howm_memo"
 		return
 	end
-	let top = line("w0")
-	let bottom = line("w$")
+	
+	" context の範囲だけに絞って末尾のスペースを削除する
+	let context_range = context_filetype#get(precious#base_filetype())["range"]
+	let top = max([line("w0"), context_range[0][0]])
+	let bottom = min([line("w$"), context_range[1][0]])
 	let pos = getpos(".")
 	silent keepjump keeppatterns execute printf('%d,%ds/ \+$//ge', top, bottom)
 	call setpos(".", pos)
