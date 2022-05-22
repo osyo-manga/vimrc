@@ -21,7 +21,7 @@ endfunction
 
 
 " "{filetype}/_" の設定をベースとして実行時に config に追加する
-function s:quickrun_execute(argline, use_range, line1, line2) abort
+function! s:quickrun_execute(argline, use_range, line1, line2) abort
   try
     let config = quickrun#command#parse(a:argline)
     if a:use_range
@@ -77,6 +77,26 @@ endfunction
 
 function! s:hook.sweep(...)
 	let g:is_quickrun_started = 0
+endfunction
+
+call quickrun#module#register(s:hook, 1)
+unlet s:hook
+" }}}
+
+" env {{{
+let s:hook = {
+\	"name" : "env",
+\	"kind" : "hook",
+\	"config" : {
+\		'values' : {}
+\	},
+\}
+
+function! s:hook.on_module_loaded(session, context)
+	let values = self.config.values
+	let envs = values->map({ -> v:key . "=" . v:val })->values()->join(" ")
+	let exec = a:session.config["exec"]
+	let a:session.config["exec"] = exec->map({ -> envs . " " . v:val })
 endfunction
 
 call quickrun#module#register(s:hook, 1)
@@ -187,16 +207,16 @@ let s:ruby_versions = [
 \	"2.0.0-p648",
 \	"2.5.9",
 \	"2.6.4",
-\	"2.6.8",
+\	"2.6.9",
 \	"2.7.1",
 \	"2.7.2",
 \	"2.7.4",
-\	"2.7.5",
+\	"2.7.6",
 \	"3.0.0",
 \	"3.0.1",
 \	"3.0.2",
-\	"3.0.3",
-\	"3.1.0",
+\	"3.0.4",
+\	"3.1.2",
 \	"3.2.0-dev",
 \	"jruby-1.7.27",
 \]
@@ -205,6 +225,10 @@ let s:ruby_versions = [
 " $ docker pull rubylang/all-ruby
 " で rubylang/all-ruby のイメージをアップデートする
 let s:config = {
+\	"ruby/_" : {
+\		"hook/env/enable" : 1,
+\		"hook/env/values" : { "COLUMNS" : "%{Quickrun_output_winwidth()}" },
+\	},
 \	"ruby/all" : {
 \		"command" : "docker",
 \		"cmdopt" : "run --rm rubylang/all-ruby ./all-ruby ",
@@ -216,21 +240,31 @@ let s:config = {
 \	},
 \	"ruby/mruby-dev" : {
 \		"command" : "mruby",
-\		"exec" : "COLUMNS=%{Quickrun_output_winwidth()} RBENV_VERSION=mruby-dev %c %o %s:p",
+\		"exec" : "RBENV_VERSION=mruby-dev %c %o %s:p",
+\	},
+\	"ruby/2.6.9 -W" : {
+\		"command" : "ruby",
+\		"exec" : "RBENV_VERSION=2.6.9 %c %o %s:p",
+\		"cmdopt" : "-W",
+\	},
+\	"ruby/2.7.5 -W" : {
+\		"command" : "ruby",
+\		"exec" : "RBENV_VERSION=2.7.6 %c %o %s:p",
+\		"cmdopt" : "-W",
 \	},
 \	"ruby/3.0 -W" : {
 \		"command" : "ruby",
-\		"exec" : "COLUMNS=%{Quickrun_output_winwidth()} RBENV_VERSION=3.0.3 %c %o %s:p",
+\		"exec" : "RBENV_VERSION=3.0.4 %c %o %s:p",
 \		"cmdopt" : "-W",
 \	},
 \	"ruby/3.1 -W" : {
 \		"command" : "ruby",
-\		"exec" : "COLUMNS=%{Quickrun_output_winwidth()} RBENV_VERSION=3.1.0 %c %o %s:p",
+\		"exec" : "RBENV_VERSION=3.1.2 %c %o %s:p",
 \		"cmdopt" : "-W",
 \	},
-\	"ruby/3.2 -W" : {
+\	"ruby/3.2-dev -W" : {
 \		"command" : "ruby",
-\		"exec" : "COLUMNS=%{Quickrun_output_winwidth()} RBENV_VERSION=3.2.0-dev %c %o %s:p",
+\		"exec" : "RBENV_VERSION=3.2.0-dev %c %o %s:p",
 \		"cmdopt" : "-W",
 \	},
 \	"ruby/rake test without warning" : {
@@ -269,6 +303,11 @@ let s:config = {
 \		"command" : "make",
 \		"hook/cd/directory" : "../build",
 \	},
+\	"ruby/make-runruby -w" : {
+\		"exec" : "RUBYOPT=-w %c DEFS=-DVM_CHECK_MODE=2 runruby %s:p",
+\		"command" : "make",
+\		"hook/cd/directory" : "../build",
+\	},
 \	"ruby/bundle" : {
 \		"exec" : "%c exec ruby %o %s:p",
 \		"command" : "bundle",
@@ -300,10 +339,10 @@ function! s:ruby_config(version)
 	return {
 \		"ruby/" . a:version : {
 \			"command" : "ruby",
-\			"exec" : "COLUMNS=%{Quickrun_output_winwidth()} " . "RBENV_VERSION=" . a:version . " %c %o %s:p",
+\			"exec" : "RBENV_VERSION=" . a:version . " %c %o %s:p",
 \		},
 \		"ruby/bundle_exec_". a:version : {
-\			"exec" : "COLUMNS=%{Quickrun_output_winwidth()} " . "RBENV_VERSION=" . a:version . " %c exec ruby %o %s:p",
+\			"exec" : "RBENV_VERSION=" . a:version . " %c exec ruby %o %s:p",
 \			"command" : "bundle",
 \		},
 \	}
