@@ -239,11 +239,45 @@ call s:add_rule(
 \)
 
 " markdown で `- <Tab>` すると
+" NOTE: neosnippet の <Tab> とかぶる
+" call s:add_rule(
+" \	{"at" : '- \%#', "char" : '<Tab>', "input" : '<Left><Left><Tab><Right><Right>', "filetype" : "markdown"},
+" \)
+
+" call s:add_rule(
+" \	{"at" : '^\s*\%#', "char" : '-', "input" : '- ', "filetype" : "markdown"},
+" \)
+
+" call s:add_rule(
+" \	{"at" : '^\s*- \%#', "char" : '-', "input" : '<BS>-', "filetype" : "markdown"},
+" \)
+"
 call s:add_rule(
-\	{"at" : '- \%#', "char" : '<Tab>', "input" : '<Left><Left><Tab><Right><Right>', "filetype" : "markdown"},
+\	{"at" : '^\s*- \%#', "char" : '<BS>', "input" : '<BS><BS>', "filetype" : "markdown"},
 \)
 
+" NOTE: neosnippet の <Tab> とかぶる
+" call s:add_rule(
+" \	{"at" : '* \%#', "char" : '<Tab>', "input" : '<Left><Left><Tab><Right><Right>', "filetype" : "markdown"},
+" \)
+
 call s:add_rule(
-\	{"at" : '* \%#', "char" : '<Tab>', "input" : '<Left><Left><Tab><Right><Right>', "filetype" : "markdown"},
+\	{"at" : '^\s*\* \%#', "char" : '<BS>', "input" : '<BS><BS>', "filetype" : "markdown"},
 \)
+
+
+call s:add_rule(
+\	{"at" : '^\s*\%#', "char" : '*', "input" : '* ', "filetype" : "markdown"},
+\)
+
+" scrapbox っぽい書き方
+" <Space> で項目のインデントをする
+call s:add_rule(
+\	{"at" : '^\s*\%#', "char" : '<Space>', "input" : '* ', "filetype" : "markdown"},
+\)
+call s:add_rule(
+\	{"at" : '^\s*\* \%#', "char" : '<Space>', "input" : '<Left><Left><Tab><Right><Right>', "filetype" : "markdown"},
+\)
+
+
 

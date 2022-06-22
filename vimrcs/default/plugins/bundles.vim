@@ -53,11 +53,11 @@ NeoBundleLazy "Shougo/unite.vim", {
 \}
 
 
-" NeoBundleLazy 'Shougo/vimfiler.vim', {
-" \	'depends' : ["Shougo/unite.vim"],
-" \	'autoload' : { 'commands' : [ "VimFilerTab", "VimFiler", "VimFilerExplorer" ] }
-" \}
-NeoBundle 'Shougo/vimfiler.vim'
+NeoBundleLazy 'Shougo/vimfiler.vim', {
+\	'depends' : ["Shougo/unite.vim"],
+\	'autoload' : { 'commands' : [ "VimFilerTab", "VimFiler", "VimFilerExplorer" ] }
+\}
+" NeoBundle 'Shougo/vimfiler.vim'
 
 NeoBundleLazy 'Shougo/vimshell.vim', {
 \	"focus" : 5,
@@ -72,16 +72,33 @@ NeoBundle "Shougo/deorise.nvim"
 if has("python3")
 	" NeoBundle "Shougo/deol.nvim"
 	NeoBundle "Shougo/denite.nvim"
+	NeoBundle "w1mvy/vim-denite-tab"
 	NeoBundle "Shougo/defx.nvim"
 	NeoBundle "kristijanhusak/defx-icons"
 end
 
-let s:use_deoplete = 1
-if s:use_deoplete && has("python3")
+NeoBundle "roxma/nvim-yarp"
+NeoBundle "roxma/vim-hug-neovim-rpc"
+
+let s:use_ddc = 0
+let s:use_deoplete = v:true
+if s:use_ddc
+	NeoBundle "vim-denops/denops.vim"
+	NeoBundle "Shougo/ddc.vim"
+	NeoBundle "Shougo/pum.vim"
+	NeoBundle "Shougo/ddc-around"
+	NeoBundle "LumaKernel/ddc-file"
+	NeoBundle "Shougo/ddc-matcher_head"
+	NeoBundle "Shougo/ddc-sorter_rank"
+" 	NeoBundle "Shougo/ddc-converter_remove_overlap"
+	NeoBundle "shun/ddc-vim-lsp"
+	NeoBundle "Shougo/ddc-cmdline"
+	NeoBundle "Shougo/ddc-cmdline-history"
+	NeoBundle "Shougo/neco-vim"
+elseif s:use_deoplete && has("python3")
 	NeoBundle "Shougo/deoplete.nvim"
-	NeoBundle "roxma/nvim-yarp"
-	NeoBundle "roxma/vim-hug-neovim-rpc"
 " 	NeoBundle "fszymanski/deoplete-emoji"
+	NeoBundle "lighttiger2505/deoplete-vim-lsp"
 elseif has("lua")
 	NeoBundle "Shougo/neocomplete.vim"
 endif
@@ -99,7 +116,6 @@ NeoBundle "Shougo/neosnippet-snippets"
 NeoBundle "prabirshrestha/async.vim"
 NeoBundle "prabirshrestha/vim-lsp"
 NeoBundle "mattn/vim-lsp-settings"
-NeoBundle "lighttiger2505/deoplete-vim-lsp"
 
 NeoBundle 'bogado/file-line'
 
@@ -167,7 +183,7 @@ NeoBundleLazy "basyura/TweetVim", {
 
 
 " Ruby
-" NeoBundle "rhysd/vim-textobj-ruby"
+NeoBundle "rhysd/vim-textobj-ruby"
 " NeoBundle "ruby-formatter/rufo-vim"
 NeoBundle "pocke/rbs.vim"
 NeoBundle "tpope/vim-rbenv"
@@ -254,6 +270,7 @@ NeoBundleLazy "cohama/vim-hier", {
 
 
 NeoBundle "h1mesuke/vim-alignta"
+NeoBundle "vim-easy-align"
 NeoBundle "t9md/vim-quickhl"
 NeoBundle "tyru/current-func-info.vim"
 NeoBundle "uplus/vim-clurin"
@@ -281,13 +298,14 @@ NeoBundle "raghur/vim-ghost"
 " Git
 " NeoBundle "kmnk/vim-unite-giti"
 " NeoBundle "sgur/vim-gitgutter
-NeoBundle 'hrsh7th/vim-versions'
+" NeoBundle 'hrsh7th/vim-versions'
 NeoBundle "airblade/vim-gitgutter"
 NeoBundle "kmnk/vim-unite-giti"
 " NeoBundle "lambdalisue/gina.vim"
 NeoBundle "tpope/vim-fugitive"
 NeoBundle "hrsh7th/vim-gitto"
 NeoBundle "hrsh7th/vim-denite-gitto"
+" NeoBundle "kien/ctrlp.vim"
 
 
 " colorscheme
@@ -305,6 +323,7 @@ NeoBundle "sjl/badwolf"
 NeoBundle "whatyouhide/vim-gotham"
 NeoBundle "junegunn/seoul256.vim"
 NeoBundle "cocopon/iceberg.vim"
+" NeoBundle "folke/tokyonight.nvim"
 
 
 

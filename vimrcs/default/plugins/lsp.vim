@@ -7,6 +7,16 @@ let g:lsp_document_highlight_enabled = 0
 let g:lsp_log_verbose = 1
 let g:lsp_log_file = expand('~/vim-lsp.log')
 
+let g:lsp_settings_filetype_ruby = ['solargraph']
+" let g:lsp_settings_filetype_ruby = ['solargraph', 'steep']
+" let g:lsp_settings_filetype_ruby = ['steep']
+
+let g:lsp_settings = {
+\	"solargraph": {
+\		'allowlist': ['ruby', "ruby.rspec"]
+\	}
+\}
+
 
 function! s:on_lsp_buffer_enabled() abort
 "     setlocal omnifunc=lsp#complete
@@ -17,6 +27,8 @@ function! s:on_lsp_buffer_enabled() abort
 
 	" リファレンスをポップアップウィンドウで表示
 	nmap <buffer> <A-k> <plug>(lsp-hover)
+
+" 	nmap <A-s> <plug>(lsp-signature-help)
 
 "     nmap <buffer> gs <plug>(lsp-document-symbol-search)
 "     nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
@@ -31,8 +43,22 @@ function! s:on_lsp_buffer_enabled() abort
 "     inoremap <buffer> <expr><c-d> lsp#scroll(-4)
 endfunction
 
+
+let s:port = "38587"
+
+function! s:lsp_setup() abort
+" 	let g:lsp_settings_filetype_ruby = ['typeprof']
+" 	call lsp#register_server({
+" 	\	'name': 'typeprof',
+" 	\	"tcp": { server_info-> "localhost:" . s:port },
+" 	\	'allowlist': ['ruby']
+" 	\})
+endfunction
+
 augroup lsp_install
-"     autocmd!
-    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
     autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+
+ 	autocmd User lsp_setup call s:lsp_setup()
 augroup END
+
+

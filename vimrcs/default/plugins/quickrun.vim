@@ -83,6 +83,7 @@ call quickrun#module#register(s:hook, 1)
 unlet s:hook
 " }}}
 
+
 " env {{{
 let s:hook = {
 \	"name" : "env",
@@ -96,6 +97,10 @@ function! s:hook.on_module_loaded(session, context)
 	let values = self.config.values
 	let envs = values->map({ -> v:key . "=" . v:val })->values()->join(" ")
 	let exec = a:session.config["exec"]
+" 	echom "Hoge"
+" 	echom envs
+" 	echom a:session.config["exec"]
+" 	echom exec->map({ -> envs . " " . v:val })
 	let a:session.config["exec"] = exec->map({ -> envs . " " . v:val })
 endfunction
 
@@ -214,7 +219,7 @@ let s:ruby_versions = [
 \	"2.7.6",
 \	"3.0.0",
 \	"3.0.1",
-\	"3.0.2",
+\	"3.0.3",
 \	"3.0.4",
 \	"3.1.2",
 \	"3.2.0-dev",

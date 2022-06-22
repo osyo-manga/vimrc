@@ -20,7 +20,8 @@ endfunction
 " キーマッピングの設定
 " set termkey=<A-w>
 if exists(":tmap")
-	tnoremap <Esc> <A-w><S-n>
+" 	tnoremap <Esc> <A-w><S-n>
+	tnoremap <Esc> <C-W>N
 endif
 
 

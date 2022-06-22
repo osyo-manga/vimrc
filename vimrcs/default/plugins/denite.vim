@@ -30,6 +30,10 @@ function! s:denite_my_settings()
 	\ denite#do_map('do_action', 'tabswitch')
 	nnoremap <silent><buffer><expr> a
 	\ denite#do_map('choose_action')
+	nnoremap <silent><buffer><expr> *
+	\ denite#do_map('toggle_select_all')
+	nnoremap <silent><buffer><expr><nowait> s
+	\ denite#do_map('do_action', 'vsplit')
 	nnoremap <silent><buffer><expr> <C-g>
 	\ denite#do_map('echo')
 endfunction
@@ -146,7 +150,7 @@ call extend(s:denite_default_options, {
 
 " :DeniteProjectDir する時に README.md や README.rdoc 基準も追加する
 call extend(s:denite_default_options, {
-\	'root_markers': "README.rdoc,README.md",
+\	'root_markers': "README.rdoc,README.md,README",
 \})
 
 call denite#custom#option('default', s:denite_default_options)
@@ -246,6 +250,9 @@ call denite#custom#source('gitto/branch', 'default_action', 'checkout')
 
 command! GitCommit DeniteGitto gitto/status
 call denite#custom#source('gitto/status', 'default_action', 'commit')
+
+nnoremap <Space>gb :GitBranch<CR>
+nnoremap <Space>gc :GitCommit<CR>
 
 
 

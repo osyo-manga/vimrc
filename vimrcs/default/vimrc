@@ -2007,10 +2007,12 @@ nmap s" <Plug>(operator-surround-append-input-in-advance)"
 nmap s' <Plug>(operator-surround-append-input-in-advance)'
 nmap s` <Plug>(operator-surround-append-input-in-advance)`
 
-nmap s() <Plug>(operator-surround-append-input-in-advance)(iw
+nmap s(( <Plug>(operator-surround-append-input-in-advance)(iw
 nmap sb <Plug>(operator-surround-append-input-in-advance)(iw
 nmap s{} <Plug>(operator-surround-append-input-in-advance){iw
+nmap s{{ <Plug>(operator-surround-append-input-in-advance){iw
 nmap s[] <Plug>(operator-surround-append-input-in-advance)[iw
+nmap s[[ <Plug>(operator-surround-append-input-in-advance)[iw
 nmap s"" <Plug>(operator-surround-append-input-in-advance)"iw
 nmap s'' <Plug>(operator-surround-append-input-in-advance)'iw
 nmap s`` <Plug>(operator-surround-append-input-in-advance)`iw
@@ -2917,7 +2919,7 @@ function! s:remove_last_space()
 	" context の範囲だけに絞って末尾のスペースを削除する
 	let context_range = context_filetype#get(precious#base_filetype())["range"]
 	let top = max([line("w0"), context_range[0][0]])
-	let bottom = min([line("w$"), context_range[1][0]])
+	let bottom = max([line("w$"), context_range[1][0]])
 	let pos = getpos(".")
 	silent keepjump keeppatterns execute printf('%d,%ds/ \+$//ge', top, bottom)
 	call setpos(".", pos)
