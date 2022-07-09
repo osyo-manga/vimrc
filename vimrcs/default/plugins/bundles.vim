@@ -80,10 +80,9 @@ end
 NeoBundle "roxma/nvim-yarp"
 NeoBundle "roxma/vim-hug-neovim-rpc"
 
-let s:use_ddc = 0
+let s:use_ddc = 1
 let s:use_deoplete = v:true
-if s:use_ddc
-	NeoBundle "vim-denops/denops.vim"
+if s:use_ddc && executable("deno")
 	NeoBundle "Shougo/ddc.vim"
 	NeoBundle "Shougo/pum.vim"
 	NeoBundle "Shougo/ddc-around"
@@ -119,7 +118,9 @@ NeoBundle "mattn/vim-lsp-settings"
 
 NeoBundle 'bogado/file-line'
 
-NeoBundle "tyru/empty-prompt.vim"
+if has('nvim') == v:false
+	NeoBundle "tyru/empty-prompt.vim"
+endif
 
 
 
@@ -305,6 +306,7 @@ NeoBundle "kmnk/vim-unite-giti"
 NeoBundle "tpope/vim-fugitive"
 NeoBundle "hrsh7th/vim-gitto"
 NeoBundle "hrsh7th/vim-denite-gitto"
+NeoBundle "rhysd/git-messenger.vim"
 " NeoBundle "kien/ctrlp.vim"
 
 

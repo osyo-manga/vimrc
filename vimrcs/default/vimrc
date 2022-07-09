@@ -79,6 +79,7 @@ let s:vimrc = expand("<sfile>:p")
 " 外部ファイルの読み込み
 "==========================================================
 " {{{
+let g:no_vimrc_example = 0
 source <sfile>:h/scripts/kaoriya.vim
 
 unlet! g:skip_loading_mswin
@@ -1143,7 +1144,8 @@ unlet s:bundle
 
 " nnoremap <Space>ttp :execute "TweetVimSwitchAccount osyo_manga" \| TweetVimSay<CR>
 
-nnoremap <Space>TT  :execute "TweetVimSwitchAccount pink_bangbi" \| TweetVimSay<CR>
+" nnoremap <Space>TT  :execute "TweetVimSwitchAccount pink_bangbi" \| TweetVimSay<CR>
+nnoremap <Space>TT  :execute "TweetVimSwitchAccount black_bangbi" \| TweetVimSay<CR>
 
 let g:tweetvim_display_icon = 1
 " let g:tweetvim_default_account = "osyo_memo"
@@ -2613,6 +2615,16 @@ function! s:hooks.on_post_source(bundle)
 	" 余計なキーマッピングがされているので無効化
 	unmap <Leader>swp
 	unmap <Leader>rwp
+endfunction
+unlet s:hooks
+" }}}
+
+
+" ddc {{{
+let s:hooks = neobundle#get_hooks("ddc")
+function! s:hooks.on_post_source(bundle)
+	" ddc 側で <TAB> が上書きされているので再定義する
+	imap <expr><TAB> neosnippet#expandable() <Bar><Bar> neosnippet#jumpable() ? "\<Plug>(neosnippet_jump_or_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
 endfunction
 unlet s:hooks
 " }}}
