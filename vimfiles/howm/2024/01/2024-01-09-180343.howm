@@ -1,0 +1,691 @@
+= [ruby, core ML] 2024年に気になった bugs.ruby
+
+
+1. 適用日に `2/1` を指定してなにも入力せずに従業員を新規登録
+2. `手続き可能従業員` になるように従業員情報を更新
+3. 適用日に `2/8` を指定して `手続き可能従業員` になるように履歴を追加
+4. `2/8` の履歴に対して履歴編集で `現住所` を変更
+5. `2.` の履歴に対して履歴編集で `現住所` を変更
+6. `2/1` の履歴に対して履歴編集で `現住所` を入力
+7. （適用日を指定せずに最新の） `現住所` を変更
+8. 適用日に `2/7` を指定して `現住所` を削除して履歴を追加
+9. `8.` の履歴を削除
+10. `2/8` の履歴に対して履歴編集で `現住所` を変更
+11. `現住所` の最新の履歴を削除すると失敗する
+
+pp "homu mami mado   ".split(" ")
+pp "homu mami mado   ".split(" ", -1)
+pp "homu,mami,mado,".split(",")
+pp "homu,mami,mado,".split(",", -1)
+
+
+
+--------------------------------------------------------------------------------------
+
+
+## [[Feature #19117] Include the method owner in backtraces, not just the method name](https://bugs.ruby-lang.org/issues/19117)
+
+* エラーとバックトレースの内容のメソッド名に『どのクラスで定義されているのか』の情報を含めるようにする提案
+* 以下のコードを実行したときに
+
+```ruby
+module Foo
+  class Bar
+    def inspect
+      1 + '1'
+    end
+  end
+end
+
+p Foo::Bar.new
+```
+
+* 以下のようなエラーが出力されるが
+
+```
+/tmp/foo.rb:4:in `+': String can't be coerced into Integer (TypeError)
+	from /tmp/foo.rb:4:in `inspect'
+	from /tmp/foo.rb:9:in `p'
+	from /tmp/foo.rb:9:in `<main>'
+```
+
+* 以下のように『どこで定義されているのか』を追加する提案
+
+```
+/tmp/foo.rb:4:in `Integer#+': String can't be coerced into Integer (TypeError)
+	from /tmp/foo.rb:4:in `Foo::Bar#inspect'
+	from /tmp/foo.rb:9:in `Kernel#p'
+	from /tmp/foo.rb:9:in `<main>'
+```
+
+* 普通に便利そう
+* 懸念点としては `#inspect` をそのまま利用すると Rails では以下のような出力されれる可能性があるとコメントされている
+    * https://bugs.ruby-lang.org/issues/19117#note-1
+
+```
+app/models/organization.rb:458:in `Organization(id: integer, name: string, created_at: datetime, updated_at: datetime, ....and so on, 35 fields in total...)#inspect`
+```
+
+* 他にも特異クラスや無名クラスの場合にどうするのか、みたいな話もでていますね
+    * https://bugs.ruby-lang.org/issues/19117#note-5
+* 他も以下のうような話とか
+    * 定義されているクラスなのか、呼び出したクラスなのか
+    * https://bugs.ruby-lang.org/issues/19117#note-16
+
+```ruby
+class Foo
+  def inspect
+    raise "hmm"
+  end
+end
+
+class Bar < Foo
+end
+
+Bar.new.inspect
+#/path/to/foo.rb:3:in `Foo#inspect': hmm (RuntimeError)
+#or
+#/path/to/foo.rb:3:in `Bar#inspect': hmm (RuntimeError)
+```
+
+* チケット自体は1年以上前につくられているんですが Ruy 3.2 のリリース直前に議論されていたぽいので暫く止まってたみたいですね
+* いまは Ruby 3.4 に向けて開発しているみたいです
+    * 概ね肯定ぽいけどパフォーマンスどうなのか、みたいな議論がされている
+    * あとバッククオートについても言及されている
+* 以下みたいにやや冗長なケースもありつつまあ普通に便利そうすねー
+
+```
+#before
+from /opt/ruby/3.1/lib/ruby/gems/3.1.0/gems/activerecord-7.0.3/lib/active_record/connection_adapters/abstract/database_statements.rb:531:in 'with_multi_statements'
+
+#after
+from /opt/ruby/3.1/lib/ruby/gems/3.1.0/gems/activerecord-7.0.3/lib/active_record/connection_adapters/abstract/database_statements.rb:531:in 'ActiveRecord::ConnectionAdapters::DatabaseStatements#with_multi_statements'
+```
+
+
+## [[Feature #16495] Inconsistent quotes in error messages](https://bugs.ruby-lang.org/issues/16495)
+
+* Ruby のエラーメッセージは以下のようにバッククオートとシングルクオートが使われている
+
+```
+-e:1:in `<main>': undefined local variable or method `foo' for main:Object (NameError)
+```
+
+* これを同じクオートにしたいという要望
+* なぜこうなっているのかといういわゆる歴史的経緯って感じなんですかね？
+    * https://bugs.ruby-lang.org/issues/16495#note-7
+* これを変えることにより影響がないか危惧しているぽいすねー
+    * まあエラーメッセージからいい感じにパースしているツールはめっちゃ影響ありそう
+* チケット自体は4年前でかなり長期的に議論されているんですが matz 的には互換性に問題がなければシングルクオートに統一する事に肯定的みたいですねー
+    * https://bugs.ruby-lang.org/issues/16495#note-28
+* 個人的には同じ記号の方が扱いやすいので統一はされてほしいところ
+
+
+## [[Bug #20188] `Module#const_source_location` returns wrong information when real constant was defined but autoload is still ongoing](https://bugs.ruby-lang.org/issues/20188)
+
+* `autoload` 中に `Module#const_source_location` の値が正しく取得できないというバグ報告
+
+```ruby
+# /tmp/autoload.rb
+File.write("/tmp/const.rb", <<~RUBY)
+module Const
+  LOCATION = Object.const_source_location(:Const)
+end
+RUBY
+
+autoload :Const, "/tmp/const"
+
+p Const::LOCATION
+# 期待する値 => ["/tmp/const.rb", 8]
+# 実際の値   => ["/tmp/autoload.rb", 8]
+
+# これは意図する位置を返す
+p Object.const_source_location(:Const)
+# => ["/tmp/const.rb", 1]
+```
+
+* `autoload` のスレッドセーフを保つために `autoload` が完了するまでは他のスレッドに値を公開されないようにするためぽい？ってコメントがされています
+    * https://bugs.ruby-lang.org/issues/20188#note-1
+* その延長戦で `autoload` 中に例外が発生した場合は『そこで定義した定数が定義されない』みたいな話もあるみたいですね
+
+```ruby
+# /tmp/foo.rb
+File.write('/tmp/bar.rb', 'Bar = 1; raise')
+autoload :Bar, '/tmp/bar'
+
+# ここで Bar を呼び出しており autoload 経由で `/tmp/bar` が読み込まれる
+# このときに内部で例外が発生する
+Bar rescue nil
+
+# 例外が発生すると Bar が定義されていない状態として扱われる
+p Object.const_source_location(:Bar) # ["/tmp/foo.rb", 3]
+p Object.autoload?(:Bar) # "/tmp/bar"
+
+# なので再度 Bar を呼び出すと autoload が発火し、また例外が発生する
+p Bar # raises
+```
+
+* そこから複数のスレッドから `autoload` （や `require` ）が呼び出された時にどうするのか、みたいな話に発展しています
+    * 詳しくは [Misc #20232: Document Kernel#require and Module#autoload concurrency guarantees](https://bugs.ruby-lang.org/issues/20232) を参照
+* ザッと読んだんですがスレッド周りなど思ったよりも話が深い…
+
+
+## [[Bug #19918] Should `a[&b]=c` be syntax valid?](https://bugs.ruby-lang.org/issues/19918)
+
+* 以下のコードは現状の Ruby だと有効なコードになる
+
+```ruby
+a[&b]=c
+a[&b]+=c
+a[&b]&&=c
+a[&b]||=c
+```
+
+* `a[&b]=c` は `a.[](c, &b)` みたいなコードとして解釈される
+
+```ruby
+class X
+  def []=(*args, &block)
+    pp args         # => [10]
+    pp block.call   # => 42
+  end
+end
+
+a = X.new
+b = proc { 42 }
+c = 10
+a[&b] = c
+```
+
+* Prism だとこれがシンタックスエラーになるがこの構文が意図的に動作しているのか質問しているチケット
+* 少なくともテストはあるみたいなので意図的ではあるみたい
+    * https://bugs.ruby-lang.org/issues/19918#note-4
+* matz 的には `a[&b]` は許容して `a[&b] = c` は禁止にしたいみたいですね
+    * https://bugs.ruby-lang.org/issues/19918#note-5
+
+
+## [[Bug #20094] Inline while loop behavior changed unexpectedly in 3.3.0](https://bugs.ruby-lang.org/issues/20094)
+
+* Ruby 3.3.0 で後置 `while` の挙動が変わっているというバグ報告
+
+```ruby
+(p 1) while false
+# Ruby 3.2 => nothing
+# Ruby 3.3 => 1
+
+(p 1; p 2) while false
+# Ruby 3.2 => nothing
+# Ruby 3.3 => 1 2
+```
+
+* この問題は既に開発版の Ruby では修正済み
+* 多分バックポートされているので多分 Ruby 3.3.1 では修正が取り込まれるはず
+* ちなみに `while` の左辺を `begin end` にすることで意図的に `do ~ while` のような処理にすることは可能
+
+```ruby
+begin
+  p 1
+end while false
+# Ruby 3.2 => 1
+# Ruby 3.3 => 1
+```
+
+
+## [[Feature #20160] rescue keyword for case expressions](https://bugs.ruby-lang.org/issues/20160)
+
+* `case ~ when` で `rescue` 節も含めるようにしたいという提案
+* 例えば以下のよう `case ~ when` があるときに
+
+```ruby
+case (parsed = parse(input))
+when Integer then handle_int(parsed)
+when Float then handle_float(parsed)
+end
+```
+
+* `parse` の例外をキャッチしたい場合は以下のように記述する必要がある
+
+```ruby
+begin
+  case (parsed = parse(input))
+  when Integer then handle_int(parsed)
+  when Float then handle_float(parsed)
+    # ...
+  end
+rescue ParseError
+  # ...
+end
+```
+
+* これを以下のよう記述したいという旨になる
+
+```ruby
+case (parsed = parse(input))
+when Integer then handle_int(parsed)
+when Float then handle_float(parsed)
+rescue ParseError
+  # ...
+rescue ArgumentError
+  # ...
+else
+  # ... fallthrough for all rescue and when cases
+ensure
+  # ... called always
+end
+```
+
+* 他にも以下のようなコードも例としてあげられています。おもしろい
+
+```ruby
+parser = Parser.new(io)
+
+loop do
+  case parser.parse # blocks for reading io in chunks
+  rescue StandardError => e
+    if parser.can_recover?(e)
+      # tolerate failure, ignore
+      next
+    else
+      emit_fail(e)
+      break
+    end
+  when :integer
+    emit_integer(parser.last)
+  when :float
+     emit_float(parser.last)
+  when :done
+     # e.g EOF reached, IO closed, YAML --- end of doc, XML top-level closed, whatever makes sense
+     emit_done
+     break
+  else
+    parser.rollback # e.g rewinds io, we may not have enough data
+  ensure
+    parser.checkpoint # e.g saves io position for rollback
+  end
+end
+```
+
+* それに対してパターンマッチで解決するようなコメントもされていますね。これもおもしろい
+    * https://bugs.ruby-lang.org/issues/20160#note-3
+
+```ruby
+def parse(input)
+  # parsing logic
+rescue StandardError => e
+  [:error, e]
+end
+
+
+case parse(input)
+in Integer => parsed_int
+  handle_int(parsed_int)
+in Float => parsed_float
+  handle_float(parsed_float)
+in :error, ParseError => error
+  # handle ParseError
+in :error, ArgumentError => error
+  # handle ArgumentError
+else
+  # all other cases — note that there is no assignment here
+  # but most parsing should probably be exhaustive
+end
+```
+
+* 最終的には matz が『処理すべき例外の発生源について混乱する可能性がある』『（コメントに提示されていた）以下のコードの方が直感的でわかりやすい』ということで Reject されている
+
+```ruby
+def parse(input)
+  # parsing logic
+rescue StandardError => e
+  [:error, e]
+end
+
+
+case parse(input)
+in Integer => parsed_int
+  handle_int(parsed_int)
+in Float => parsed_float
+  handle_float(parsed_float)
+in :error, ParseError => error
+  # handle ParseError
+in :error, ArgumentError => error
+  # handle ArgumentError
+else
+  # all other cases — note that there is no assignment here
+  # but most parsing should probably be exhaustive
+end
+```
+
+
+## [[Bug #20253] `Proc.dup` and `Proc#clone` don't preserve finalizers](https://bugs.ruby-lang.org/issues/20253)
+
+* `ObjectSpace.define_finalizer` に渡したオブジェクトを `#dup/clone` した場合はその複製したオブジェクトごとに `finalizer` が呼ばれる
+    * `ObjectSpace.define_finalizer` は指定したオブジェクトが解放されるときに実行される処理を仕込むためのメソッド
+    * [ObjectSpace.#define_finalizer (Ruby 3.3 リファレンスマニュアル)](https://docs.ruby-lang.org/ja/latest/method/ObjectSpace/m/define_finalizer.html)
+
+```ruby
+def fin(sym)
+  # obj が解放されるときにこのブロックが呼ばれる
+  ->(obj) { p "#{sym}: #{obj}" }
+end
+
+obj = Object.new
+ObjectSpace.define_finalizer(obj, fin(:obj))
+obj.dup
+obj.clone
+__END__
+output:
+"obj: 60"
+"obj: 80"
+"obj: 100"
+```
+
+* これが `obj` が `Proc` の場合は呼ばれないというバグ報告
+
+```ruby
+def fin(sym)
+  # obj が解放されるときにこのブロックが呼ばれる
+  ->(obj) { p "#{sym}: #{obj}" }
+end
+
+proc = Proc.new { }
+ObjectSpace.define_finalizer(proc, fin(:proc))
+# ここでコピーしたオブジェクトの finalizer は呼ばれない
+proc.dup
+proc.clone
+__END__
+"proc: 60"
+```
+
+* 他にも `Proc#dup` した場合はインスタンス変数がコピーされない、みたいな挙動もあるみたいですね
+
+```ruby
+def ivar_dup(obj)
+  obj.instance_variable_set(:@foo, 1)
+  p [:dup, obj.dup.instance_variable_get(:@foo)]
+  p [:clone, obj.clone.instance_variable_get(:@foo)]
+end
+
+ivar_dup(Object.new)
+ivar_dup(Proc.new { })
+__END__
+output:
+[:dup, 1]
+[:clone, 1]
+[:dup, nil]
+[:clone, 1]
+```
+
+* これらの問題は開発版の Ruby では修正済み
+
+
+
+------------------------------------------------------------
+
+
+
+
+## [[Bug #20043] `defined?` checks for method existence but only sometimes](https://bugs.ruby-lang.org/issues/20043)
+
+* `defined?` はメソッドの存在をチェックするが、たまにしかチェックしないというバグ報告
+* 例えば以下のようなコードであれば `expression` を返す
+
+```ruby
+p defined? []     # => "expression"
+p defined? [*a]   # => "expression"
+```
+
+```ruby
+p(defined? [])
+p(defined? [*a])
+```
+
+* しかし、次のように未定義？の値を渡すと `nil` が返ってくるケースもある
+
+```ruby
+def a; end
+
+# これはなにかしら意図する値が返ってくる
+p defined?(a)     # => "method"
+p defined?([a])   # => "expression"
+
+# これは nil が返ってくる
+p defined?(b)     # => nil
+p defined?([b])   # => nil
+```
+
+* またこれは通常のメソッドでも同じような挙動になる
+
+```ruby
+p defined?(itself)       # => "method"
+p defined?(itself(a))    # => nil
+p defined?(itself(*a))   # => "method"
+```
+
+* また `[]` は中身までチェックするんですが `{}` は中身までチェックしないみたいですね
+
+```ruby
+p defined?([[[a]]])      # => nil
+p defined?({ a => a })   # => "expression"
+```
+
+* `defined?(foo(*a))` が `"method"` を返すようになったのは 1.9 からのバグぽいらしいですね？
+    * https://bugs.ruby-lang.org/issues/20043#note-5
+* いまは以下のような挙動になる PR が出されてます
+    * https://github.com/ruby/ruby/pull/9500
+    * 基本的にメソッドが定義されていれば `nil` 以外、定義されていなければ `nil` みたいな挙動ですかね？
+
+```ruby
+defined?([*a])         # => nil
+defined?(itself(*a))   # => nil
+defined?([*itself]     # => "expression"
+defined?({a => a})     # => nil
+defined?({itself => itself})   # => "expression"
+```
+
+
+
+
+## [[Bug #20085] Fiber.new{ }.resume causes Segmentation fault for Ruby 3.3.0 on aarch64-linux](https://bugs.ruby-lang.org/issues/20085)
+
+* aarch64-linux 環境で Ruby 3.3 の `Fiber.new{ }.resume` が segv するというバグ報告
+* 厳密に言うと『PAC をサポートした aarch64』で壊れていたみたいですね
+    * https://bugs.ruby-lang.org/issues/20085#note-10
+    * [Arm アーキテクチャ v8.3-A: ポインタ認証コードの解説](https://zenn.dev/hidenori3/articles/c5e8ce75608730)
+* この問題は既に修正済みで Ruby 3.3.1 にバックポートされる予定
+* ちなみに以下のようにビルドオプションを調整する事で回避することが可能
+
+```shell
+./configure ASFLAGS=-mbranch-protection=pac-ret
+```
+
+
+## [[Bug #20095] Regex lookahead behaving strangely in 3.3.0](https://bugs.ruby-lang.org/issues/20095)
+
+* Ruby 3.3.0 で正規表現の先読みがおかしいというバグ報告
+* 以下のコードを実行すると Ruby 3.3 と 3.2 で挙動が異なります
+
+```ruby
+p "xxx" =~ /(?=.*x)x(?=banana)/
+# Ruby 3.2.2 => nil
+# Ruby 3.3.0 => 2
+```
+
+
+## [[Bug #20083] String#match? behaving inconsistently with Ruby 3.3.0](https://bugs.ruby-lang.org/issues/20083)
+
+* 同様に Ruby 3.3.0 で正規表現がおかしいというバグ報告
+* 以下のコードは Ruby 3.2.2 では全て `true` になるが Ruby 3.3.0 の場合は `false` になるケースが存在している
+
+```ruby
+# /i のときに再現する
+pattern = /([\s]*ABC)$/i # or /(\s*ABC)/i
+
+# Ruby 3.3.0 の実行結果
+p "1ABC".match?(pattern) # => true
+p "12ABC".match?(pattern) # => true
+p "123ABC".match?(pattern) # => true
+p "1231ABC".match?(pattern) # => true
+p "12312ABC".match?(pattern) # => false
+p "123123ABC".match?(pattern) # => false
+p "1231231ABC".match?(pattern) # => true
+p "12312312ABC".match?(pattern) # => true
+p "123123123ABC".match?(pattern) # => false
+p "1231231231ABC".match?(pattern) # => false
+p "12312312312ABC".match?(pattern) # => true
+p "123123123123ABC".match?(pattern) # => true
+p "1231231231231ABC".match?(pattern) # => false
+```
+
+* バグの原因は `/\s*ABC/i` が内部では `/(?>\s*)ABC/` に最適されるんですがこのときにアトミックグループにバグがあるらしくて、結果的におかしな結果になるらしいです
+    * https://bugs.ruby-lang.org/issues/20083#note-5
+* また `/\s*ABC/` のように `i` がない場合は `/(?:(?!A)\s)*ABC/` に最適化され、この時はアトミックグループにはならないので問題ないらしい
+* この問題は開発版の Ruby では既に修正済み
+    * [Fix [Bug #20083]: correct a cache point size for atomic groups by makenowjust · Pull Request #9367 · ruby/ruby](https://github.com/ruby/ruby/pull/9367)
+
+
+
+
+## [[Feature #20080] Introduce #bounds method on Range](https://bugs.ruby-lang.org/issues/20080)
+
+* `Range#begin, end` を返す `Range#bounds` メソッドを追加する提案
+
+```ruby
+# [begin, end] の配列を返す
+first, last = (1..300).bounds # => [1, 300]
+first, last = (300..1).bounds # => [300, 1]
+first, last = (..300).bounds # => [nil, 300]
+first, last = (1..).bounds # => [1, nil]
+```
+
+* また `Range#exclude_end?` が `true` の場合はその情報が第三要素で受け取る事ができる
+    * これを利用してシリアライズ化が簡単にできるようになる
+
+```ruby
+# ... の場合は第三要素に true が渡される
+a = (1..2).bounds  #=> [1,2]
+b = (1...2).bounds #=> [1,2,true]
+
+# これを利用すると bounds の結果から元の Range を簡単に復元する事ができる
+Range.new(*a)      #=> 1..2
+Range.new(*b)      #=> 1...2
+```
+
+* この `Range#exclude_end?` 値を含めるか含めないかは `Range#bounds` の引数で制御することができる
+
+```ruby
+# true を渡すと Range#exclude_end? の結果に変わらずに含める
+(1..2).bounds(true)  #=> [1,2,false]
+(1...2).bounds(true)  #=> [1,2,true]
+
+# false を渡すと Range#exclude_end? の結果に変わらずに含めない
+(1..2).bounds(false)  #=> [1,2]
+(1...2).bounds(false)  #=> [1,2]
+```
+
+* このチケットの背景は [Feature #20027: Add Range Deconstruction](https://bugs.ruby-lang.org/issues/20027) で `Range` を分割代入したい、っていう要望からの派生ですね
+* 上記のチケットだと `Range` を直接分割代入するのは Reject されたんですが、その代わりにメソッドを追加する案があったのでそれの派生になります
+* `Range#minmax` と似ているんですが `#minmax` の場合は `begin > end` の場合に `nil` を返したりするのでちょっとだけ挙動が異なります
+
+```ruby
+(1..42).minmax #=> [1, 42]
+(42..1).minmax #=> [nil, nil]
+```
+
+* まあ普通に便利そうな感じはしますねー
+
+
+## [[Bug #20084] Breaking change with Regexp.new on 3.3.0](https://bugs.ruby-lang.org/issues/20084)
+
+* `Range.new` の引数が Ruby 3.3 から 1〜2個しか渡せなくなったというバグ報告
+
+```ruby
+Regexp.new 'abc', 'i', 'n'
+# Ruby 3.2 => no error
+# Ruby 3.3 => error: wrong number of arguments (given 3, expected 1..2) (ArgumentError)
+```
+
+* これは期待する挙動で [Bug #18797: Third argument to Regexp.new is a bit broken](https://bugs.ruby-lang.org/issues/18797) のチケットで不要だと判断されて削除対応がされました
+* また、この変更は非互換になるので Ruby 3.2 では `-W` で警告がでるようになっていました
+
+```ruby
+Regexp.new("this is regexp", Regexp::IGNORECASE, "n")
+# Ruby 3.1 => no warning
+# Ruby 3.2 => warning: 3rd argument to Regexp.new is deprecated and will be removed in Ruby 3.3; use 2nd argument instead
+# Ruby 3.3 => error: wrong number of arguments (given 3, expected 1..2) (ArgumentError)
+```
+
+* 参照: https://docs.ruby-lang.org/ja/3.2/class/Regexp.html#S_COMPILE
+
+
+
+## [[Feature #19370] Anonymous parameters for blocks?](https://bugs.ruby-lang.org/issues/19370)
+
+* 以下のようにブロックの引数で匿名引数を受け取り、それをフォワードしたい場合にエラーになるが、実装可能であればサポートを追加してほしい、というチケット  
+
+```ruby
+# data in form [request method, URL, params]:
+[
+  [:get, 'https://google.com', {q: 'Ruby'}, {'User-Argent': 'Google-Chrome'}],
+  [:post, 'https://gist.github.com', 'body'],
+  # ...
+].each { |method, *| request(method.to_s.upcase, *) }
+```
+
+* と、いうのが元々のこのチケットの趣旨だったのですが、以下のようにメソッドの匿名引数をブロック内で別のメソッドにフォワードした場合に混乱する可能性があるという話にシフトしました
+
+```ruby
+def test(*)
+  # ...
+
+  # p(*) の * は実際には test(*) で受け取った引数がフォワードされる
+  proc { |*| p(*) }.call(1)
+end
+
+test(2) #=> prints 2 (method's anonymous arguments, not proc's)
+```
+
+* これが意図しない挙動につながるのでこのチケットでは以下のように対応する事になりました
+    * https://bugs.ruby-lang.org/issues/19370#note-8
+
+```ruby
+def m(*)
+  # ブロックの引数で * を受け取り、ブロックの中で * を参照する場合はシンタックスエラーにする
+  ->(*) { p(*) }    # SyntaxError
+  ->(x, *) { p(*) } # SyntaxError
+
+  # ブロックの引数で * を受け取らない場合はブロックの中で * が参照できる
+  ->(x) { p(*) }    #=> 1
+  proc {|x| p(*) }  #=> 1
+end
+
+m(1).call(2)
+```
+
+* で、Ruby 3.3.0 ではこの対応を含んでリリースされたんですがこの挙動にバグがあり **許容する想定の下2つのコードもエラーになるバグ** が含まれてしまっています
+
+```ruby
+def m(*)
+  # この2つもエラーになっちゃう
+  ->(x) { p(*) }    #=> SyntaxError
+  proc {|x| p(*) }  #=> SyntaxError
+
+  # こういうのも
+  -> { p(*) }    #=> SyntaxError
+end
+
+m(1).call(2)
+```
+
+* この問題は [Bug #20090: Anonymous arguments are now syntax errors in unambiguous cases](https://bugs.ruby-lang.org/issues/20090) などで報告されているんですが既に開発版では対応済みです
+* クリティカルなバグだと思うのでそのうち Ruby 3.3.1 が出ると思うんですが、対応前にアップデートするのは難しそうですねえ…
+* 事前に（自分で）動作確認できていれば防げたと思うのでちょっと悔しい
+    * このチケットの経緯詳しく確認してなかったんだよなあ…
+    * これを対応したのがリリース2日前とかっていうのもちょっとね…
+
+
+
+
+
+[2024-01-09 18:03]
+
