@@ -11,7 +11,7 @@
 
 
 
-published_at: 2024-11-15
+published_at: 2024-11-18
 
 
 tenant_group_spec
@@ -36,6 +36,7 @@ tenant_group_spec
 ## [20594][Misc #20746] Request to migrate the json gem from flori/json repository to ruby/json](https://bugs.ruby-lang.org/issues/20746)
 ## [[Bug #20880] Hash allows array-type key duplicates](https://bugs.ruby-lang.org/issues/20880)
 ## [[Bug #20505] Reassigning the block argument in method body keeps old block when calling super with implicit arguments](https://bugs.ruby-lang.org/issues/20505)
+
 
 
 
@@ -133,6 +134,100 @@ pp Float("\u{3036}".encode("utf-16be")) #=> 6.0
 
 
 @[card](https://zenn.dev/mamayukawaii/articles/20240313200648)
+
+
+
+## [[Bug #20948] Constant references incorrectly cached in `module (expr)::Foo`](https://bugs.ruby-lang.org/issues/20948)
+
+* 以下のように `module (expr)::Foo` 経由で定数を参照すると誤った値を参照してしまうというバグ報告
+
+```ruby
+module M1
+  module Foo
+    X = 1
+  end
+end
+
+module M2
+  module Foo
+    X = 2
+  end
+end
+
+
+[M1, M2].each do
+  module _1::Foo
+    # 1, 2 が出力されてほしいが実際には 1, 1 と出力される
+    p X
+  end
+end
+```
+
+* 以下のように参照された場合は問題ないので上のコード特有なんですかね？
+
+```ruby
+# 直接参照した場合
+p M1::Foo::X # => 1
+p M2::Foo::X # => 2
+
+
+# module を経由しない場合
+[M1, M2].each do
+  p _1::Foo::X
+end
+```
+
+* かなりニッチなバグなんですがハマるときつそう
+
+
+
+## [[Feature #20922] Should not we omit parentheses in assert calls?](https://bugs.ruby-lang.org/issues/20922)
+
+* Ruby では次のように第一引数がマイナスリテラルだったり正規表現リテラルだったりすると警告が表示されます
+* 警告がでるのは `-W` が有効な場合のみ
+
+```ruby
+def hoge(a = 0)
+  42
+end
+
+# warning: ambiguous first argument; put parentheses or a space even after `-' operator
+hoge -1
+
+# warning: ambiguity between regexp and two divisions: wrap regexp in parentheses or add a space after `/' operator
+hoge /a/
+```
+
+* これは `(hoge - 1)` なのか `hoge(-1)` なのかが曖昧なので警告がでるようになっています（上記の場合だと `hoge(-1)` として処理される
+* それを踏まえた上で次のような `assert_equal` でも同様の警告が出力されます
+
+```ruby
+assert_equal -1, val    #=> warning: ambiguous first argument; put parentheses or a space even after `-` operator
+assert_match /foo/, str #=> warning: ambiguous `/`; wrap regexp in parentheses or add a space after `/` operator
+```
+
+* この警告に対応する場合、メソッド呼び出しに `()` をつける必要があるんですがそうすると次のように `()` がついてたりついてたりするようなコードになります
+
+```ruby
+assert_equal 1, one
+assert_equal 0, zero
+assert_equal(-1, minus_one)
+```
+
+* チケットの内容は `assert_xxx` のときのみ警告を削除する提案になります
+* 警告は削除せずに Close されています
+* その上でリテラルだけにカッコをつけたり変数に代入した場合は警告が出ないなどの提示もされています
+
+```ruby
+# 以下はいずれも警告は出ない
+assert_equal (-1), minus_one
+assert_match (/foo/), str
+
+re = /foo/
+assert_match re, str
+```
+
+* そもそも仕様（やパーサ）として曖昧にしないようにするのはむずかしいんですかねえ
 
 
 
