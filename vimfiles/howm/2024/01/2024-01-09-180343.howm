@@ -136,6 +136,116 @@ pp Float("\u{3036}".encode("utf-16be")) #=> 6.0
 @[card](https://zenn.dev/mamayukawaii/articles/20240313200648)
 
 
+## [[Bug #20970] `it /1/i` raises undefined method 'it' for main (NoMethodError) even if binding.local_variables includes `it`](https://bugs.ruby-lang.org/issues/20970)
+
+```ruby
+i=2
+42.tap do
+  p it # 42
+  p local_variables # [:it, :i]
+  p it /1/i # should be 21, got NoMethodError
+end
+```
+
+## [[Bug #20965] `it` vs `binding.local_variables`](https://bugs.ruby-lang.org/issues/20965)
+
+* 以下のように `binding.local_varaibles` の結果が `_1` と `it` で異なっているというバグ報告
+
+```ruby
+# _1 も it も使用していない場合はなにも返さない
+p(proc { binding.local_variables }.call)  # []
+
+# ブロック内で _1 を参照している場合は :_1 が含まれる
+p(proc { _1; binding.local_variables }.call)  # [:_1]
+
+# 一方 it の方は参照していても :it は含まれない
+p(proc { it; binding.local_variables }.call)  # []
+```
+
+* これなんですが一貫性を保つために `:it` を含めるように開発版の Ruby 3.4-dev で対応がされました
+    * 厳密にいうと `it` がブロック内で参照されているとローカル変数のように振る舞うようになった
+* っていうのが 2024/12/19 時点の話になります
+* その直後に以下のコードが parse.y と prism で差異があることが起票されました
+    * [Bug #20970: `it /1/i` raises undefined method 'it' for main (NoMethodError) even if binding.local_variables includes `it`](https://bugs.ruby-lang.org/issues/20970)
+
+```ruby
+i = 2
+42.tap do
+  p it                # => 42
+  p local_variables   # => [:it, :i]
+  p it /1/i
+  # parse.y => 21
+  # prism   => NoMethodError
+end
+```
+
+* これなんですがどういうことかというと
+    * parse.y => `it` が変数として定義されているので `it / 1 / i` という除算として処理される
+    * prism   => `it` がメソッドとして解釈され `it(/1//i)` と処理される
+* そもそも `hoge /1/i` みたいな書き方は Ruby だと曖昧で `hoge` がどう定義されているのかに依存します
+
+```ruby
+hoge = 42
+i = 2
+
+# 変数がある場合は除算として処理される
+p(hoge /1/i) # => 21
+```
+
+```ruby
+def hoge(x) = x
+i = 2
+
+# メソッドが定義されている場合はメソッド呼び出しとして処理される
+p(hoge /1/i) # => /1/i
+```
+
+* 今回の `[Bug #20965]` の対応によって `it` の定義が変わり意図しない挙動になってしまったみたいです
+    * ちなみに `[Bug #20965]` の対応前は両方とも `NoMethodError` になっていました
+* `it` が呼び出し方によって `変数` なのか `メソッド` なのかが構文からは決定できないのがポイントみたいですねえ
+* また、次のような点も指摘されていますね
+    * https://bugs.ruby-lang.org/issues/20965#note-7
+
+```ruby
+"foo".tap do
+  it
+  "bar".tap do
+    # このコードを実行した時に例外が発生すること期待していると(実際今は例外になる)
+    p eval("it")
+
+    # it 変数が参照できないのに [:it] を返すのが奇妙になる
+    p binding.local_variables
+  end
+end
+```
+
+* などなど Ruby 3.4 のリリース直前もあり `binding.local_variables` が `:it` を返す対応は一旦 Revert されました
+* いやー直前で対応がされてよかった Ruby むずかしいね
+* そういえばこれを検証ている時に気づいたんですが `_1` はネストして参照できないんですが `it` ってネストして参照できるんですね？
+
+```ruby
+"foo".tap do
+  p _1
+  "bar".tap do
+    # SyntaxError: numbered parameter is already used in outer block
+    p _1
+  end
+end
+```
+
+```ruby
+"foo".tap do
+  p it # => "foo"
+  "bar".tap do
+    p it # => "bar"
+  end
+end
+```
+
+* これって意図されているんですかね？と思ってたら [Bug #20930: Different semantics for nested `it` and `_1`](https://bugs.ruby-lang.org/issues/20930) で議論されており、これは意図する挙動みたい
+    * `it` は一番内側のブロックの引数を参照する
+
+
 
 ## [[Bug #20948] Constant references incorrectly cached in `module (expr)::Foo`](https://bugs.ruby-lang.org/issues/20948)
 
@@ -231,8 +341,8 @@ assert_match re, str
 
 
 
-## [[Feature #20925] Allow boolean operators at beginning of line to continue previous line](https://bugs.ruby-lang.org/issues/20925)
 
+## [[Feature #20925] Allow boolean operators at beginning of line to continue previous line](https://bugs.ruby-lang.org/issues/20925)
 * 以下のように `||` や `&&` などを行頭でもかけるように許容する提案
 
 ```ruby
