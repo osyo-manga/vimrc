@@ -205,7 +205,8 @@ set imsearch=0 " 検索モードで日本語入力を ON にしない
 set noimdisable
 
 " <C-a> <C-x> で英字も増減させる
-set nrformats=alpha,hex
+" 数値のときには符号は無視する
+set nrformats=alpha,hex,unsigned
 
 " 折り返しを無効にする
 set textwidth=0
@@ -296,6 +297,7 @@ if exists("+breakindent")
 endif
 
 " set foldmethod=marker
+set foldmethod=indent
 " 1行が長い場合に重いのを回避する
 " http://blog.kaihatsubu.com/?p=1713
 " 幅
@@ -438,6 +440,8 @@ syntax enable
 " 雑多 {{{
 " スペースを挿入
 nnoremap <C-Space> i<Space><Esc><Right>
+" nnoremap <C-Space> :noautocmd normal! i<Space><CR><Right>
+" execute "noautocmd normal! i\<Space>\<Right>"
 
 " C-@ の誤爆防止
 inoremap <C-@> <ESC>
@@ -620,6 +624,12 @@ command! -range JSONFormatter :<line1>,<line2>!jq .
 
 " 現在開いているファイルのパスをコピーする
 nnoremap <silent> <Space>cp :call setreg(v:register, expand("%:p"))<CR>
+
+
+" Tab で選択している行をインデント
+nnoremap <Tab> >l
+vnoremap <Tab> >gv
+vnoremap <C-Tab> <gv
 " }}}
 
 
@@ -654,6 +664,7 @@ MyAutocmd FileType pl set filetype=perl
 MyAutocmd FileType rb set filetype=ruby
 MyAutocmd FileType scm set filetype=scheme
 MyAutocmd BufReadPost *.ruby set filetype=ruby
+MyAutocmd BufReadPost *.jbuilder set filetype=ruby
 MyAutocmd BufReadPost *.pryrc.local set filetype=ruby
 MyAutocmd CmdwinEnter * nnoremap <buffer> q <C-w>c
 
@@ -669,6 +680,9 @@ MyAutocmd CmdwinEnter * :silent! 1,$-20 delete _ | call cursor("$", 1)
 
 " /usr/local/share/vim/vim82/vimrc_example.vim:42 で textwidth を設定しているのでそれを上書きする
 MyAutocmd FileType text setlocal textwidth=0
+
+" ポップアップウィンドウでコマンドライン補完する
+set wildoptions=pum
 " }}}
 
 
@@ -744,7 +758,7 @@ nnoremap <Space>ns :execute "tabnew\|:NeoSnippetEdit ".&filetype<CR>
 " }}}
 
 nnoremap gw gf
-nnoremap gf <C-w>gf
+nnoremap gf <C-w>gF
 " }}}
 
 " スワップファイルの削除 {{{
@@ -814,7 +828,7 @@ endfunction
 " nnoremap <silent> <Space>vs<CR> :call <SID>vimshell_tabopen()<CR>
 
 nnoremap <silent> <Space>vs<CR> :execute "VimShellTab -create ".expand("%:p:h")<CR>
-nnoremap <silent> <Space>vss<CR> :execute "VimShellPop -create ".expand("%:p:h")<CR>
+" nnoremap <silent> <Space>vss<CR> :execute "VimShellPop -create ".expand("%:p:h")<CR>
 nnoremap <silent> <Space>vsi :VimShellInteractive --split='split \| resize 12'<CR>
 " }}}
 
@@ -1089,13 +1103,13 @@ unlet s:bundle
 
 " caw.vim {{{
 " コメントアウトする
-nmap <Leader>c <Plug>(caw:zeropos:toggle)
-vmap <Leader>c <Plug>(caw:zeropos:toggle)
+nmap <Leader>c <Plug>(caw:hatpos:toggle)
+vmap <Leader>c <Plug>(caw:hatpos:toggle)
 " コメントアウトを解除する
-nmap <Leader>C <Plug>(caw:i:uncomment)
-vmap <Leader>C <Plug>(caw:i:uncomment)
+nmap <Leader>C <Plug>(caw:hatpos:uncomment)
+vmap <Leader>C <Plug>(caw:hatpos:uncomment)
 
-nmap cp p`[v`]<Plug>(caw:i:comment)
+nmap cp p`[v`]<Plug>(caw:hatpos:comment)
 
 " コメントアウトをトグルする
 nmap <silent><expr> <Plug>(operator-caw-I-toggle)
@@ -1105,8 +1119,11 @@ nmap <silent><expr> <Plug>(operator-caw-I-uncomment)
 nmap <leader><Leader>c <Plug>(operator-caw-I-toggle)ii
 nmap <leader><Leader>C <Plug>(operator-caw-I-uncomment)ii
 
+nnoremap <Plug>(original-p) p
+nnoremap <Plug>(original-P) P
 
-nmap gcy yyp<Plug>(caw:I:toggle)k
+" nmap gcy yy<Plug>(original-P)<Plug>(caw:I:toggle)k
+nmap gcy yy<Plug>(original-P)<Plug>(caw:hatpos:comment)
 vmap gcy ygvgcIP
 
 
@@ -1248,9 +1265,14 @@ let s:bundle = neobundle#get("ddc.vim")
 let s:bundle.hooks = get(s:bundle, "hooks", {})
 function! s:bundle.hooks.on_source(bundle)
 	execute "source" fnamemodify(s:vimrc, ":h")."/plugins/ddc.vim"
+
+	" ddc 側で <TAB> が上書きされているので再定義する
+	imap <expr><TAB> neosnippet#expandable() <Bar><Bar> neosnippet#jumpable() ? "\<Plug>(neosnippet_jump_or_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
 	
 	" ddc.vimの機能を有効にする
 	call ddc#enable()
+
+	imap <expr><TAB> neosnippet#expandable() <Bar><Bar> neosnippet#jumpable() ? "\<Plug>(neosnippet_jump_or_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
 endfunction
 
 unlet s:bundle
@@ -1563,6 +1585,7 @@ let g:textobj_multiblock_blocks = [
 \	[ '"', '"', 1 ],
 \	[ "'", "'", 1 ],
 \	[ "|", "|", 1 ],
+\	[ '+', '+', 1 ],
 \	[ "`", "`", 1 ],
 \	[ "「", "」" ],
 \	[ "（", "）" ],
@@ -1648,6 +1671,10 @@ function! s:bundle.hooks.on_source(bundle)
       \   {
       \    'start' : '^\s*```\s*\(\h\w*\).*$',
       \    'end' : '^\s*```$', 'filetype' : '\1',
+      \   },
+      \   {
+      \    'start' : '^<style>$',
+      \    'end' : '^</style>$', 'filetype' : 'css',
       \   },
       \ ],
 \	}
@@ -1774,6 +1801,8 @@ function! s:bundle.hooks.on_source(bundle)
 	let g:airline#extensions#anzu#enabled = 1
 	let g:airline#extensions#hunks#enabled = 0
 	let g:airline#extensions#branch#enabled = 1
+	" disable `percentage, line number, column number`
+	" let g:airline_section_z = ""
 endfunction
 unlet s:bundle
 " }}}
@@ -2004,7 +2033,9 @@ nmap sa <Plug>(operator-surround-append-input-in-advance)
 nmap s( <Plug>(operator-surround-append-input-in-advance)(
 nmap sb <Plug>(operator-surround-append-input-in-advance)(
 nmap s{ <Plug>(operator-surround-append-input-in-advance){
+nmap s} <Plug>(operator-surround-append-input-in-advance){
 nmap s[ <Plug>(operator-surround-append-input-in-advance)[
+nmap s] <Plug>(operator-surround-append-input-in-advance)[
 nmap s" <Plug>(operator-surround-append-input-in-advance)"
 nmap s' <Plug>(operator-surround-append-input-in-advance)'
 nmap s` <Plug>(operator-surround-append-input-in-advance)`
@@ -2072,12 +2103,12 @@ unlet s:hooks
 
 " vim-operator-block {{{
 nmap <A-y> <Plug>(operator-block-yank)
-nmap <A-p> <Plug>(operator-block-paste)
+" nmap <A-p> <Plug>(operator-block-paste)
 nmap <A-d> <Plug>(operator-block-delete)
 
 nmap <A-y><A-y> <Plug>(operator-block-yank)axb
 " nmap <A-y><A-y> <Plug>(operator-block-yank)aysb
-nmap <A-p><A-p> <Plug>(operator-block-paste)iw
+" nmap <A-p><A-p> <Plug>(operator-block-paste)iw
 nmap <A-d><A-d> <Plug>(operator-block-delete)axb
 " nmap <A-d><A-d> <Plug>(operator-block-delete)aysb
 
@@ -2453,11 +2484,11 @@ unlet s:hooks
 " tyru/empty-prompt.vim {{{
 let s:hooks = neobundle#get_hooks("empty-prompt.vim")
 function! s:hooks.on_source(bundle)
-	function! s:empty_prompt_mappings() abort
-		  call empty_prompt#map(#{lhs: ':', rhs: "<C-w>:"})
-		  call empty_prompt#map(#{lhs: '<Esc>', rhs: "<C-w>N"})
-	endfunction
-	MyAutocmd VimEnter * ++once call s:empty_prompt_mappings()
+	" function! s:empty_prompt_mappings() abort
+	" 	  call empty_prompt#map(#{lhs: ':', rhs: "<C-g>:"})
+	" 	  call empty_prompt#map(#{lhs: '<Esc>', rhs: "<C-g>N"})
+	" endfunction
+	" MyAutocmd VimEnter * ++once call s:empty_prompt_mappings()
 endfunction
 unlet s:hooks
 " }}}
@@ -2495,7 +2526,8 @@ function! s:bundle.hooks.on_source(bundle)
 	\				{'pattern': '\<false\>', 'replace': 'false'},
 	\			],
 	\			[
-	\				'on', 'off'
+	\				'on', 'off',
+	\				'ON', 'OFF'
 	\			]
 	\		],
 	\		'nomatch': function('g:CtrlAX')
@@ -2620,16 +2652,33 @@ unlet s:hooks
 " }}}
 
 
-" ddc {{{
-let s:hooks = neobundle#get_hooks("ddc")
+" ddu {{{
+let s:hooks = neobundle#get_hooks("ddu.vim")
 function! s:hooks.on_post_source(bundle)
-	" ddc 側で <TAB> が上書きされているので再定義する
-	imap <expr><TAB> neosnippet#expandable() <Bar><Bar> neosnippet#jumpable() ? "\<Plug>(neosnippet_jump_or_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
+	execute "source" fnamemodify(s:vimrc, ":h")."/plugins/ddu.vim"
 endfunction
 unlet s:hooks
 " }}}
 
 
+" unite-outline {{{
+let g:unite_source_outline_max_headings=10000
+let g:unite_source_outline_cache_limit=10000
+" }}}
+
+
+" pum.vim {{{
+let s:hooks = neobundle#get_hooks("pum.vim")
+function! s:hooks.on_post_source(bundle)
+	" inoremap <Tab>   <Cmd>call pum#map#insert_relative(+1)<CR>
+	" inoremap <S-Tab> <Cmd>call pum#map#insert_relative(-1)<CR>
+	" inoremap <C-n>   <Cmd>call pum#map#insert_relative(+1)<CR>
+	" inoremap <C-p>   <Cmd>call pum#map#insert_relative(-1)<CR>
+	" inoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
+	" inoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
+endfunction
+unlet s:hooks
+" }}}
 
 set updatetime=500
 
@@ -2898,7 +2947,7 @@ function! WebPageTitle(url)
 	if empty(enc)
 		let enc = matchstr(body, 'charset=["'']\zs[^"'']*\ze["'']')
 	endif
-	return iconv(matchstr(body, '<title>\zs.\{-}\ze<\/title>'), empty(enc) ? 'uft-8' : enc, &enc)
+	return webapi#html#decodeEntityReference(iconv(matchstr(body, '<title>\zs.\{-}\ze<\/title>'), empty(enc) ? 'uft-8' : enc, &enc))
 endfunction
 
 augroup hi-clumns
@@ -3005,6 +3054,10 @@ source <sfile>:h/scripts/git.vim
 source <sfile>:h/scripts/scrapbox.vim
 source <sfile>:h/scripts/projector.vim
 source <sfile>:h/scripts/rurema.vim
+source <sfile>:h/scripts/zenn.vim
+source <sfile>:h/scripts/month.vim
+source <sfile>:h/scripts/yank_except_indent.vim
+source <sfile>:h/scripts/auto_indent_past.vim
 
 if has("terminal")
 	source <sfile>:h/scripts/terminal.vim
